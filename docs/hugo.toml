@@ -1,0 +1,31 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'Rift'
+disableKinds = ['taxonomy']
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = false
+  [markup.highlight]
+    noClasses = true
+    style = 'monokai'
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+    ordered = false
+
+[module]
+  [[module.mounts]]
+    source = 'assets'
+    target = 'assets'
+[[module.mounts]]
+    source = 'content'
+    target = 'content'
+  [[module.mounts]]
+    source = 'layouts'
+    target = 'layouts'
+
+[params]
+  description = 'Documentation for Rift'
+  author = 'Priyash Patil'

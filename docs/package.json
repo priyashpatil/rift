@@ -1,0 +1,7 @@
+{
+  "name": "rift-docs",
+  "private": true,
+  "devDependencies": {
+    "bootstrap": "^5.3.8"
+  }
+}

@@ -1,0 +1,127 @@
+@import "bootstrap/scss/mixins/banner";
+@include bsBanner("");
+
+// Configuration
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+// Layout & components
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/nav";
+
+// Helpers
+@import "bootstrap/scss/helpers";
+
+// Utilities
+@import "bootstrap/scss/utilities/api";
+
+@import "header";
+
+// ── Terminal palette ────────────────────────────────────────
+$term-bg:         #0d1117;
+$term-bg-surface: #161b22;
+$term-green:      #00ff41;
+$term-green-dim:  rgba(0, 255, 65, 0.7);
+$term-text:       #c9d1d9;
+$term-muted:      #8b949e;
+$term-border:     rgba(0, 255, 65, 0.12);
+$term-link:       #58a6ff;
+
+// ── Global ──────────────────────────────────────────────────
+
+html,
+body {
+  font-family: "iA Writer Mono", monospace;
+  overflow-x: hidden;
+  background-color: $term-bg;
+  color: $term-text;
+}
+
+p {
+  line-height: 1.8;
+}
+
+a {
+  color: $term-green-dim;
+
+  &:hover {
+    color: $term-green;
+  }
+}
+
+.container {
+  max-width: 768px;
+}
+
+// ── Content ─────────────────────────────────────────────────
+
+article {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    margin: 20px 0 15px;
+    color: $term-green;
+  }
+
+  a {
+    word-wrap: break-word;
+    color: $term-link;
+
+    &:hover {
+      color: lighten($term-link, 15%);
+    }
+  }
+
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    margin-bottom: 20px;
+  }
+}
+
+// ── Code blocks ─────────────────────────────────────────────
+
+pre {
+  border-radius: 0.25rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  background-color: $term-bg-surface !important;
+  border: 1px solid $term-border;
+}
+
+pre code {
+  display: block;
+  min-width: max-content;
+  padding: 0.5rem;
+}
+
+code {
+  color: $term-green;
+}
+
+// ── Footer ──────────────────────────────────────────────────
+
+footer {
+  border-top: 1px solid $term-border;
+
+  .text-muted {
+    color: $term-muted !important;
+  }
+
+  .nav-link {
+    color: $term-green-dim;
+
+    &:hover {
+      color: $term-green;
+    }
+  }
+}

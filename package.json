@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun build --compile src/index.ts --outfile rift"
+    "build": "bun build --compile src/index.ts --outfile rift",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
+    <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+
+    <link rel="canonical" href="{{ .Permalink }}">
+
+{{ $scss := resources.Get "sass/site.scss" }}
+    {{ $style := $scss | toCSS (dict "includePaths" (slice "node_modules")) }}
+    <link rel="stylesheet" href="{{ $style.RelPermalink }}">
+
+    {{ block "head" . }}{{ end }}
+</head>
+
+<body>
+    {{ partial "header.html" . }}
+
+    <main>
+        {{ block "main" . }}{{ end }}
+    </main>
+
+    {{ partial "footer.html" . }}
+
+    {{ block "foot" . }}{{ end }}
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+{{ define "main" }}
+<div class="container py-4">
+    <article>
+        <h1>{{ .Title }}</h1>
+        {{ .Content }}
+
+        {{ range .Pages }}
+        <section>
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            {{ with .Description }}<p>{{ . }}</p>{{ end }}
+        </section>
+        {{ end }}
+    </article>
+</div>
+{{ end }}

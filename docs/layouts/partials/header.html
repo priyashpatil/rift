@@ -1,0 +1,20 @@
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bolder" href="/">rift</a>
+
+        <ul class="nav nav-left">
+            <li class="nav-item">
+                <a class="nav-link {{ if eq .RelPermalink "/" }}active{{ end }}" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ if hasPrefix .RelPermalink "/docs" }}active{{ end }}" href="/docs/">Docs</a>
+            </li>
+        </ul>
+
+        <ul class="nav nav-right">
+            <li class="nav-item">
+                <a class="nav-link" href="https://github.com/priyashpatil/rift" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </li>
+        </ul>
+    </div>
+</nav>
