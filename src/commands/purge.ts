@@ -61,7 +61,7 @@ export async function cmdPurge(args: string[]): Promise<void> {
 
   await worktreePrune(mainRepo);
 
-  if (getEditor().managedWorkspace) {
+  if ((await getEditor()).managedWorkspace) {
     try { await syncWorkspace(project, mainRepo); } catch {}
   }
 

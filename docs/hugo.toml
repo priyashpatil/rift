@@ -1,7 +1,8 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://rift.priyashpatil.com/'
 languageCode = 'en-us'
 title = 'Rift'
 disableKinds = ['taxonomy']
+enableRobotsTXT = true
 
 [markup]
   [markup.goldmark]

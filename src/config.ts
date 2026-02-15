@@ -59,12 +59,18 @@ export function saveGlobalConfig(config: GlobalConfig): void {
   writeFileSync(GLOBAL_CONFIG_PATH, yaml.dump(config));
 }
 
-export function getAgentCommand(): string {
+export async function getAgentCommand(): Promise<string> {
+  const riftConfig = await getRiftConfig();
+  if (riftConfig.agent) return riftConfig.agent;
   const config = getGlobalConfig();
   return config.agent || "claude";
 }
 
-export function getEditor(): Editor {
+export async function getEditor(): Promise<Editor> {
+  const riftConfig = await getRiftConfig();
+  if (riftConfig.editor) {
+    return EDITORS.find((e) => e.cmd === riftConfig.editor) || DEFAULT_EDITOR;
+  }
   const config = getGlobalConfig();
   return EDITORS.find((e) => e.cmd === config.editor) || DEFAULT_EDITOR;
 }

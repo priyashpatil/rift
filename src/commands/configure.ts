@@ -4,7 +4,7 @@ import { join, basename } from "path";
 import { getGlobalConfig, saveGlobalConfig, EDITORS, AGENTS } from "../config";
 import { promptChoice } from "../prompt";
 
-const GUARD_COMMENT = "# Added by rift configure";
+const GUARD_COMMENT = "# Added by rift";
 
 function detectShell(): string {
   const shell = process.env.SHELL || "";
@@ -29,8 +29,8 @@ function getRcPath(shell: string): string {
 }
 
 function getInitLine(shell: string): string {
-  if (shell === "fish") return "rift init | source";
-  return 'eval "$(rift init)"';
+  if (shell === "fish") return "rift _shell-init | source";
+  return 'eval "$(rift _shell-init)"';
 }
 
 function makeLabels(
@@ -72,6 +72,8 @@ export async function cmdConfigure(): Promise<void> {
 
   // Editor selection
   console.log();
+  console.log("Which editor should Rift open worktrees in?");
+  console.log("This is the default for all projects. You can override it per-project in rift.yaml.\n");
   const currentEditor = config.editor || "code";
   const editorLabels = makeLabels(EDITORS, currentEditor);
   const editorChoice = await promptChoice("Editor:", editorLabels);
@@ -85,6 +87,8 @@ export async function cmdConfigure(): Promise<void> {
 
   // Agent selection
   console.log();
+  console.log("Which AI coding agent should Rift launch in new worktrees?");
+  console.log("Rift starts this command automatically when you open or jump to a worktree.\n");
   const currentAgent = config.agent || "claude";
   const agentLabels = makeLabels(AGENTS, currentAgent);
   const agentChoice = await promptChoice("AI agent:", agentLabels);

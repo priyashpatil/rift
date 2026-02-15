@@ -18,7 +18,7 @@ export async function cmdCode(): Promise<void> {
 
   const mainRepo = await getMainWorktree();
   const project = await getProjectName();
-  const editor = getEditor();
+  const editor = await getEditor();
 
   if (editor.managedWorkspace) {
     const wsPath = join(WORKSPACES_DIR, `${project}.code-workspace`);

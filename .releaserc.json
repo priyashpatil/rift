@@ -1,0 +1,26 @@
+{
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/npm",
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          { "path": "dist/rift-darwin-arm64", "label": "rift-darwin-arm64" },
+          { "path": "dist/rift-darwin-x64", "label": "rift-darwin-x64" },
+          { "path": "dist/rift-linux-x64", "label": "rift-linux-x64" },
+          { "path": "dist/rift-linux-arm64", "label": "rift-linux-arm64" }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["package.json"],
+        "message": "chore(release): ${nextRelease.version}"
+      }
+    ]
+  ]
+}

@@ -10,6 +10,7 @@ import { cmdJump } from "./commands/jump";
 import { cmdCode } from "./commands/code";
 import { cmdPurge } from "./commands/purge";
 import { cmdInit } from "./commands/init";
+import { cmdShellInit } from "./commands/shell-init";
 import { cmdConfigure } from "./commands/configure";
 import { getAgentCommand } from "./config";
 
@@ -46,13 +47,16 @@ try {
       await cmdPurge(rest);
       break;
     case "init":
-      cmdInit();
+      await cmdInit(rest);
+      break;
+    case "_shell-init":
+      cmdShellInit();
       break;
     case "configure":
       await cmdConfigure();
       break;
     case "_agent-cmd":
-      console.log(getAgentCommand());
+      console.log(await getAgentCommand());
       break;
     case "help":
     case "--help":

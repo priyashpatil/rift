@@ -12,11 +12,13 @@ Commands:
   jump <name>       Switch to a worktree and start agent
   code              Open project in configured editor
   purge             Remove ALL worktrees for current project
-  configure         Set up shell integration and agent preference
-  init              Output shell wrapper function
+  init              Initialize rift.yaml in current git project
+  configure         Set up shell integration and global preferences
 
 Options:
   --base <branch>   Base branch for new worktree (default: current branch)
   --skip-agent      Don't launch agent after opening worktree
+  --editor <cmd>    Editor to use (init only)
+  --agent <cmd>     AI agent to use (init only)
   -f, --force       Skip confirmation prompts`);
 }

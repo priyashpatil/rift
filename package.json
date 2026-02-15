@@ -1,15 +1,24 @@
 {
-  "name": "rift",
-  "version": "1.0.0-beta.1",
+  "name": "@priyashpatil/rift",
+  "version": "0.0.0-development",
   "description": "Git worktree manager for parallel AI agent development",
   "type": "module",
   "license": "MIT",
+  "bin": {
+    "rift": "bin/rift.js"
+  },
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun build --compile src/index.ts --outfile rift",
+    "build:all": "bun run scripts/build-all.js",
+    "postinstall": "node scripts/postinstall.js",
     "test": "bun test",
     "test:coverage": "bun test --coverage"
   },
+  "files": [
+    "bin/rift.js",
+    "scripts/postinstall.js"
+  ],
   "dependencies": {
     "js-yaml": "^4.1.0"
   },

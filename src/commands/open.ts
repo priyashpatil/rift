@@ -65,7 +65,7 @@ export async function cmdOpen(args: string[]): Promise<void> {
   console.log(`Branch: ${name} (based on ${base})`);
   console.log(`Path: ${wtPath}`);
 
-  if (getEditor().managedWorkspace) {
+  if ((await getEditor()).managedWorkspace) {
     try { await syncWorkspace(project, mainRepo); } catch {}
   }
 

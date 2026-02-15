@@ -2,6 +2,15 @@
 <div class="container py-4">
     <article>
         <h1>{{ .Title }}</h1>
+        {{ $toc := .TableOfContents }}
+        {{ if findRE "<li>" $toc }}
+        <nav class="toc">
+            <details open>
+                <summary>On this page</summary>
+                {{ $toc }}
+            </details>
+        </nav>
+        {{ end }}
         {{ .Content }}
 
         {{ range .Pages }}

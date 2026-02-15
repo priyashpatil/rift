@@ -93,7 +93,7 @@ describe("config", () => {
   describe("getAgentCommand", () => {
     test("returns a non-empty string", async () => {
       const { getAgentCommand } = await import("../config");
-      const cmd = getAgentCommand();
+      const cmd = await getAgentCommand();
       expect(typeof cmd).toBe("string");
       expect(cmd.length).toBeGreaterThan(0);
     });
@@ -102,7 +102,7 @@ describe("config", () => {
   describe("getEditor", () => {
     test("returns an Editor object with required properties", async () => {
       const { getEditor } = await import("../config");
-      const editor = getEditor();
+      const editor = await getEditor();
       expect(editor).toHaveProperty("name");
       expect(editor).toHaveProperty("cmd");
       expect(editor).toHaveProperty("managedWorkspace");
@@ -113,7 +113,7 @@ describe("config", () => {
 
     test("returns a valid editor from the EDITORS list", async () => {
       const { getEditor, EDITORS } = await import("../config");
-      const editor = getEditor();
+      const editor = await getEditor();
       expect(EDITORS.some((e) => e.cmd === editor.cmd)).toBe(true);
     });
   });

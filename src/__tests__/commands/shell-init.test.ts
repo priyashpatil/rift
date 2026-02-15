@@ -1,7 +1,7 @@
 import { describe, expect, test, spyOn, beforeEach, afterEach } from "bun:test";
-import { cmdInit } from "../../commands/init";
+import { cmdShellInit } from "../../commands/shell-init";
 
-describe("cmdInit", () => {
+describe("cmdShellInit", () => {
   const originalShell = process.env.SHELL;
 
   afterEach(() => {
@@ -10,7 +10,7 @@ describe("cmdInit", () => {
 
   function getInitOutput(): string {
     const logSpy = spyOn(console, "log").mockImplementation(() => {});
-    cmdInit();
+    cmdShellInit();
     // Find the log call that contains shell wrapper content
     const output = logSpy.mock.calls
       .map((c) => String(c[0] ?? ""))

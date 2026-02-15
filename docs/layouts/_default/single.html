@@ -1,7 +1,21 @@
 {{ define "main" }}
 <div class="container py-4">
     <article>
+        {{ if eq .Section "guides" }}
+        <nav class="breadcrumb" aria-label="breadcrumb">
+            <a href="/guides/">Guides</a> <span class="separator">/</span> {{ .Title }}
+        </nav>
+        {{ end }}
         <h1>{{ .Title }}</h1>
+        {{ $toc := .TableOfContents }}
+        {{ if findRE "<li>" $toc }}
+        <nav class="toc">
+            <details open>
+                <summary>On this page</summary>
+                {{ $toc }}
+            </details>
+        </nav>
+        {{ end }}
         {{ .Content }}
     </article>
 </div>

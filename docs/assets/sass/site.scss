@@ -27,23 +27,28 @@
 @import "header";
 
 // ── Terminal palette ────────────────────────────────────────
-$term-bg:         #0d1117;
-$term-bg-surface: #161b22;
-$term-green:      #00ff41;
-$term-green-dim:  rgba(0, 255, 65, 0.7);
-$term-text:       #c9d1d9;
-$term-muted:      #8b949e;
-$term-border:     rgba(0, 255, 65, 0.12);
-$term-link:       #58a6ff;
+$term-bg:          #0d1117;
+$term-bg-surface:  #161b22;
+$term-accent:      #00ff41;
+$term-accent-dim:  rgba(0, 255, 65, 0.7);
+$term-text:        #c9d1d9;
+$term-muted:       #8b949e;
+$term-border:      rgba(0, 255, 65, 0.12);
+$term-link:        rgba(0, 255, 65, 0.7);
 
 // ── Global ──────────────────────────────────────────────────
 
-html,
-body {
+html {
   font-family: "iA Writer Mono", monospace;
-  overflow-x: hidden;
   background-color: $term-bg;
   color: $term-text;
+}
+
+body {
+  font-family: inherit;
+  overflow-x: hidden;
+  background-color: inherit;
+  color: inherit;
 }
 
 p {
@@ -51,10 +56,10 @@ p {
 }
 
 a {
-  color: $term-green-dim;
+  color: $term-accent-dim;
 
   &:hover {
-    color: $term-green;
+    color: $term-accent;
   }
 }
 
@@ -68,7 +73,7 @@ article {
   h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     margin: 20px 0 15px;
-    color: $term-green;
+    color: $term-accent;
   }
 
   a {
@@ -84,6 +89,77 @@ article {
     max-width: 100% !important;
     height: auto !important;
     margin-bottom: 20px;
+  }
+}
+
+// ── Breadcrumb ───────────────────────────────────────────────
+
+.breadcrumb {
+  font-size: 0.85rem;
+  color: $term-muted;
+  margin-bottom: 0.25rem;
+
+  a {
+    color: $term-muted;
+
+    &:hover {
+      color: $term-accent;
+    }
+  }
+
+  .separator {
+    margin: 0 0.35rem;
+  }
+}
+
+// ── Table of Contents ───────────────────────────────────────
+
+.toc {
+  margin: 1.5rem 0;
+  border: 1px solid $term-border;
+  border-radius: 0.25rem;
+  background-color: $term-bg-surface;
+
+  details {
+    summary {
+      cursor: pointer;
+      padding: 0.625rem 1rem;
+      font-size: 0.85rem;
+      color: $term-muted;
+      user-select: none;
+
+      &:hover {
+        color: $term-accent;
+      }
+    }
+  }
+
+  #TableOfContents {
+    padding: 0 1rem 0.625rem;
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+
+      ul {
+        padding-left: 1rem;
+      }
+    }
+
+    li {
+      margin: 0.25rem 0;
+    }
+
+    a {
+      color: $term-text;
+      font-size: 0.875rem;
+      text-decoration: none;
+
+      &:hover {
+        color: $term-accent;
+      }
+    }
   }
 }
 
@@ -105,7 +181,55 @@ pre code {
 }
 
 code {
-  color: $term-green;
+  color: $term-accent;
+}
+
+// ── GitHub link ─────────────────────────────────────────────
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  color: $term-text !important;
+  text-decoration: none !important;
+  border: 1px solid $term-border;
+  border-radius: 0.25rem;
+  background-color: rgba(0, 255, 65, 0.06);
+  transition: border-color 0.2s, background-color 0.2s;
+
+  > svg {
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    border-color: $term-accent;
+    background-color: rgba(0, 255, 65, 0.1);
+    color: $term-accent !important;
+  }
+
+  .github-star-count {
+    display: none;
+    align-items: center;
+    gap: 0.25rem;
+    padding-left: 0.4rem;
+    border-left: 1px solid $term-border;
+    font-variant-numeric: tabular-nums;
+
+    svg {
+      color: #e3b341;
+    }
+
+    &.visible {
+      display: inline-flex;
+    }
+  }
+}
+
+.github-link--footer {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
 }
 
 // ── Footer ──────────────────────────────────────────────────
@@ -118,10 +242,10 @@ footer {
   }
 
   .nav-link {
-    color: $term-green-dim;
+    color: $term-accent-dim;
 
     &:hover {
-      color: $term-green;
+      color: $term-accent;
     }
   }
 }

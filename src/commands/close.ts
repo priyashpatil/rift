@@ -54,7 +54,7 @@ export async function cmdClose(args: string[]): Promise<void> {
     console.error(`Warning: failed to delete branch ${branch}`);
   }
 
-  if (getEditor().managedWorkspace) {
+  if ((await getEditor()).managedWorkspace) {
     try { await syncWorkspace(project, mainRepo); } catch {}
   }
 

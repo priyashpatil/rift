@@ -1,4 +1,6 @@
 export interface RiftConfig {
+  editor?: string;
+  agent?: string;
   hooks?: {
     open?: string;
     jump?: string;
