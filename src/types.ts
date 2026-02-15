@@ -1,0 +1,24 @@
+export interface RiftConfig {
+  hooks?: {
+    open?: string;
+    jump?: string;
+    close?: string;
+    purge?: string;
+  };
+}
+
+export interface GlobalConfig {
+  agent?: string;
+  editor?: string;
+}
+
+export interface WorktreeInfo {
+  path: string;
+  branch: string;
+}
+
+export interface Editor {
+  name: string;
+  cmd: string;
+  managedWorkspace: boolean;
+}

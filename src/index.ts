@@ -1,0 +1,72 @@
+#!/usr/bin/env bun
+
+import { cmdHelp } from "./commands/help";
+import { cmdStatus } from "./commands/status";
+import { cmdOpen } from "./commands/open";
+import { cmdList } from "./commands/list";
+import { cmdClose } from "./commands/close";
+import { cmdMain } from "./commands/main";
+import { cmdJump } from "./commands/jump";
+import { cmdCode } from "./commands/code";
+import { cmdPurge } from "./commands/purge";
+import { cmdInit } from "./commands/init";
+import { cmdConfigure } from "./commands/configure";
+import { getAgentCommand } from "./config";
+
+const args = process.argv.slice(2);
+const command = args[0] || "help";
+const rest = args.slice(1);
+
+try {
+  switch (command) {
+    case "status":
+      await cmdStatus();
+      break;
+    case "open":
+      await cmdOpen(rest);
+      break;
+    case "list":
+    case "ls":
+      await cmdList();
+      break;
+    case "close":
+      await cmdClose(rest);
+      break;
+    case "main":
+    case "base":
+      await cmdMain();
+      break;
+    case "jump":
+      await cmdJump(rest);
+      break;
+    case "code":
+      await cmdCode();
+      break;
+    case "purge":
+      await cmdPurge(rest);
+      break;
+    case "init":
+      cmdInit();
+      break;
+    case "configure":
+      await cmdConfigure();
+      break;
+    case "_agent-cmd":
+      console.log(getAgentCommand());
+      break;
+    case "help":
+    case "--help":
+    case "-h":
+      cmdHelp();
+      break;
+    default:
+      console.error(`Error: unknown command: ${command}`);
+      cmdHelp();
+      process.exit(1);
+  }
+} catch (err) {
+  if (err instanceof Error) {
+    console.error(`Error: ${err.message}`);
+  }
+  process.exit(1);
+}

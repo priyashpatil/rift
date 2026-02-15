@@ -1,0 +1,47 @@
+import { basename } from "path";
+import {
+  isGitRepo,
+  getMainWorktree,
+  getProjectName,
+  listRiftWorktrees,
+} from "../git";
+import { writeCdPath, signalAgentStart } from "../ipc";
+import { runHook } from "../hooks";
+
+export async function cmdJump(args: string[]): Promise<void> {
+  const skipAgent = args.includes("--skip-agent");
+  const positional = args.filter((a) => a !== "--skip-agent");
+  const name = positional[0];
+
+  if (!name) {
+    console.error("Usage: rift jump <name> [--skip-agent]");
+    process.exit(1);
+  }
+
+  if (!(await isGitRepo())) {
+    console.error("Error: not in a git repository");
+    process.exit(1);
+  }
+
+  const mainRepo = await getMainWorktree();
+  const project = await getProjectName();
+  const worktrees = await listRiftWorktrees(mainRepo, project);
+
+  const match = worktrees.find((wt) => basename(wt.path) === name);
+
+  if (!match) {
+    console.error(`Error: worktree "${name}" not found`);
+    if (worktrees.length > 0) {
+      console.error("Available worktrees:");
+      for (const wt of worktrees) {
+        console.error(`  ${basename(wt.path)}`);
+      }
+    }
+    process.exit(1);
+  }
+
+  console.log(`Jumping to: ${name}`);
+  writeCdPath(match.path);
+  if (!skipAgent) signalAgentStart();
+  await runHook("jump", match.path);
+}

@@ -1,0 +1,29 @@
+import { homedir, tmpdir } from "os";
+import { join } from "path";
+
+export const RIFT_DIR = join(homedir(), ".rift");
+export const WORKTREES_DIR = join(RIFT_DIR, "worktrees");
+export const WORKSPACES_DIR = join(RIFT_DIR, "workspaces");
+export const CONFIG_DIR = join(homedir(), ".config", "rift");
+export const GLOBAL_CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
+
+export const CD_PATH_FILE = join(tmpdir(), ".rift_cd_path");
+export const AGENT_START_FILE = join(tmpdir(), ".rift_start_agent");
+
+export const ADJECTIVES = [
+  "bold", "calm", "cool", "dark", "deep", "dry", "fair", "fast", "firm",
+  "flat", "free", "full", "good", "hard", "high", "hot", "kind", "late",
+  "lean", "live", "long", "loud", "low", "mild", "neat", "new", "nice",
+  "odd", "old", "open", "pure", "rare", "raw", "red", "rich", "safe",
+  "shy", "slim", "slow", "soft", "sour", "tall", "tame", "thin", "tiny",
+  "true", "vast", "warm", "weak", "wet", "wide", "wild", "wise",
+];
+
+export const NOUNS = [
+  "ant", "ape", "bat", "bear", "bee", "bird", "boar", "cat", "clam",
+  "cod", "crab", "crow", "deer", "dog", "dove", "duck", "eel", "elk",
+  "emu", "fish", "fox", "frog", "goat", "gull", "hare", "hawk", "hen",
+  "jay", "lark", "lion", "lynx", "mole", "moth", "newt", "owl", "ox",
+  "pike", "pony", "puma", "ray", "seal", "swan", "toad", "wasp", "wolf",
+  "wren", "yak", "oak", "pine",
+];
