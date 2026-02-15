@@ -1,8 +1,9 @@
 {
   "name": "rift",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.1",
   "description": "Git worktree manager for parallel AI agent development",
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun build --compile src/index.ts --outfile rift",
