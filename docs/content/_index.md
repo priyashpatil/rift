@@ -25,6 +25,8 @@ Then run `rift configure` to set up shell integration and global preferences, an
 
 VS Code, Cursor, and Windsurf. All three support managed workspaces — `rift code` creates a `.code-workspace` file that includes all active worktrees.
 
+> **JetBrains IDEs and Zed** have multi-root workspace support that is either in early stages or only partially implemented. Rift does not have built-in support for these editors at the moment. You can still use them by setting a custom editor command in `rift.yaml`, but `rift code` won't manage a shared workspace file for them.
+
 ## Supported agents
 
 Amp, Claude Code, Codex, Continue, Copilot, Gemini, Kiro, and OpenCode.
