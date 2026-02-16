@@ -12,6 +12,7 @@ import { cmdPurge } from "./commands/purge";
 import { cmdInit } from "./commands/init";
 import { cmdShellInit } from "./commands/shell-init";
 import { cmdConfigure } from "./commands/configure";
+import { cmdVersion } from "./commands/version";
 import { getAgentCommand } from "./config";
 
 const args = process.argv.slice(2);
@@ -57,6 +58,11 @@ try {
       break;
     case "_agent-cmd":
       console.log(await getAgentCommand());
+      break;
+    case "version":
+    case "--version":
+    case "-v":
+      cmdVersion();
       break;
     case "help":
     case "--help":

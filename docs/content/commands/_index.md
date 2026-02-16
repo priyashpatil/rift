@@ -128,6 +128,16 @@ rift purge
 rift purge --force
 ```
 
+### `rift version`
+
+Print the current Rift version.
+
+```bash
+rift version
+```
+
+Also available as `rift --version` or `rift -v`.
+
 ## Options
 
 These flags can be combined with the commands above:

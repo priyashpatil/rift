@@ -14,6 +14,7 @@ Commands:
   purge             Remove ALL worktrees for current project
   init              Initialize rift.yaml in current git project
   configure         Set up shell integration and global preferences
+  version           Show version number
 
 Options:
   --base <branch>   Base branch for new worktree (default: current branch)
