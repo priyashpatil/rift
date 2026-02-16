@@ -17,7 +17,8 @@ export async function promptChoice(
 
   for await (const line of console) {
     const input = line.trim();
-    if (input === "q" || input === "") return null;
+    if (input === "q") process.exit(0);
+    if (input === "") return null;
     const num = parseInt(input, 10);
     if (!isNaN(num) && num >= 1 && num <= items.length) return num - 1;
     console.error("Invalid selection.");

@@ -42,7 +42,7 @@ The left side of each port mapping (the host port) is the one that must be uniqu
 
 ### bootstrap.sh
 
-`rift init` can generate a bootstrap script for you, or you can use any custom command. Here's the [multiple ports variant](/hooks/#multiple-ports) to generate a `.env` with all the ports your services need:
+Here's the [multiple ports variant](/hooks/#multiple-ports) to generate a `.env` with all the ports your services need:
 
 ```bash
 #!/usr/bin/env bash
@@ -62,7 +62,7 @@ echo "Assigned ports $BASE, $(( BASE + 1 )), $(( BASE + 2 )) for worktree '$RIFT
 
 ### rift.yaml
 
-`rift init` can set up the bootstrap hooks for you. For Docker Compose projects, you'll likely want to extend the hooks with container lifecycle commands:
+For Docker Compose projects, add container lifecycle commands to the hooks in your `rift.yaml`:
 
 ```yaml
 hooks:

@@ -17,7 +17,7 @@ hooks:
 ```
 
 - **`editor`** — the editor command to use for this project (e.g. `code`, `cursor`, `windsurf`). Overrides the global config.
-- **`agent`** — the coding agent command to use for this project (e.g. `claude`, `aider`, `codex`). Overrides the global config.
+- **`agent`** — the coding agent command to use for this project (e.g. `claude`, `copilot`, `codex`). Overrides the global config.
 
 ## Hooks
 
@@ -74,13 +74,9 @@ This keeps complex setup logic out of `rift.yaml` and in a version-controlled sc
 
 When multiple worktrees run dev servers simultaneously, they all compete for the same default ports. The bootstrap pattern solves this by running a command on the `open` and `jump` hooks that derives a **deterministic port** from the worktree name — the same worktree always gets the same port.
 
-### Quick setup
-
-`rift init` offers to set up the bootstrap pattern for you. It can generate a ready-made bash script or let you enter any custom command (e.g. `npm run bootstrap`).
-
 ### Bash script example
 
-If you chose to generate a bash script during `rift init`, or want to create one manually:
+Create a bootstrap script manually or follow the [framework guides](/guides/):
 
 ```bash
 #!/usr/bin/env bash
@@ -137,7 +133,7 @@ echo "Assigned ports $BASE, $(( BASE + 1 )), $(( BASE + 2 )) for worktree '$RIFT
 
 ### Wiring it up
 
-If you didn't use `rift init` to set up the bootstrap pattern, add the hook command to your `rift.yaml` manually:
+Add the hook command to your `rift.yaml`:
 
 ```yaml
 hooks:
@@ -155,8 +151,6 @@ The generated `.env` file is worktree-specific and should not be committed:
 # .gitignore
 .env
 ```
-
-`rift init` adds this automatically when you enable the bootstrap pattern.
 
 ### Next steps
 

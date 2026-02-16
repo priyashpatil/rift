@@ -23,10 +23,8 @@ Then run `rift configure` to set up shell integration and global preferences, an
 
 ## Supported editors
 
-VS Code, Cursor, Windsurf, IntelliJ IDEA, WebStorm, GoLand, PyCharm, PhpStorm, CLion, RubyMine, Rider, RustRover, Aqua, and DataGrip.
-
-VS Code, Cursor, and Windsurf support managed workspaces — `rift code` creates a `.code-workspace` file that includes all active worktrees.
+VS Code, Cursor, and Windsurf. All three support managed workspaces — `rift code` creates a `.code-workspace` file that includes all active worktrees.
 
 ## Supported agents
 
-Claude Code, Amp, OpenAI Codex, Aider, and Gemini CLI.
+Amp, Claude Code, Codex, Continue, Copilot, Gemini, Kiro, and OpenCode.

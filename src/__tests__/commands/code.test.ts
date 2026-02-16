@@ -145,7 +145,7 @@ describe("cmdCode", () => {
 
   test("does not sync workspace for non-managed editors", async () => {
     mockGetEditor.mockReturnValue({
-      name: "IntelliJ IDEA",
+      name: "Other",
       cmd: "true",
       managedWorkspace: false,
     });

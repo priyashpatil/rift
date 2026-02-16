@@ -12,48 +12,40 @@ import yaml from "js-yaml";
 
 describe("config", () => {
   describe("EDITORS constant", () => {
-    test("contains VS Code as first editor with managed workspace", async () => {
+    test("contains VS Code with managed workspace", async () => {
       const { EDITORS } = await import("../config");
-      expect(EDITORS[0]).toEqual({
+      expect(EDITORS.find((e) => e.cmd === "code")).toEqual({
         name: "VS Code",
         cmd: "code",
         managedWorkspace: true,
       });
     });
 
-    test("contains expected number of editors", async () => {
+    test("contains 3 editors", async () => {
       const { EDITORS } = await import("../config");
-      expect(EDITORS.length).toBe(14);
+      expect(EDITORS.length).toBe(3);
     });
 
-    test("Cursor and Windsurf have managedWorkspace true", async () => {
+    test("all editors have managedWorkspace true", async () => {
       const { EDITORS } = await import("../config");
-      const cursor = EDITORS.find((e) => e.cmd === "cursor");
-      const windsurf = EDITORS.find((e) => e.cmd === "windsurf");
-      expect(cursor?.managedWorkspace).toBe(true);
-      expect(windsurf?.managedWorkspace).toBe(true);
-    });
-
-    test("JetBrains editors have managedWorkspace false", async () => {
-      const { EDITORS } = await import("../config");
-      const jetbrains = EDITORS.filter(
-        (e) => !["code", "cursor", "windsurf"].includes(e.cmd),
-      );
-      for (const editor of jetbrains) {
-        expect(editor.managedWorkspace).toBe(false);
+      for (const editor of EDITORS) {
+        expect(editor.managedWorkspace).toBe(true);
       }
     });
   });
 
   describe("AGENTS constant", () => {
-    test("contains Claude Code as first agent", async () => {
+    test("contains Claude Code agent", async () => {
       const { AGENTS } = await import("../config");
-      expect(AGENTS[0]).toEqual({ name: "Claude Code", cmd: "claude" });
+      expect(AGENTS.find((a) => a.cmd === "claude")).toEqual({
+        name: "Claude Code",
+        cmd: "claude",
+      });
     });
 
-    test("contains 5 agents", async () => {
+    test("contains 8 agents", async () => {
       const { AGENTS } = await import("../config");
-      expect(AGENTS.length).toBe(5);
+      expect(AGENTS.length).toBe(8);
     });
   });
 

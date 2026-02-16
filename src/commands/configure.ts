@@ -2,7 +2,6 @@ import { existsSync, readFileSync, appendFileSync } from "fs";
 import { homedir } from "os";
 import { join, basename } from "path";
 import { getGlobalConfig, saveGlobalConfig, EDITORS, AGENTS } from "../config";
-import { promptChoice } from "../prompt";
 
 const GUARD_COMMENT = "# Added by rift";
 
@@ -33,24 +32,21 @@ function getInitLine(shell: string): string {
   return 'eval "$(rift _shell-init)"';
 }
 
-function makeLabels(
-  items: { name: string; cmd: string }[],
-  currentCmd: string,
-): string[] {
-  return items.map((item) =>
-    item.cmd === currentCmd
-      ? `${item.name} [${item.cmd}] (current)`
-      : `${item.name} [${item.cmd}]`,
-  );
+function parseFlags(args: string[]): { editor?: string; agent?: string } {
+  const flags: { editor?: string; agent?: string } = {};
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--editor" && args[i + 1]) {
+      flags.editor = args[++i];
+    } else if (args[i] === "--agent" && args[i + 1]) {
+      flags.agent = args[++i];
+    }
+  }
+  return flags;
 }
 
-export async function cmdConfigure(): Promise<void> {
+export async function cmdConfigure(args: string[]): Promise<void> {
   const shell = detectShell();
   const rcPath = getRcPath(shell);
-
-  console.log(`Detected shell: ${shell}`);
-  console.log(`RC file: ${rcPath}`);
-  console.log();
 
   // Shell integration
   if (existsSync(rcPath)) {
@@ -68,38 +64,41 @@ export async function cmdConfigure(): Promise<void> {
     console.log(`Created ${rcPath} with shell integration.`);
   }
 
+  const flags = parseFlags(args);
   const config = getGlobalConfig();
+  let changed = false;
 
-  // Editor selection
-  console.log();
-  console.log("Which editor should Rift open worktrees in?");
-  console.log("This is the default for all projects. You can override it per-project in rift.yaml.\n");
-  const currentEditor = config.editor || "code";
-  const editorLabels = makeLabels(EDITORS, currentEditor);
-  const editorChoice = await promptChoice("Editor:", editorLabels);
-
-  if (editorChoice !== null) {
-    config.editor = EDITORS[editorChoice].cmd;
-    console.log(`\nEditor set to: ${EDITORS[editorChoice].name} [${config.editor}]`);
-  } else {
-    console.log(`\nKept current editor: ${currentEditor}`);
+  if (flags.editor) {
+    if (!EDITORS.some((e) => e.cmd === flags.editor)) {
+      const valid = EDITORS.map((e) => e.cmd).join(", ");
+      throw new Error(
+        `unknown editor "${flags.editor}". Available editors: ${valid}`,
+      );
+    }
+    config.editor = flags.editor;
+    changed = true;
   }
 
-  // Agent selection
-  console.log();
-  console.log("Which AI coding agent should Rift launch in new worktrees?");
-  console.log("Rift starts this command automatically when you open or jump to a worktree.\n");
-  const currentAgent = config.agent || "claude";
-  const agentLabels = makeLabels(AGENTS, currentAgent);
-  const agentChoice = await promptChoice("AI agent:", agentLabels);
-
-  if (agentChoice !== null) {
-    config.agent = AGENTS[agentChoice].cmd;
-    console.log(`\nAgent set to: ${AGENTS[agentChoice].name} [${config.agent}]`);
-  } else {
-    console.log(`\nKept current agent: ${currentAgent}`);
+  if (flags.agent) {
+    if (!AGENTS.some((a) => a.cmd === flags.agent)) {
+      const valid = AGENTS.map((a) => a.cmd).join(", ");
+      throw new Error(
+        `unknown agent "${flags.agent}". Available agents: ${valid}`,
+      );
+    }
+    config.agent = flags.agent;
+    changed = true;
   }
 
-  saveGlobalConfig(config);
-  console.log("\nConfiguration complete. Restart your shell to apply changes.");
+  if (changed) {
+    saveGlobalConfig(config);
+  }
+
+  const editorCmd = config.editor || "code";
+  const agentCmd = config.agent || "claude";
+  const editorName = EDITORS.find((e) => e.cmd === editorCmd)?.name || editorCmd;
+  const agentName = AGENTS.find((a) => a.cmd === agentCmd)?.name || agentCmd;
+
+  console.log(`  editor: ${editorName} [${editorCmd}]`);
+  console.log(`  agent:  ${agentName} [${agentCmd}]`);
 }

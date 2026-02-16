@@ -5,17 +5,23 @@ description: "CLI reference for all Rift commands and options."
 
 ### `rift configure`
 
-Set up shell integration and global preferences. This does three things:
-
-1. Detects your shell and adds the Rift shell wrapper to your RC file.
-2. Prompts for a default editor.
-3. Prompts for a default AI agent.
+Set up shell integration and global preferences.
 
 ```bash
+# Set up shell integration and show current config
 rift configure
+
+# Set default editor
+rift configure --editor cursor
+
+# Set default agent
+rift configure --agent copilot
+
+# Set both
+rift configure --editor cursor --agent copilot
 ```
 
-You can re-run it at any time to change your editor or agent.
+Running without flags detects your shell, adds the Rift shell wrapper to your RC file, and prints the current editor and agent. Use `--editor` and `--agent` flags to change them.
 
 ### `rift init`
 
@@ -29,13 +35,13 @@ rift init
 rift init --editor cursor
 
 # Override agent
-rift init --agent aider
+rift init --agent copilot
 
 # Override both
-rift init --editor cursor --agent aider
+rift init --editor cursor --agent copilot
 ```
 
-During init, Rift offers to set up the [bootstrap pattern](/hooks/#the-bootstrap-pattern) for deterministic dev server ports. You can generate a bash script or enter a custom command (e.g. `npm run bootstrap`). See [Hooks](/hooks/) for details.
+The generated `rift.yaml` includes commented-out hook examples. See [Hooks](/hooks/) for details on configuring lifecycle hooks.
 
 ### `rift status`
 
@@ -111,7 +117,7 @@ Alias: `rift base`
 
 ### `rift code`
 
-Open the project in your configured editor. For editors with workspace support (VS Code, Cursor, Windsurf), this creates a `.code-workspace` file containing all active worktrees as folders.
+Open the project in your configured editor. Creates a `.code-workspace` file containing all active worktrees as folders.
 
 ```bash
 rift code
@@ -144,6 +150,8 @@ These flags can be combined with the commands above:
 
 - **`--base <branch>`** (`open`) — base branch for the new worktree (default: current branch)
 - **`--skip-agent`** (`open`, `jump`) — don't launch the AI agent after switching
-- **`--editor <cmd>`** (`init`) — editor to use for the project
-- **`--agent <cmd>`** (`init`) — AI agent to use for the project
+- **`--editor <cmd>`** (`init`, `configure`) — editor to use
+- **`--agent <cmd>`** (`init`, `configure`) — AI agent to use
 - **`-f`, `--force`** (`close`, `purge`) — skip confirmation prompts
+
+Run `rift <command> --help` for more information on a specific command.

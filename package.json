@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun build --compile src/index.ts --outfile rift",
+    "build:dev": "bun run build && cp rift ~/.local/bin/rift",
     "build:all": "bun run scripts/build-all.js",
     "postinstall": "node scripts/postinstall.js",
     "test": "bun test",

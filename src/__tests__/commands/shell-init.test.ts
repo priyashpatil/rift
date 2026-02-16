@@ -22,7 +22,7 @@ describe("cmdShellInit", () => {
   test("outputs posix wrapper for zsh", () => {
     process.env.SHELL = "/bin/zsh";
     const output = getInitOutput();
-    expect(output).toContain("rift()");
+    expect(output).toContain("function rift");
     expect(output).toContain("command rift");
     expect(output).toContain(".rift_cd_path");
     expect(output).toContain(".rift_start_agent");
@@ -32,7 +32,7 @@ describe("cmdShellInit", () => {
   test("outputs posix wrapper for bash", () => {
     process.env.SHELL = "/bin/bash";
     const output = getInitOutput();
-    expect(output).toContain("rift()");
+    expect(output).toContain("function rift");
     expect(output).toContain("command rift");
   });
 
@@ -48,12 +48,12 @@ describe("cmdShellInit", () => {
   test("defaults to zsh for unknown shell", () => {
     process.env.SHELL = "/bin/unknownshell";
     const output = getInitOutput();
-    expect(output).toContain("rift()");
+    expect(output).toContain("function rift");
   });
 
   test("defaults to zsh when SHELL is empty", () => {
     process.env.SHELL = "";
     const output = getInitOutput();
-    expect(output).toContain("rift()");
+    expect(output).toContain("function rift");
   });
 });

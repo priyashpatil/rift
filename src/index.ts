@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { cmdHelp } from "./commands/help";
+import { cmdHelp, showCommandHelp } from "./commands/help";
 import { cmdStatus } from "./commands/status";
 import { cmdOpen } from "./commands/open";
 import { cmdList } from "./commands/list";
@@ -18,6 +18,11 @@ import { getAgentCommand } from "./config";
 const args = process.argv.slice(2);
 const command = args[0] || "help";
 const rest = args.slice(1);
+
+if (rest.includes("--help") || rest.includes("-h")) {
+  showCommandHelp(command);
+  process.exit(0);
+}
 
 try {
   switch (command) {
@@ -54,7 +59,7 @@ try {
       cmdShellInit();
       break;
     case "configure":
-      await cmdConfigure();
+      await cmdConfigure(rest);
       break;
     case "_agent-cmd":
       console.log(await getAgentCommand());

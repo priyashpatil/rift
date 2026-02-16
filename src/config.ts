@@ -9,28 +9,20 @@ export const EDITORS: Editor[] = [
   { name: "VS Code", cmd: "code", managedWorkspace: true },
   { name: "Cursor", cmd: "cursor", managedWorkspace: true },
   { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
-  { name: "IntelliJ IDEA", cmd: "idea", managedWorkspace: false },
-  { name: "WebStorm", cmd: "webstorm", managedWorkspace: false },
-  { name: "GoLand", cmd: "goland", managedWorkspace: false },
-  { name: "PyCharm", cmd: "pycharm", managedWorkspace: false },
-  { name: "PhpStorm", cmd: "phpstorm", managedWorkspace: false },
-  { name: "CLion", cmd: "clion", managedWorkspace: false },
-  { name: "RubyMine", cmd: "rubymine", managedWorkspace: false },
-  { name: "Rider", cmd: "rider", managedWorkspace: false },
-  { name: "RustRover", cmd: "rustrover", managedWorkspace: false },
-  { name: "Aqua", cmd: "aqua", managedWorkspace: false },
-  { name: "DataGrip", cmd: "datagrip", managedWorkspace: false },
 ];
 
 export const AGENTS = [
-  { name: "Claude Code", cmd: "claude" },
   { name: "Amp", cmd: "amp" },
-  { name: "OpenAI Codex", cmd: "codex" },
-  { name: "Aider", cmd: "aider" },
-  { name: "Gemini CLI", cmd: "gemini" },
+  { name: "Claude Code", cmd: "claude" },
+  { name: "Codex", cmd: "codex" },
+  { name: "Continue", cmd: "cn" },
+  { name: "Copilot", cmd: "copilot" },
+  { name: "Gemini", cmd: "gemini" },
+  { name: "Kiro", cmd: "kiro-cli" },
+  { name: "OpenCode", cmd: "opencode" },
 ];
 
-const DEFAULT_EDITOR: Editor = EDITORS[0];
+const DEFAULT_EDITOR: Editor = EDITORS.find((e) => e.cmd === "code")!;
 
 export async function getRiftConfig(dir = "."): Promise<RiftConfig> {
   try {

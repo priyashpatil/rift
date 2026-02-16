@@ -18,7 +18,8 @@ export function cmdShellInit(): void {
 }
 
 function posixWrapper(shell: "zsh" | "bash"): string {
-  return `rift() {
+  return `unalias rift 2>/dev/null
+function rift {
     local tmpdir="\${TMPDIR:-/tmp}"
     rm -f "\$tmpdir/.rift_cd_path" "\$tmpdir/.rift_start_agent"
     command rift "\$@"

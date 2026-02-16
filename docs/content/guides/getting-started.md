@@ -18,33 +18,30 @@ npx @priyashpatil/rift
 
 ## 2. Configure
 
-Run `rift configure` once after installing. It does three things:
-
-1. **Shell integration** — adds a one-liner to your shell RC file (`.zshrc`, `.bashrc`, or `config.fish`) so Rift can `cd` you into worktrees automatically.
-2. **Default editor** — pick the editor Rift opens worktrees in. Supports VS Code, Cursor, Windsurf, and all JetBrains IDEs.
-3. **Default agent** — pick the AI coding agent Rift launches in new worktrees. Supports Claude Code, Amp, OpenAI Codex, Aider, and Gemini CLI.
+Run `rift configure` once after installing. It detects your shell and adds a one-liner to your RC file (`.zshrc`, `.bashrc`, or `config.fish`) so Rift can `cd` you into worktrees automatically.
 
 ```bash
 rift configure
 ```
 
 ```
-Detected shell: zsh
-RC file: /Users/you/.zshrc
-Added shell integration to /Users/you/.zshrc
-
-Which editor should Rift open worktrees in?
-> VS Code [code]
-
-Which AI coding agent should Rift launch in new worktrees?
-> Claude Code [claude]
-
-Configuration complete. Restart your shell to apply changes.
+Shell integration added to /Users/you/.zshrc
+  editor: VS Code [code]
+  agent:  Claude Code [claude]
 ```
+
+Use the `--editor` and `--agent` flags to change your defaults:
+
+```bash
+rift configure --editor cursor --agent copilot
+```
+
+Supported editors: VS Code, Cursor, and Windsurf.
+Supported agents: Amp, Claude Code, Codex, Continue, Copilot, Gemini, Kiro, and OpenCode.
 
 These defaults apply to all projects. You can override them per-project in the next step.
 
-You can re-run `rift configure` at any time to change your defaults.
+Re-run `rift configure` at any time to change your defaults. Restart your shell after the first run to load shell integration.
 
 ## 3. Initialize a project
 
@@ -55,10 +52,11 @@ cd my-project
 rift init
 ```
 
-The wizard walks you through:
+The editor and agent default to your global config. Override with flags:
 
-- **Editor & agent** — inherited from your global config, or override with `--editor` and `--agent` flags.
-- **Bootstrap pattern** — optionally generate a script that assigns a deterministic port to each worktree so dev servers don't collide. The script runs automatically on `open` and `jump` hooks.
+```bash
+rift init --editor cursor --agent copilot
+```
 
 The result is a `rift.yaml` committed to your repo:
 
@@ -66,15 +64,13 @@ The result is a `rift.yaml` committed to your repo:
 editor: code
 agent: claude
 hooks:
-  open: bash scripts/bootstrap.sh
-  jump: bash scripts/bootstrap.sh
+  # open: bash scripts/bootstrap.sh
+  # jump: bash scripts/bootstrap.sh
+  # close: echo "closing $RIFT_WORKTREE"
+  # purge: echo "purging $RIFT_WORKTREE"
 ```
 
-You can also skip the wizard and pass flags directly:
-
-```bash
-rift init --editor cursor --agent aider
-```
+Hooks are commented out by default. Uncomment and customize them to run commands on worktree lifecycle events — see [Hooks](/hooks/) for details and the [bootstrap pattern](/hooks/#the-bootstrap-pattern) for deterministic dev server ports.
 
 ## 4. Open a worktree
 
@@ -156,7 +152,9 @@ agent: "claude"
 ```yaml
 editor: code
 agent: claude
-hooks: {}
+hooks:
+  # open: bash scripts/bootstrap.sh
+  # jump: bash scripts/bootstrap.sh
 ```
 
 This file lets you override the editor and agent for the project, and define [hooks](/hooks/) — shell commands that run on lifecycle events like creating, switching to, or removing a worktree. See the [Hooks](/hooks/) page for the full reference and patterns.

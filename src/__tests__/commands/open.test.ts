@@ -205,8 +205,8 @@ describe("cmdOpen", () => {
 
   test("skips workspace sync when editor is not managed", async () => {
     mockGetEditor.mockReturnValue({
-      name: "IntelliJ",
-      cmd: "idea",
+      name: "Other",
+      cmd: "other",
       managedWorkspace: false,
     });
     const logSpy = spyOn(console, "log").mockImplementation(() => {});

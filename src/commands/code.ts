@@ -1,11 +1,7 @@
 import { existsSync, readFileSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-import {
-  isGitRepo,
-  getMainWorktree,
-  getProjectName,
-} from "../git";
+import { isGitRepo, getMainWorktree, getProjectName } from "../git";
 import { WORKSPACES_DIR } from "../constants";
 import { syncWorkspace } from "../workspace";
 import { getEditor } from "../config";
