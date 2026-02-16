@@ -160,4 +160,4 @@ The generated `.env` file is worktree-specific and should not be committed:
 
 ### Next steps
 
-See the [Dev Servers guide](/guides/dev-servers/) for framework-specific examples of reading the assigned port, and the [Docker Compose guide](/guides/docker-compose/) for isolating containerized services across worktrees.
+See the [framework guides](/guides/) for step-by-step examples of reading the assigned port, configuring databases, and wiring up hooks, and the [Docker Compose guide](/guides/docker-compose/) for isolating containerized services across worktrees.
