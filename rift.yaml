@@ -1,0 +1,25 @@
+# Rift project configuration
+# Docs: https://rift.priyashpatil.com/hooks/
+
+# Editor to open worktrees in.
+# Options: code, cursor, windsurf
+editor: code
+
+# AI coding agent to launch in new worktrees.
+# Options: amp, claude, cn, codex, copilot, gemini, kiro-cli, opencode
+agent: claude
+
+# Hooks run shell commands at worktree lifecycle events.
+# The RIFT_WORKTREE environment variable is set to the branch name.
+hooks:
+  # Runs when a worktree is created or opened.
+  # open: bash scripts/bootstrap.sh
+
+  # Runs when you jump to an existing worktree.
+  # jump: bash scripts/bootstrap.sh
+
+  # Runs before a worktree is closed.
+  # close: echo "closing $RIFT_WORKTREE"
+
+  # Runs before stale worktrees are purged.
+  # purge: echo "purging $RIFT_WORKTREE"
