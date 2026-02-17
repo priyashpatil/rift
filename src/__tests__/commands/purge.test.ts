@@ -55,7 +55,6 @@ mock.module("../../config", () => ({
   saveGlobalConfig: mock(() => {}),
   getAgentCommand: mock(() => "claude"),
   EDITORS: [],
-  AGENTS: [],
 }));
 
 import { cmdPurge } from "../../commands/purge";

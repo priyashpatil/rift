@@ -1,7 +1,7 @@
 import { existsSync, writeFileSync } from "fs";
 import { join } from "path";
 import { isGitRepo, getMainWorktree } from "../git";
-import { getGlobalConfig, EDITORS, AGENTS } from "../config";
+import { getGlobalConfig, EDITORS } from "../config";
 
 function parseFlags(args: string[]): { editor?: string; agent?: string } {
   const flags: { editor?: string; agent?: string } = {};
@@ -23,8 +23,8 @@ function generateConfig(editor: string, agent: string): string {
 # Options: ${EDITORS.map((e) => e.cmd).join(", ")}
 editor: ${editor}
 
-# AI coding agent to launch in new worktrees.
-# Options: ${AGENTS.map((a) => a.cmd).join(", ")}
+# AI coding agent to launch in new worktrees (any CLI command).
+# Examples: claude, aider, copilot
 agent: ${agent}
 
 # Hooks run shell commands at worktree lifecycle events.
@@ -68,18 +68,11 @@ export async function cmdInit(args: string[]): Promise<void> {
     throw new Error(`unknown editor "${editor}". Valid editors: ${valid}`);
   }
 
-  // Validate agent
-  if (!AGENTS.some((a) => a.cmd === agent)) {
-    const valid = AGENTS.map((a) => a.cmd).join(", ");
-    throw new Error(`unknown agent "${agent}". Valid agents: ${valid}`);
-  }
-
   writeFileSync(configPath, generateConfig(editor, agent));
 
   const editorName = EDITORS.find((e) => e.cmd === editor)?.name || editor;
-  const agentName = AGENTS.find((a) => a.cmd === agent)?.name || agent;
 
   console.log(`Initialized rift.yaml in ${mainRepo}`);
   console.log(`  editor: ${editorName} [${editor}]`);
-  console.log(`  agent:  ${agentName} [${agent}]`);
+  console.log(`  agent:  ${agent}`);
 }

@@ -27,7 +27,7 @@ rift config
 ```
 Shell integration added to /Users/you/.zshrc
   editor: VS Code [code]
-  agent:  Claude Code [claude]
+  agent:  claude
 ```
 
 Restart your shell after the first run to load shell integration.
@@ -41,10 +41,10 @@ cd my-project
 rift init
 ```
 
-The editor defaults to VS Code and the agent to Claude Code. Override with flags:
+The editor defaults to VS Code and the agent to `claude`. Override with flags — the agent can be any CLI command:
 
 ```bash
-rift init --editor cursor --agent copilot
+rift init --editor cursor --agent aider
 ```
 
 The result is a `rift.yaml` committed to your repo:
@@ -65,10 +65,10 @@ To change settings later, use `rift config`:
 
 ```bash
 # Update the project config (rift.yaml)
-rift config --editor cursor --agent copilot
+rift config --editor cursor --agent aider
 
 # Update global defaults (for new projects)
-rift config --global --editor cursor
+rift config --global --editor cursor --agent claude
 ```
 
 ## 4. Open a worktree

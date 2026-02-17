@@ -30,7 +30,6 @@ mock.module("../../config", () => ({
   saveGlobalConfig: mock(() => {}),
   getAgentCommand: mock(() => "claude"),
   EDITORS: [],
-  AGENTS: [],
 }));
 
 // We need to mock the WORKSPACES_DIR to control workspace file existence

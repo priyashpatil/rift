@@ -11,17 +11,6 @@ export const EDITORS: Editor[] = [
   { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
 ];
 
-export const AGENTS = [
-  { name: "Amp", cmd: "amp" },
-  { name: "Claude Code", cmd: "claude" },
-  { name: "Codex", cmd: "codex" },
-  { name: "Continue", cmd: "cn" },
-  { name: "Copilot", cmd: "copilot" },
-  { name: "Gemini", cmd: "gemini" },
-  { name: "Kiro", cmd: "kiro-cli" },
-  { name: "OpenCode", cmd: "opencode" },
-];
-
 const DEFAULT_EDITOR: Editor = EDITORS.find((e) => e.cmd === "code")!;
 
 export async function getRiftConfig(dir = "."): Promise<RiftConfig> {

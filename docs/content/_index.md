@@ -29,4 +29,4 @@ VS Code, Cursor, and Windsurf. All three support managed workspaces — `rift co
 
 ## Supported agents
 
-Amp, Claude Code, Codex, Continue, Copilot, Gemini, Kiro, and OpenCode.
+Any CLI agent works — just set the command in `rift.yaml`. Common agents include Amp, Claude Code, Codex, Continue, Copilot, Gemini, Kiro, and OpenCode, but you can use any command (e.g. `aider`, `claude --model opus`, or a custom script).

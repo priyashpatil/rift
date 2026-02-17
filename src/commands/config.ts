@@ -7,7 +7,6 @@ import {
   getRiftConfig,
   saveRiftConfig,
   EDITORS,
-  AGENTS,
 } from "../config";
 import { isGitRepo } from "../git";
 
@@ -94,12 +93,6 @@ export async function cmdConfig(args: string[]): Promise<void> {
   }
 
   if (flags.agent) {
-    if (!AGENTS.some((a) => a.cmd === flags.agent)) {
-      const valid = AGENTS.map((a) => a.cmd).join(", ");
-      throw new Error(
-        `unknown agent "${flags.agent}". Available agents: ${valid}`,
-      );
-    }
     changed = true;
   }
 
@@ -132,8 +125,7 @@ export async function cmdConfig(args: string[]): Promise<void> {
   const agentCmd = riftConfig.agent || globalConfig.agent || "claude";
   const editorName =
     EDITORS.find((e) => e.cmd === editorCmd)?.name || editorCmd;
-  const agentName = AGENTS.find((a) => a.cmd === agentCmd)?.name || agentCmd;
 
   console.log(`  editor: ${editorName} [${editorCmd}]`);
-  console.log(`  agent:  ${agentName} [${agentCmd}]`);
+  console.log(`  agent:  ${agentCmd}`);
 }

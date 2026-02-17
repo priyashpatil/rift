@@ -48,7 +48,6 @@ mock.module("../../config", () => ({
   saveGlobalConfig: mock(() => {}),
   getAgentCommand: mock(() => "claude"),
   EDITORS: [],
-  AGENTS: [],
 }));
 
 // Mock fs.existsSync to return false (worktree doesn't exist yet)

@@ -34,21 +34,6 @@ describe("config", () => {
     });
   });
 
-  describe("AGENTS constant", () => {
-    test("contains Claude Code agent", async () => {
-      const { AGENTS } = await import("../config");
-      expect(AGENTS.find((a) => a.cmd === "claude")).toEqual({
-        name: "Claude Code",
-        cmd: "claude",
-      });
-    });
-
-    test("contains 8 agents", async () => {
-      const { AGENTS } = await import("../config");
-      expect(AGENTS.length).toBe(8);
-    });
-  });
-
   describe("getGlobalConfig", () => {
     test("returns an object", async () => {
       const { getGlobalConfig } = await import("../config");

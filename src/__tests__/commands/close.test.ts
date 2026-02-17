@@ -56,7 +56,6 @@ mock.module("../../config", () => ({
   saveGlobalConfig: mock(() => {}),
   getAgentCommand: mock(() => "claude"),
   EDITORS: [],
-  AGENTS: [],
 }));
 
 import { cmdClose } from "../../commands/close";

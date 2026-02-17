@@ -14,11 +14,12 @@ rift config
 # Set editor in project config (rift.yaml)
 rift config --editor cursor
 
-# Set agent in project config
-rift config --agent copilot
+# Set agent in project config (any CLI command)
+rift config --agent claude
+rift config --agent "aider --model gpt-4"
 
 # Set global defaults (for new projects)
-rift config --global --editor cursor --agent copilot
+rift config --global --editor cursor --agent claude
 ```
 
 Running without flags detects your shell, adds the Rift shell wrapper to your RC file, and prints the current editor and agent. Use `--editor` and `--agent` flags to change them. A `rift.yaml` must exist for project-level changes — run `rift init` first.
@@ -34,11 +35,11 @@ rift init
 # Override editor
 rift init --editor cursor
 
-# Override agent
-rift init --agent copilot
+# Override agent (any CLI command)
+rift init --agent aider
 
 # Override both
-rift init --editor cursor --agent copilot
+rift init --editor cursor --agent aider
 ```
 
 The generated `rift.yaml` includes commented-out hook examples. See [Hooks](/hooks/) for details on configuring lifecycle hooks.
@@ -151,7 +152,7 @@ These flags can be combined with the commands above:
 - **`--base <branch>`** (`open`) — base branch for the new worktree (default: current branch)
 - **`--skip-agent`** (`open`, `jump`) — don't launch the AI agent after switching
 - **`--editor <cmd>`** (`init`, `config`) — editor to use
-- **`--agent <cmd>`** (`init`, `config`) — AI agent to use
+- **`--agent <cmd>`** (`init`, `config`) — AI agent command to use (any CLI command)
 - **`-f`, `--force`** (`close`, `purge`) — skip confirmation prompts
 
 Run `rift <command> --help` for more information on a specific command.

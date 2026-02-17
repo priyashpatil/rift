@@ -19,18 +19,12 @@ const mockEditors = [
   { name: "Cursor", cmd: "cursor", managedWorkspace: true },
   { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
 ];
-const mockAgents = [
-  { name: "Claude Code", cmd: "claude" },
-  { name: "Amp", cmd: "amp" },
-];
-
 mock.module("../../config", () => ({
   getGlobalConfig: mockGetGlobalConfig,
   saveGlobalConfig: mockSaveGlobalConfig,
   getRiftConfig: mockGetRiftConfig,
   saveRiftConfig: mockSaveRiftConfig,
   EDITORS: mockEditors,
-  AGENTS: mockAgents,
 }));
 
 mock.module("../../git", () => ({
@@ -129,13 +123,15 @@ describe("cmdConfig", () => {
     logSpy.mockRestore();
   });
 
-  test("throws on unknown agent", async () => {
+  test("accepts any agent string", async () => {
     process.env.SHELL = "/bin/zsh";
     const logSpy = spyOn(console, "log").mockImplementation(() => {});
 
-    await expect(cmdConfig(["--agent", "copilot"])).rejects.toThrow(
-      /unknown agent "copilot"/,
-    );
+    await cmdConfig(["--agent", "aider --model gpt-4"]);
+
+    expect(mockSaveRiftConfig).toHaveBeenCalled();
+    const updates = mockSaveRiftConfig.mock.calls[0][0];
+    expect(updates.agent).toBe("aider --model gpt-4");
     logSpy.mockRestore();
   });
 
@@ -180,7 +176,7 @@ describe("cmdConfig", () => {
 
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
     expect(logCalls.some((c) => c.includes("VS Code") && c.includes("code"))).toBe(true);
-    expect(logCalls.some((c) => c.includes("Claude Code") && c.includes("claude"))).toBe(true);
+    expect(logCalls.some((c) => c.includes("claude"))).toBe(true);
     logSpy.mockRestore();
   });
 
