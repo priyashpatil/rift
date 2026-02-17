@@ -11,7 +11,7 @@ import { cmdCode } from "./commands/code";
 import { cmdPurge } from "./commands/purge";
 import { cmdInit } from "./commands/init";
 import { cmdShellInit } from "./commands/shell-init";
-import { cmdConfigure } from "./commands/configure";
+import { cmdConfig } from "./commands/config";
 import { cmdVersion } from "./commands/version";
 import { getAgentCommand } from "./config";
 
@@ -58,8 +58,8 @@ try {
     case "_shell-init":
       cmdShellInit();
       break;
-    case "configure":
-      await cmdConfigure(rest);
+    case "config":
+      await cmdConfig(rest);
       break;
     case "_agent-cmd":
       console.log(await getAgentCommand());

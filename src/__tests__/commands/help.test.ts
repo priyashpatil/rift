@@ -18,7 +18,7 @@ describe("cmdHelp", () => {
     expect(output).toContain("jump");
     expect(output).toContain("code");
     expect(output).toContain("purge");
-    expect(output).toContain("configure");
+    expect(output).toContain("config");
     expect(output).toContain("init");
     expect(output).toContain("Options:");
     expect(output).toContain("--base");

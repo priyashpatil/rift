@@ -17,7 +17,7 @@ describe("index module", () => {
       import("../commands/code"),
       import("../commands/purge"),
       import("../commands/init"),
-      import("../commands/configure"),
+      import("../commands/config"),
     ];
     const results = await Promise.all(modules);
     expect(results[0].cmdHelp).toBeDefined();
@@ -30,7 +30,7 @@ describe("index module", () => {
     expect(results[7].cmdCode).toBeDefined();
     expect(results[8].cmdPurge).toBeDefined();
     expect(results[9].cmdInit).toBeDefined();
-    expect(results[10].cmdConfigure).toBeDefined();
+    expect(results[10].cmdConfig).toBeDefined();
   });
 
   test("getAgentCommand is importable from config", async () => {

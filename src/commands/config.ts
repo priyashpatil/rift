@@ -1,7 +1,15 @@
 import { existsSync, readFileSync, appendFileSync } from "fs";
 import { homedir } from "os";
 import { join, basename } from "path";
-import { getGlobalConfig, saveGlobalConfig, EDITORS, AGENTS } from "../config";
+import {
+  getGlobalConfig,
+  saveGlobalConfig,
+  getRiftConfig,
+  saveRiftConfig,
+  EDITORS,
+  AGENTS,
+} from "../config";
+import { isGitRepo } from "../git";
 
 const GUARD_COMMENT = "# Added by rift";
 
@@ -32,19 +40,27 @@ function getInitLine(shell: string): string {
   return 'eval "$(rift _shell-init)"';
 }
 
-function parseFlags(args: string[]): { editor?: string; agent?: string } {
-  const flags: { editor?: string; agent?: string } = {};
+function parseFlags(args: string[]): {
+  editor?: string;
+  agent?: string;
+  global: boolean;
+} {
+  const flags: { editor?: string; agent?: string; global: boolean } = {
+    global: false,
+  };
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--editor" && args[i + 1]) {
       flags.editor = args[++i];
     } else if (args[i] === "--agent" && args[i + 1]) {
       flags.agent = args[++i];
+    } else if (args[i] === "--global") {
+      flags.global = true;
     }
   }
   return flags;
 }
 
-export async function cmdConfigure(args: string[]): Promise<void> {
+export async function cmdConfig(args: string[]): Promise<void> {
   const shell = detectShell();
   const rcPath = getRcPath(shell);
 
@@ -65,7 +81,6 @@ export async function cmdConfigure(args: string[]): Promise<void> {
   }
 
   const flags = parseFlags(args);
-  const config = getGlobalConfig();
   let changed = false;
 
   if (flags.editor) {
@@ -75,7 +90,6 @@ export async function cmdConfigure(args: string[]): Promise<void> {
         `unknown editor "${flags.editor}". Available editors: ${valid}`,
       );
     }
-    config.editor = flags.editor;
     changed = true;
   }
 
@@ -86,17 +100,38 @@ export async function cmdConfigure(args: string[]): Promise<void> {
         `unknown agent "${flags.agent}". Available agents: ${valid}`,
       );
     }
-    config.agent = flags.agent;
     changed = true;
   }
 
   if (changed) {
-    saveGlobalConfig(config);
+    const updates: Record<string, string> = {};
+    if (flags.editor) updates.editor = flags.editor;
+    if (flags.agent) updates.agent = flags.agent;
+
+    if (flags.global) {
+      const config = getGlobalConfig();
+      Object.assign(config, updates);
+      saveGlobalConfig(config);
+      console.log("Global config updated.");
+    } else {
+      if (!(await isGitRepo())) {
+        throw new Error(
+          "not a git repository. Use --global to set global defaults, or run from a git project.",
+        );
+      }
+      await saveRiftConfig(updates);
+      console.log("Project config updated (rift.yaml).");
+    }
   }
 
-  const editorCmd = config.editor || "code";
-  const agentCmd = config.agent || "claude";
-  const editorName = EDITORS.find((e) => e.cmd === editorCmd)?.name || editorCmd;
+  // Show effective config (project overrides global)
+  const riftConfig = (await isGitRepo()) ? await getRiftConfig() : {};
+  const globalConfig = getGlobalConfig();
+
+  const editorCmd = riftConfig.editor || globalConfig.editor || "code";
+  const agentCmd = riftConfig.agent || globalConfig.agent || "claude";
+  const editorName =
+    EDITORS.find((e) => e.cmd === editorCmd)?.name || editorCmd;
   const agentName = AGENTS.find((a) => a.cmd === agentCmd)?.name || agentCmd;
 
   console.log(`  editor: ${editorName} [${editorCmd}]`);

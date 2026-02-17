@@ -58,13 +58,15 @@ Options:
   --editor <cmd>    Editor command (e.g. "code", "cursor")
   --agent <cmd>     AI agent command (e.g. "claude", "copilot")`,
 
-  configure: `Usage: rift configure [options]
+  config: `Usage: rift config [options]
 
-Set up shell integration and global preferences.
+Set up shell integration and configure preferences.
+By default, writes to project-level rift.yaml. Use --global for global defaults.
 
 Options:
-  --editor <cmd>    Set default editor (e.g. "code", "cursor", "windsurf")
-  --agent <cmd>     Set default AI agent (e.g. "claude", "copilot", "gemini")
+  --editor <cmd>    Set editor (e.g. "code", "cursor", "windsurf")
+  --agent <cmd>     Set AI agent (e.g. "claude", "copilot", "gemini")
+  --global          Write to global config (~/.config/rift/config.yaml)
 
 Run without flags to set up shell integration and show current config.`,
 
@@ -104,14 +106,14 @@ Commands:
   code              Open project in configured editor
   purge             Remove ALL worktrees for current project
   init              Initialize rift.yaml in current git project
-  configure         Set up shell integration and global preferences
+  config            Set up shell integration and preferences
   version           Show version number
 
 Options:
   --base <branch>   Base branch for new worktree (default: current branch)
   --skip-agent      Don't launch agent after opening worktree
-  --editor <cmd>    Editor to use (init, configure)
-  --agent <cmd>     AI agent to use (init, configure)
+  --editor <cmd>    Editor to use (init, config)
+  --agent <cmd>     AI agent to use (init, config)
   -f, --force       Skip confirmation prompts
 
 Run 'rift <command> --help' for more information on a command.`);

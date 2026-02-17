@@ -19,7 +19,7 @@ Or try it without installing:
 npx @priyashpatil/rift
 ```
 
-Then run `rift configure` to set up shell integration and global preferences, and `rift init` inside a git project to create a `rift.yaml`. See the [Getting Started guide](/guides/getting-started/) for the full walkthrough.
+Then run `rift config` to set up shell integration, and `rift init` inside a git project to create a `rift.yaml`. See the [Getting Started guide](/guides/getting-started/) for the full walkthrough.
 
 ## Supported editors
 

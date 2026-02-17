@@ -16,12 +16,12 @@ Or try it without installing:
 npx @priyashpatil/rift
 ```
 
-## 2. Configure
+## 2. Shell integration
 
-Run `rift configure` once after installing. It detects your shell and adds a one-liner to your RC file (`.zshrc`, `.bashrc`, or `config.fish`) so Rift can `cd` you into worktrees automatically.
+Run `rift config` once after installing. It detects your shell and adds a one-liner to your RC file (`.zshrc`, `.bashrc`, or `config.fish`) so Rift can `cd` you into worktrees automatically.
 
 ```bash
-rift configure
+rift config
 ```
 
 ```
@@ -30,18 +30,7 @@ Shell integration added to /Users/you/.zshrc
   agent:  Claude Code [claude]
 ```
 
-Use the `--editor` and `--agent` flags to change your defaults:
-
-```bash
-rift configure --editor cursor --agent copilot
-```
-
-Supported editors: VS Code, Cursor, and Windsurf.
-Supported agents: Amp, Claude Code, Codex, Continue, Copilot, Gemini, Kiro, and OpenCode.
-
-These defaults apply to all projects. You can override them per-project in the next step.
-
-Re-run `rift configure` at any time to change your defaults. Restart your shell after the first run to load shell integration.
+Restart your shell after the first run to load shell integration.
 
 ## 3. Initialize a project
 
@@ -52,7 +41,7 @@ cd my-project
 rift init
 ```
 
-The editor and agent default to your global config. Override with flags:
+The editor defaults to VS Code and the agent to Claude Code. Override with flags:
 
 ```bash
 rift init --editor cursor --agent copilot
@@ -71,6 +60,16 @@ hooks:
 ```
 
 Hooks are commented out by default. Uncomment and customize them to run commands on worktree lifecycle events — see [Hooks](/hooks/) for details and the [bootstrap pattern](/hooks/#the-bootstrap-pattern) for deterministic dev server ports.
+
+To change settings later, use `rift config`:
+
+```bash
+# Update the project config (rift.yaml)
+rift config --editor cursor --agent copilot
+
+# Update global defaults (for new projects)
+rift config --global --editor cursor
+```
 
 ## 4. Open a worktree
 
@@ -130,24 +129,15 @@ Your shell is returned to the main repository. Use `-f` to skip the confirmation
 
 Rift manages [git worktrees](https://git-scm.com/docs/git-worktree) under `~/.rift/worktrees/`. Each worktree gets its own directory and branch, completely isolated from your main checkout.
 
-A shell wrapper (installed by `rift configure`) intercepts the `rift` command so it can change your working directory and launch agents — things a child process can't do on its own. The wrapper is loaded via `eval "$(rift _shell-init)"` in your RC file.
+A shell wrapper (installed by `rift config`) intercepts the `rift` command so it can change your working directory and launch agents — things a child process can't do on its own. The wrapper is loaded via `eval "$(rift _shell-init)"` in your RC file.
 
 ## Configuration
 
 Rift has two levels of configuration: **global** (your machine) and **per-project** (your repository).
 
-### Global config
-
-Stored at `~/.config/rift/config.yaml`. Created by `rift configure`.
-
-```yaml
-editor: "code"
-agent: "claude"
-```
-
 ### Per-project config
 
-`rift.yaml` at the repo root, created by `rift init`:
+`rift.yaml` at the repo root, created by `rift init`. This is the primary config file.
 
 ```yaml
 editor: code
@@ -157,4 +147,12 @@ hooks:
   # jump: bash scripts/bootstrap.sh
 ```
 
-This file lets you override the editor and agent for the project, and define [hooks](/hooks/) — shell commands that run on lifecycle events like creating, switching to, or removing a worktree. See the [Hooks](/hooks/) page for the full reference and patterns.
+Change settings with `rift config --editor cursor` or edit the file directly. See the [Hooks](/hooks/) page for the full reference and patterns.
+
+### Global config
+
+Optional. Stored at `~/.config/rift/config.yaml`. Sets defaults for `rift init` when creating new projects. Project-level `rift.yaml` always takes precedence.
+
+```bash
+rift config --global --editor cursor --agent copilot
+```

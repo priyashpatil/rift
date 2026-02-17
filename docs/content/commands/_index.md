@@ -3,29 +3,29 @@ title: "Command Reference"
 description: "CLI reference for all Rift commands and options."
 ---
 
-### `rift configure`
+### `rift config`
 
-Set up shell integration and global preferences.
+Set up shell integration and configure preferences. By default writes to the project-level `rift.yaml`. Use `--global` to set global defaults.
 
 ```bash
 # Set up shell integration and show current config
-rift configure
+rift config
 
-# Set default editor
-rift configure --editor cursor
+# Set editor in project config (rift.yaml)
+rift config --editor cursor
 
-# Set default agent
-rift configure --agent copilot
+# Set agent in project config
+rift config --agent copilot
 
-# Set both
-rift configure --editor cursor --agent copilot
+# Set global defaults (for new projects)
+rift config --global --editor cursor --agent copilot
 ```
 
-Running without flags detects your shell, adds the Rift shell wrapper to your RC file, and prints the current editor and agent. Use `--editor` and `--agent` flags to change them.
+Running without flags detects your shell, adds the Rift shell wrapper to your RC file, and prints the current editor and agent. Use `--editor` and `--agent` flags to change them. A `rift.yaml` must exist for project-level changes — run `rift init` first.
 
 ### `rift init`
 
-Initialize a `rift.yaml` in the current git project. The editor and agent default to your global config.
+Initialize a `rift.yaml` in the current git project. The editor defaults to VS Code and the agent to Claude Code, unless overridden by global config.
 
 ```bash
 # Use global defaults
@@ -150,8 +150,8 @@ These flags can be combined with the commands above:
 
 - **`--base <branch>`** (`open`) — base branch for the new worktree (default: current branch)
 - **`--skip-agent`** (`open`, `jump`) — don't launch the AI agent after switching
-- **`--editor <cmd>`** (`init`, `configure`) — editor to use
-- **`--agent <cmd>`** (`init`, `configure`) — AI agent to use
+- **`--editor <cmd>`** (`init`, `config`) — editor to use
+- **`--agent <cmd>`** (`init`, `config`) — AI agent to use
 - **`-f`, `--force`** (`close`, `purge`) — skip confirmation prompts
 
 Run `rift <command> --help` for more information on a specific command.
