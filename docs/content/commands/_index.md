@@ -77,7 +77,7 @@ If no name is given, Rift generates a random one (e.g. `bold-eagle`).
 
 ### `rift list`
 
-List all Rift-managed worktrees for the current project. The active worktree is marked with `*`.
+List all worktrees for the current project. The base (main) workspace is always shown first, followed by Rift-managed worktrees. The active worktree is marked with `*`.
 
 ```bash
 rift list
@@ -87,10 +87,13 @@ Alias: `rift ls`
 
 ### `rift jump <name>`
 
-Switch to an existing worktree and start the agent.
+Switch to an existing worktree and start the agent. Use `base` (or `main`) to jump to the main repository.
 
 ```bash
 rift jump my-feature
+
+# Jump to the main repository
+rift jump base
 
 # Jump without launching the agent
 rift jump my-feature --skip-agent
@@ -111,16 +114,6 @@ rift close --force
 ```
 
 Must be run from inside a Rift worktree (not the main repo).
-
-### `rift main`
-
-Switch back to the main repository from any worktree.
-
-```bash
-rift main
-```
-
-Alias: `rift base`
 
 ### `rift code`
 

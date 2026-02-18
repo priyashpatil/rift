@@ -27,12 +27,6 @@ Must be run from inside a rift worktree.
 Options:
   -f, --force       Skip confirmation prompt`,
 
-  main: `Usage: rift main
-
-Switch back to the main repository from a worktree.
-
-Aliases: base`,
-
   jump: `Usage: rift jump <name> [options]
 
 Switch to an existing worktree and start the configured agent.
@@ -81,7 +75,6 @@ Show the rift version number.`,
 // Resolve aliases to canonical command names
 const aliases: Record<string, string> = {
   ls: "list",
-  base: "main",
 };
 
 export function showCommandHelp(command: string): void {
@@ -104,7 +97,6 @@ Commands:
   open [name]       Create a new worktree and launch agent
   list              List worktrees for current project
   close             Close current worktree (must be in rift worktree)
-  main              Switch to main repository
   jump <name>       Switch to a worktree and start agent
   code              Open project in configured editor
   purge             Remove ALL worktrees for current project

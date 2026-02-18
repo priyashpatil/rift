@@ -120,8 +120,7 @@ Your shell is returned to the main repository. Use `-f` to skip the confirmation
 |---------|-------------|
 | `rift status` | Show current context (project, worktree, branch) |
 | `rift list` | List all worktrees for the current project |
-| `rift jump <name>` | Switch to a worktree and start the agent |
-| `rift main` | Switch back to the main repository |
+| `rift jump <name>` | Switch to a worktree and start the agent (`rift jump base` for main repo) |
 | `rift code` | Open the project in your configured editor |
 | `rift purge` | Remove all worktrees for the current project |
 

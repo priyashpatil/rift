@@ -14,7 +14,6 @@ describe("cmdHelp", () => {
     expect(output).toContain("open");
     expect(output).toContain("list");
     expect(output).toContain("close");
-    expect(output).toContain("main");
     expect(output).toContain("jump");
     expect(output).toContain("code");
     expect(output).toContain("purge");
