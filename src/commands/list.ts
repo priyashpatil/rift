@@ -1,6 +1,7 @@
 import {
   isGitRepo,
   getMainWorktree,
+  getCurrentBranch,
   getProjectName,
   getRepoRoot,
   listRiftWorktrees,
@@ -18,14 +19,14 @@ export async function cmdList(): Promise<void> {
   const currentPath = await getRepoRoot();
   const worktrees = await listRiftWorktrees(mainRepo, project);
 
-  if (worktrees.length === 0) {
-    console.log("No rift worktrees found.");
-    console.log("Use 'rift open' to create one.");
-    return;
-  }
-
   console.log(`Worktrees for ${project}:`);
   console.log();
+
+  const baseMarker = mainRepo === currentPath ? "* " : "  ";
+  const baseBranch = await getCurrentBranch(mainRepo);
+  console.log(`${baseMarker}base`);
+  console.log(`    Branch: ${baseBranch}`);
+  console.log(`    Path:   ${mainRepo}`);
 
   for (const wt of worktrees) {
     const marker = wt.path === currentPath ? "* " : "  ";

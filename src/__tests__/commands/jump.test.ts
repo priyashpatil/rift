@@ -208,4 +208,59 @@ describe("cmdJump", () => {
     expect(mockSignalAgentStart).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
+
+  test("jump base switches to main repo and starts agent", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdJump(["base"]);
+
+    expect(logSpy).toHaveBeenCalledWith("Jumping to: base");
+    expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
+    expect(mockSignalAgentStart).toHaveBeenCalled();
+    expect(mockRunHook).toHaveBeenCalledWith("jump", "/main/repo");
+    logSpy.mockRestore();
+  });
+
+  test("jump main switches to main repo and starts agent", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdJump(["main"]);
+
+    expect(logSpy).toHaveBeenCalledWith("Jumping to: base");
+    expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
+    expect(mockSignalAgentStart).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  test("jump base with --skip-agent prevents agent start", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdJump(["base", "--skip-agent"]);
+
+    expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
+    expect(mockSignalAgentStart).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  test("jump base with --skip-hooks skips hooks", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdJump(["base", "--skip-hooks"]);
+
+    expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
+    expect(mockRunHook).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  test("jump base shows hint when shell wrapper is not active", async () => {
+    delete process.env.RIFT_SHELL_PID;
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdJump(["base"]);
+
+    expect(logSpy).toHaveBeenCalledWith("Worktree: base");
+    expect(logSpy).toHaveBeenCalledWith("Path: /main/repo");
+    expect(mockWriteCdPath).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
 });

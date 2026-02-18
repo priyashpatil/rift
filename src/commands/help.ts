@@ -36,6 +36,7 @@ Aliases: base`,
   jump: `Usage: rift jump <name> [options]
 
 Switch to an existing worktree and start the configured agent.
+Use "rift jump base" (or "rift jump main") to switch to the main repository.
 
 Options:
   --skip-agent      Switch without launching an agent

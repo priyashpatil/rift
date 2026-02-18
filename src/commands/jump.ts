@@ -9,6 +9,8 @@ import { writeCdPath, signalAgentStart } from "../ipc";
 import { runHook } from "../hooks";
 import { warnIfAgentMissing } from "../config";
 
+const BASE_ALIASES = new Set(["base", "main"]);
+
 export async function cmdJump(args: string[]): Promise<void> {
   const skipAgent = args.includes("--skip-agent");
   const skipHooks = args.includes("--skip-hooks");
@@ -28,6 +30,26 @@ export async function cmdJump(args: string[]): Promise<void> {
   }
 
   const mainRepo = await getMainWorktree();
+
+  if (BASE_ALIASES.has(name)) {
+    if (!process.env.RIFT_SHELL_PID) {
+      console.log(`Worktree: base`);
+      console.log(`Path: ${mainRepo}`);
+      console.log(
+        `\nHint: Add this to your shell profile to enable auto-cd:\n  eval "$(rift _shell-init)"`,
+      );
+      return;
+    }
+    console.log(`Jumping to: base`);
+    writeCdPath(mainRepo);
+    if (!skipAgent) {
+      await warnIfAgentMissing();
+      signalAgentStart();
+    }
+    if (!skipHooks) await runHook("jump", mainRepo);
+    return;
+  }
+
   const project = await getProjectName();
   const worktrees = await listRiftWorktrees(mainRepo, project);
 
