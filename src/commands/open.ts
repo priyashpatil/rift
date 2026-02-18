@@ -12,7 +12,7 @@ import { generateName } from "../names";
 import { syncWorkspace } from "../workspace";
 import { runHook } from "../hooks";
 import { writeCdPath, signalAgentStart } from "../ipc";
-import { getEditor } from "../config";
+import { getEditor, warnIfAgentMissing } from "../config";
 
 export async function cmdOpen(args: string[]): Promise<void> {
   let name = "";
@@ -74,5 +74,8 @@ export async function cmdOpen(args: string[]): Promise<void> {
 
   if (!skipHooks) await runHook("open", wtPath);
   writeCdPath(wtPath);
-  if (!skipAgent) signalAgentStart();
+  if (!skipAgent) {
+    await warnIfAgentMissing();
+    signalAgentStart();
+  }
 }

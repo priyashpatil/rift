@@ -125,6 +125,8 @@ Your shell is returned to the main repository. Use `-f` to skip the confirmation
 | `rift code` | Open the project in your configured editor |
 | `rift purge` | Remove all worktrees for the current project |
 
+Run `rift <command> --help` for detailed usage and options on any command.
+
 ## How it works
 
 Rift manages [git worktrees](https://git-scm.com/docs/git-worktree) under `~/.rift/worktrees/`. Each worktree gets its own directory and branch, completely isolated from your main checkout.

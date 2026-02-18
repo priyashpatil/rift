@@ -41,6 +41,7 @@ hooks:
 - Hooks are defined in `rift.yaml` at the root of your repository.
 - Each hook value is passed to `bash -c`, so you can use any shell syntax.
 - Hooks run **synchronously** — Rift waits for the command to finish before continuing.
+- Hook failures are **not blocking** — if a hook exits with a non-zero code, Rift logs the hook execution but continues with the operation. A failing `open` hook will not prevent the worktree from being created.
 - The working directory is the worktree directory (e.g. `~/.rift/worktrees/my-project/bold-ant`).
 - The environment variable `RIFT_WORKTREE` is set to the worktree name (e.g. `bold-ant`).
 

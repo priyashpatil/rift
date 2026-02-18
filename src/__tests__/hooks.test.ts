@@ -1,4 +1,4 @@
-import { describe, expect, test, mock, spyOn, beforeEach } from "bun:test";
+import { describe, expect, test, mock, spyOn, beforeEach, afterAll } from "bun:test";
 import { runHook } from "../hooks";
 
 // Mock getRiftConfig
@@ -9,7 +9,11 @@ mock.module("../config", () => ({
 
 describe("runHook", () => {
   beforeEach(() => {
-    mockGetRiftConfig.mockClear();
+    mockGetRiftConfig.mockReset().mockResolvedValue({});
+  });
+
+  afterAll(() => {
+    mockGetRiftConfig.mockReset().mockResolvedValue({});
   });
 
   test("does nothing when no hook is configured", async () => {
@@ -50,5 +54,35 @@ describe("runHook", () => {
     await runHook("jump", "/test/dir");
 
     expect(mockGetRiftConfig).toHaveBeenCalledWith("/test/dir");
+  });
+
+  test("warns when hook exits with non-zero code", async () => {
+    mockGetRiftConfig.mockResolvedValue({
+      hooks: { open: "exit 1" },
+    });
+    const consoleSpy = spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
+
+    await runHook("open", "/tmp");
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Warning: open hook exited with code 1",
+    );
+    consoleSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  test("does not warn when hook exits with zero", async () => {
+    mockGetRiftConfig.mockResolvedValue({
+      hooks: { open: "true" },
+    });
+    const consoleSpy = spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
+
+    await runHook("open", "/tmp");
+
+    expect(errorSpy).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 });

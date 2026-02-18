@@ -21,16 +21,17 @@ function posixWrapper(shell: "zsh" | "bash"): string {
   return `unalias rift 2>/dev/null
 function rift {
     local tmpdir="\${TMPDIR:-/tmp}"
-    rm -f "\$tmpdir/.rift_cd_path" "\$tmpdir/.rift_start_agent"
+    export RIFT_SHELL_PID=\$\$
+    rm -f "\$tmpdir/.rift_cd_path_\$\$" "\$tmpdir/.rift_start_agent_\$\$"
     command rift "\$@"
     local rc=\$?
-    if [[ -f "\$tmpdir/.rift_cd_path" ]]; then
-        local cd_path=\$(cat "\$tmpdir/.rift_cd_path")
-        rm -f "\$tmpdir/.rift_cd_path"
+    if [[ -f "\$tmpdir/.rift_cd_path_\$\$" ]]; then
+        local cd_path=\$(cat "\$tmpdir/.rift_cd_path_\$\$")
+        rm -f "\$tmpdir/.rift_cd_path_\$\$"
         [[ -d "\$cd_path" ]] && cd "\$cd_path"
     fi
-    if [[ -f "\$tmpdir/.rift_start_agent" ]]; then
-        rm -f "\$tmpdir/.rift_start_agent"
+    if [[ -f "\$tmpdir/.rift_start_agent_\$\$" ]]; then
+        rm -f "\$tmpdir/.rift_start_agent_\$\$"
         local agent_cmd=\$(command rift _agent-cmd 2>/dev/null)
         [[ -n "\$agent_cmd" ]] && \$agent_cmd
     fi
@@ -41,16 +42,17 @@ function rift {
 function fishWrapper(): string {
   return `function rift
     set tmpdir (test -n "$TMPDIR" && echo "$TMPDIR" || echo "/tmp")
-    rm -f "$tmpdir/.rift_cd_path" "$tmpdir/.rift_start_agent"
+    set -x RIFT_SHELL_PID %self
+    rm -f "$tmpdir/.rift_cd_path_$RIFT_SHELL_PID" "$tmpdir/.rift_start_agent_$RIFT_SHELL_PID"
     command rift $argv
     set rc $status
-    if test -f "$tmpdir/.rift_cd_path"
-        set cd_path (cat "$tmpdir/.rift_cd_path")
-        rm -f "$tmpdir/.rift_cd_path"
+    if test -f "$tmpdir/.rift_cd_path_$RIFT_SHELL_PID"
+        set cd_path (cat "$tmpdir/.rift_cd_path_$RIFT_SHELL_PID")
+        rm -f "$tmpdir/.rift_cd_path_$RIFT_SHELL_PID"
         test -d "$cd_path" && cd "$cd_path"
     end
-    if test -f "$tmpdir/.rift_start_agent"
-        rm -f "$tmpdir/.rift_start_agent"
+    if test -f "$tmpdir/.rift_start_agent_$RIFT_SHELL_PID"
+        rm -f "$tmpdir/.rift_start_agent_$RIFT_SHELL_PID"
         set agent_cmd (command rift _agent-cmd 2>/dev/null)
         test -n "$agent_cmd" && eval $agent_cmd
     end

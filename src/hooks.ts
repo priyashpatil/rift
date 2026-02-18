@@ -18,5 +18,8 @@ export async function runHook(
     stdout: "inherit",
     stderr: "inherit",
   });
-  await proc.exited;
+  const exitCode = await proc.exited;
+  if (exitCode !== 0) {
+    console.error(`Warning: ${hookName} hook exited with code ${exitCode}`);
+  }
 }

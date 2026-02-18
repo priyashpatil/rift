@@ -29,6 +29,11 @@ mock.module("../../hooks", () => ({
   runHook: mockRunHook,
 }));
 
+const mockWarnIfAgentMissing = mock(() => Promise.resolve());
+mock.module("../../config", () => ({
+  warnIfAgentMissing: mockWarnIfAgentMissing,
+}));
+
 import { cmdJump } from "../../commands/jump";
 
 describe("cmdJump", () => {
@@ -43,6 +48,7 @@ describe("cmdJump", () => {
     mockWriteCdPath.mockClear();
     mockSignalAgentStart.mockClear();
     mockRunHook.mockClear().mockResolvedValue(undefined);
+    mockWarnIfAgentMissing.mockClear().mockResolvedValue(undefined);
   });
 
   test("exits with usage error when no name provided", async () => {

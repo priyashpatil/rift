@@ -7,8 +7,9 @@ export const WORKSPACES_DIR = join(RIFT_DIR, "workspaces");
 export const CONFIG_DIR = join(homedir(), ".config", "rift");
 export const GLOBAL_CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
 
-export const CD_PATH_FILE = join(tmpdir(), ".rift_cd_path");
-export const AGENT_START_FILE = join(tmpdir(), ".rift_start_agent");
+const shellPid = process.env.RIFT_SHELL_PID || String(process.ppid);
+export const CD_PATH_FILE = join(tmpdir(), `.rift_cd_path_${shellPid}`);
+export const AGENT_START_FILE = join(tmpdir(), `.rift_start_agent_${shellPid}`);
 
 export const ADJECTIVES = [
   "bold", "calm", "cool", "dark", "deep", "dry", "fair", "fast", "firm",

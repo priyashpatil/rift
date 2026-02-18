@@ -41,8 +41,10 @@ const mockGetEditor = mock(() => ({
   cmd: "code",
   managedWorkspace: true,
 }));
+const mockWarnIfAgentMissing = mock(() => Promise.resolve());
 mock.module("../../config", () => ({
   getEditor: mockGetEditor,
+  warnIfAgentMissing: mockWarnIfAgentMissing,
   getRiftConfig: mock(() => Promise.resolve({})),
   getGlobalConfig: mock(() => ({})),
   saveGlobalConfig: mock(() => {}),
@@ -76,6 +78,7 @@ describe("cmdOpen", () => {
       cmd: "code",
       managedWorkspace: true,
     });
+    mockWarnIfAgentMissing.mockClear().mockResolvedValue(undefined);
   });
 
   test("exits with error when not in a git repo", async () => {

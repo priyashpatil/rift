@@ -6,7 +6,7 @@ Show the current rift context: project, branch, worktree, and agent.`,
   open: `Usage: rift open [name] [options]
 
 Create a new worktree and launch the configured AI agent.
-If no name is given, you will be prompted to enter one.
+If no name is given, Rift generates a random one (e.g. bold-eagle).
 
 Options:
   --base <branch>   Base branch for the worktree (default: current branch)

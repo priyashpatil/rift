@@ -63,6 +63,14 @@ export async function getAgentCommand(): Promise<string> {
   return config.agent || "claude";
 }
 
+export async function warnIfAgentMissing(): Promise<void> {
+  const cmd = await getAgentCommand();
+  const bin = cmd.split(/\s+/)[0];
+  if (!Bun.which(bin)) {
+    console.error(`Warning: agent command "${bin}" not found on PATH`);
+  }
+}
+
 export async function getEditor(): Promise<Editor> {
   const riftConfig = await getRiftConfig();
   if (riftConfig.editor) {

@@ -24,12 +24,12 @@ describe("constants", () => {
     expect(GLOBAL_CONFIG_PATH).toBe(`${CONFIG_DIR}/config.yaml`);
   });
 
-  test("CD_PATH_FILE ends with .rift_cd_path", () => {
-    expect(CD_PATH_FILE).toEndWith(".rift_cd_path");
+  test("CD_PATH_FILE contains .rift_cd_path", () => {
+    expect(CD_PATH_FILE).toMatch(/\.rift_cd_path/);
   });
 
-  test("AGENT_START_FILE ends with .rift_start_agent", () => {
-    expect(AGENT_START_FILE).toEndWith(".rift_start_agent");
+  test("AGENT_START_FILE contains .rift_start_agent", () => {
+    expect(AGENT_START_FILE).toMatch(/\.rift_start_agent/);
   });
 
   test("RIFT_DIR is a string path", () => {

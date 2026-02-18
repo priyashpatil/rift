@@ -7,6 +7,7 @@ import {
 } from "../git";
 import { writeCdPath, signalAgentStart } from "../ipc";
 import { runHook } from "../hooks";
+import { warnIfAgentMissing } from "../config";
 
 export async function cmdJump(args: string[]): Promise<void> {
   const skipAgent = args.includes("--skip-agent");
@@ -45,6 +46,9 @@ export async function cmdJump(args: string[]): Promise<void> {
 
   console.log(`Jumping to: ${name}`);
   writeCdPath(match.path);
-  if (!skipAgent) signalAgentStart();
+  if (!skipAgent) {
+    await warnIfAgentMissing();
+    signalAgentStart();
+  }
   if (!skipHooks) await runHook("jump", match.path);
 }
