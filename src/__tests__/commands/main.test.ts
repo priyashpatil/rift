@@ -1,4 +1,4 @@
-import { describe, expect, test, mock, spyOn, beforeEach } from "bun:test";
+import { describe, expect, test, mock, spyOn, beforeEach, afterEach } from "bun:test";
 
 const mockIsGitRepo = mock(() => Promise.resolve(true));
 const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
@@ -16,10 +16,21 @@ mock.module("../../ipc", () => ({
 import { cmdMain } from "../../commands/main";
 
 describe("cmdMain", () => {
+  const origShellPid = process.env.RIFT_SHELL_PID;
+
   beforeEach(() => {
+    process.env.RIFT_SHELL_PID = "12345";
     mockIsGitRepo.mockClear();
     mockGetMainWorktree.mockClear();
     mockWriteCdPath.mockClear();
+  });
+
+  afterEach(() => {
+    if (origShellPid !== undefined) {
+      process.env.RIFT_SHELL_PID = origShellPid;
+    } else {
+      delete process.env.RIFT_SHELL_PID;
+    }
   });
 
   test("writes cd path and logs message on success", async () => {
@@ -31,6 +42,19 @@ describe("cmdMain", () => {
 
     expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
     expect(logSpy).toHaveBeenCalledWith("Switching to: /main/repo");
+    logSpy.mockRestore();
+  });
+
+  test("shows hint when shell wrapper is not active", async () => {
+    delete process.env.RIFT_SHELL_PID;
+    mockIsGitRepo.mockResolvedValue(true);
+    mockGetMainWorktree.mockResolvedValue("/main/repo");
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdMain();
+
+    expect(mockWriteCdPath).not.toHaveBeenCalled();
+    expect(logSpy).toHaveBeenCalledWith("Main repo: /main/repo");
     logSpy.mockRestore();
   });
 

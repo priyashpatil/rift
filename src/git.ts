@@ -125,20 +125,14 @@ export async function worktreeAdd(
   quiet = false,
 ): Promise<void> {
   const args = ["worktree", "add", "-b", branch, wtPath, base];
-  if (quiet) {
-    const proc = Bun.spawn(["git", "-C", mainRepo, ...args], {
-      cwd: SAFE_CWD,
-      stdout: "pipe",
-      stderr: "pipe",
-    });
-    await proc.exited;
-  } else {
-    const proc = Bun.spawn(["git", "-C", mainRepo, ...args], {
-      cwd: SAFE_CWD,
-      stdout: "inherit",
-      stderr: "inherit",
-    });
-    await proc.exited;
+  const proc = Bun.spawn(["git", "-C", mainRepo, ...args], {
+    cwd: SAFE_CWD,
+    stdout: quiet ? "pipe" : "inherit",
+    stderr: quiet ? "pipe" : "inherit",
+  });
+  const exitCode = await proc.exited;
+  if (exitCode !== 0) {
+    throw new Error(`Failed to create worktree "${branch}"`);
   }
 }
 
@@ -150,7 +144,10 @@ export async function worktreeRemove(
     ["git", "-C", mainRepo, "worktree", "remove", wtPath, "--force"],
     { cwd: SAFE_CWD, stdout: "inherit", stderr: "inherit" },
   );
-  await proc.exited;
+  const exitCode = await proc.exited;
+  if (exitCode !== 0) {
+    throw new Error(`Failed to remove worktree`);
+  }
 }
 
 export async function branchDelete(

@@ -44,6 +44,15 @@ export async function cmdJump(args: string[]): Promise<void> {
     process.exit(1);
   }
 
+  if (!process.env.RIFT_SHELL_PID) {
+    console.log(`Worktree: ${name}`);
+    console.log(`Path: ${match.path}`);
+    console.log(
+      `\nHint: Add this to your shell profile to enable auto-cd:\n  eval "$(rift _shell-init)"`,
+    );
+    return;
+  }
+
   console.log(`Jumping to: ${name}`);
   writeCdPath(match.path);
   if (!skipAgent) {

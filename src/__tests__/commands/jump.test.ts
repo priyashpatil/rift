@@ -1,4 +1,4 @@
-import { describe, expect, test, mock, spyOn, beforeEach } from "bun:test";
+import { describe, expect, test, mock, spyOn, beforeEach, afterEach } from "bun:test";
 
 const mockIsGitRepo = mock(() => Promise.resolve(true));
 const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
@@ -37,7 +37,10 @@ mock.module("../../config", () => ({
 import { cmdJump } from "../../commands/jump";
 
 describe("cmdJump", () => {
+  const origShellPid = process.env.RIFT_SHELL_PID;
+
   beforeEach(() => {
+    process.env.RIFT_SHELL_PID = "12345";
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockGetMainWorktree.mockClear().mockResolvedValue("/main/repo");
     mockGetProjectName.mockClear().mockResolvedValue("myproject");
@@ -49,6 +52,14 @@ describe("cmdJump", () => {
     mockSignalAgentStart.mockClear();
     mockRunHook.mockClear().mockResolvedValue(undefined);
     mockWarnIfAgentMissing.mockClear().mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    if (origShellPid !== undefined) {
+      process.env.RIFT_SHELL_PID = origShellPid;
+    } else {
+      delete process.env.RIFT_SHELL_PID;
+    }
   });
 
   test("exits with usage error when no name provided", async () => {
@@ -180,6 +191,21 @@ describe("cmdJump", () => {
     expect(mockWriteCdPath).toHaveBeenCalledWith(
       "/worktrees/myproject/calm-bee",
     );
+    logSpy.mockRestore();
+  });
+
+  test("shows hint when shell wrapper is not active", async () => {
+    delete process.env.RIFT_SHELL_PID;
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdJump(["bold-ant"]);
+
+    expect(logSpy).toHaveBeenCalledWith("Worktree: bold-ant");
+    expect(logSpy).toHaveBeenCalledWith(
+      "Path: /worktrees/myproject/bold-ant",
+    );
+    expect(mockWriteCdPath).not.toHaveBeenCalled();
+    expect(mockSignalAgentStart).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
 });

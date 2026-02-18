@@ -1,4 +1,4 @@
-import { describe, expect, test, mock, spyOn, beforeEach } from "bun:test";
+import { describe, expect, test, mock, spyOn, beforeEach, afterEach } from "bun:test";
 
 const mockIsGitRepo = mock(() => Promise.resolve(true));
 const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
@@ -62,7 +62,10 @@ const mockExistsSync = mock((path: string) => {
 import { cmdOpen } from "../../commands/open";
 
 describe("cmdOpen", () => {
+  const origShellPid = process.env.RIFT_SHELL_PID;
+
   beforeEach(() => {
+    process.env.RIFT_SHELL_PID = "12345";
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockGetMainWorktree.mockClear().mockResolvedValue("/main/repo");
     mockGetProjectName.mockClear().mockResolvedValue("myproject");
@@ -79,6 +82,14 @@ describe("cmdOpen", () => {
       managedWorkspace: true,
     });
     mockWarnIfAgentMissing.mockClear().mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    if (origShellPid !== undefined) {
+      process.env.RIFT_SHELL_PID = origShellPid;
+    } else {
+      delete process.env.RIFT_SHELL_PID;
+    }
   });
 
   test("exits with error when not in a git repo", async () => {
@@ -225,6 +236,17 @@ describe("cmdOpen", () => {
     await cmdOpen([]);
 
     expect(mockSyncWorkspace).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  test("shows hint instead of cd/agent when shell wrapper is not active", async () => {
+    delete process.env.RIFT_SHELL_PID;
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdOpen([]);
+
+    expect(mockWriteCdPath).not.toHaveBeenCalled();
+    expect(mockSignalAgentStart).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
 });

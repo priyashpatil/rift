@@ -73,9 +73,15 @@ export async function cmdOpen(args: string[]): Promise<void> {
   }
 
   if (!skipHooks) await runHook("open", wtPath);
-  writeCdPath(wtPath);
-  if (!skipAgent) {
-    await warnIfAgentMissing();
-    signalAgentStart();
+  if (process.env.RIFT_SHELL_PID) {
+    writeCdPath(wtPath);
+    if (!skipAgent) {
+      await warnIfAgentMissing();
+      signalAgentStart();
+    }
+  } else {
+    console.log(
+      `\nHint: Add this to your shell profile to auto-cd and launch agent:\n  eval "$(rift _shell-init)"`,
+    );
   }
 }
