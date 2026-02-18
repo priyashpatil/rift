@@ -24,3 +24,9 @@ export interface Editor {
   cmd: string;
   managedWorkspace: boolean;
 }
+
+export interface AgentRegistration {
+  shellPid: number;
+  agentPid: number;
+  mainWorktreePath: string;
+}

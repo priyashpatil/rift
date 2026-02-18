@@ -3,6 +3,7 @@ import {
   RIFT_DIR,
   WORKTREES_DIR,
   WORKSPACES_DIR,
+  AGENTS_DIR,
   CONFIG_DIR,
   GLOBAL_CONFIG_PATH,
   CD_PATH_FILE,
@@ -18,6 +19,10 @@ describe("constants", () => {
 
   test("WORKSPACES_DIR is under RIFT_DIR", () => {
     expect(WORKSPACES_DIR).toBe(`${RIFT_DIR}/workspaces`);
+  });
+
+  test("AGENTS_DIR ends with .rift/agents", () => {
+    expect(AGENTS_DIR.endsWith(".rift/agents")).toBe(true);
   });
 
   test("GLOBAL_CONFIG_PATH is config.yaml in CONFIG_DIR", () => {

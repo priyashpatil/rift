@@ -14,6 +14,7 @@ import { runHook } from "../hooks";
 import { writeCdPath } from "../ipc";
 import { promptYesNo } from "../prompt";
 import { getEditor } from "../config";
+import { removeWorktreeAgents } from "../agents";
 
 export async function cmdClose(args: string[]): Promise<void> {
   const force = args.includes("-f") || args.includes("--force");
@@ -42,6 +43,14 @@ export async function cmdClose(args: string[]): Promise<void> {
       console.log("Cancelled.");
       return;
     }
+  }
+
+  const removedAgents = removeWorktreeAgents(project, wtName);
+  if (removedAgents.length > 0) {
+    console.log(
+      `Signaling ${removedAgents.length} running agent(s) to shut down...`,
+    );
+    await Bun.sleep(2000);
   }
 
   await runHook("close", wtPath);

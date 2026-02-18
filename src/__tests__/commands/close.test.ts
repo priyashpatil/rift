@@ -58,6 +58,11 @@ mock.module("../../config", () => ({
   EDITORS: [],
 }));
 
+const mockRemoveWorktreeAgents = mock(() => []);
+mock.module("../../agents", () => ({
+  removeWorktreeAgents: mockRemoveWorktreeAgents,
+}));
+
 import { cmdClose } from "../../commands/close";
 
 describe("cmdClose", () => {
@@ -82,6 +87,7 @@ describe("cmdClose", () => {
       cmd: "code",
       managedWorkspace: true,
     });
+    mockRemoveWorktreeAgents.mockClear().mockReturnValue([]);
   });
 
   test("exits with error when not in a git repo", async () => {
@@ -203,6 +209,33 @@ describe("cmdClose", () => {
     await cmdClose(["-f"]);
 
     expect(mockSyncWorkspace).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  test("removes worktree agent registrations before closing", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdClose(["-f"]);
+
+    expect(mockRemoveWorktreeAgents).toHaveBeenCalledWith(
+      "myproject",
+      "bold-ant",
+    );
+    logSpy.mockRestore();
+  });
+
+  test("logs agent shutdown message when agents are running", async () => {
+    mockRemoveWorktreeAgents.mockReturnValue([
+      { shellPid: 111, agentPid: 222, mainWorktreePath: "/main/repo" },
+      { shellPid: 333, agentPid: 444, mainWorktreePath: "/main/repo" },
+    ]);
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdClose(["-f"]);
+
+    expect(logSpy).toHaveBeenCalledWith(
+      "Signaling 2 running agent(s) to shut down...",
+    );
     logSpy.mockRestore();
   });
 });

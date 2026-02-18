@@ -17,6 +17,7 @@ describe("index module", () => {
       import("../commands/purge"),
       import("../commands/init"),
       import("../commands/config"),
+      import("../commands/run-agent"),
     ];
     const results = await Promise.all(modules);
     expect(results[0].cmdHelp).toBeDefined();
@@ -29,6 +30,7 @@ describe("index module", () => {
     expect(results[7].cmdPurge).toBeDefined();
     expect(results[8].cmdInit).toBeDefined();
     expect(results[9].cmdConfig).toBeDefined();
+    expect(results[10].cmdRunAgent).toBeDefined();
   });
 
   test("getAgentCommand is importable from config", async () => {

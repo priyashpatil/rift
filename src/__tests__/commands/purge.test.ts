@@ -57,6 +57,11 @@ mock.module("../../config", () => ({
   EDITORS: [],
 }));
 
+const mockRemoveProjectAgents = mock(() => []);
+mock.module("../../agents", () => ({
+  removeProjectAgents: mockRemoveProjectAgents,
+}));
+
 import { cmdPurge } from "../../commands/purge";
 
 describe("cmdPurge", () => {
@@ -80,6 +85,7 @@ describe("cmdPurge", () => {
       cmd: "code",
       managedWorkspace: true,
     });
+    mockRemoveProjectAgents.mockClear().mockReturnValue([]);
   });
 
   test("exits with error when not in a git repo", async () => {
@@ -222,6 +228,29 @@ describe("cmdPurge", () => {
     );
     expect(logSpy).toHaveBeenCalledWith(
       "  - calm-bee (branch: calm-bee)",
+    );
+    logSpy.mockRestore();
+  });
+
+  test("removes project agent registrations before purging", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdPurge(["-f"]);
+
+    expect(mockRemoveProjectAgents).toHaveBeenCalledWith("myproject");
+    logSpy.mockRestore();
+  });
+
+  test("logs agent shutdown message when agents are running", async () => {
+    mockRemoveProjectAgents.mockReturnValue([
+      { shellPid: 111, agentPid: 222, mainWorktreePath: "/main/repo" },
+    ]);
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdPurge(["-f"]);
+
+    expect(logSpy).toHaveBeenCalledWith(
+      "Signaling 1 running agent(s) to shut down...",
     );
     logSpy.mockRestore();
   });

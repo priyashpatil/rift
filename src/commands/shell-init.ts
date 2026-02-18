@@ -32,8 +32,12 @@ function rift {
     fi
     if [[ -f "\$tmpdir/.rift_start_agent_\$\$" ]]; then
         rm -f "\$tmpdir/.rift_start_agent_\$\$"
-        local agent_cmd=\$(command rift _agent-cmd 2>/dev/null)
-        [[ -n "\$agent_cmd" ]] && \$agent_cmd
+        command rift _run-agent
+        if [[ -f "\$tmpdir/.rift_cd_path_\$\$" ]]; then
+            local cd_path=\$(cat "\$tmpdir/.rift_cd_path_\$\$")
+            rm -f "\$tmpdir/.rift_cd_path_\$\$"
+            [[ -d "\$cd_path" ]] && cd "\$cd_path"
+        fi
     fi
     return \$rc
 }`;
@@ -53,8 +57,12 @@ function fishWrapper(): string {
     end
     if test -f "$tmpdir/.rift_start_agent_$RIFT_SHELL_PID"
         rm -f "$tmpdir/.rift_start_agent_$RIFT_SHELL_PID"
-        set agent_cmd (command rift _agent-cmd 2>/dev/null)
-        test -n "$agent_cmd" && eval $agent_cmd
+        command rift _run-agent
+        if test -f "$tmpdir/.rift_cd_path_$RIFT_SHELL_PID"
+            set cd_path (cat "$tmpdir/.rift_cd_path_$RIFT_SHELL_PID")
+            rm -f "$tmpdir/.rift_cd_path_$RIFT_SHELL_PID"
+            test -d "$cd_path" && cd "$cd_path"
+        end
     end
     return $rc
 end`;

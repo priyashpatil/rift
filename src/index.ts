@@ -13,6 +13,7 @@ import { cmdShellInit } from "./commands/shell-init";
 import { cmdConfig } from "./commands/config";
 import { cmdVersion } from "./commands/version";
 import { getAgentCommand } from "./config";
+import { cmdRunAgent } from "./commands/run-agent";
 
 const args = process.argv.slice(2);
 const command = args[0] || "help";
@@ -58,6 +59,9 @@ try {
       break;
     case "_agent-cmd":
       console.log(await getAgentCommand());
+      break;
+    case "_run-agent":
+      await cmdRunAgent();
       break;
     case "version":
     case "--version":

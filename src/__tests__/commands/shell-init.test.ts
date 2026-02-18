@@ -26,7 +26,7 @@ describe("cmdShellInit", () => {
     expect(output).toContain("command rift");
     expect(output).toContain(".rift_cd_path");
     expect(output).toContain(".rift_start_agent");
-    expect(output).toContain("_agent-cmd");
+    expect(output).toContain("_run-agent");
   });
 
   test("outputs posix wrapper for bash", () => {

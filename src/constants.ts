@@ -4,6 +4,7 @@ import { join } from "path";
 export const RIFT_DIR = join(homedir(), ".rift");
 export const WORKTREES_DIR = join(RIFT_DIR, "worktrees");
 export const WORKSPACES_DIR = join(RIFT_DIR, "workspaces");
+export const AGENTS_DIR = join(RIFT_DIR, "agents");
 export const CONFIG_DIR = join(homedir(), ".config", "rift");
 export const GLOBAL_CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
 
