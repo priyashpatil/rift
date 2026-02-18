@@ -193,6 +193,15 @@ describe("cmdOpen", () => {
     logSpy.mockRestore();
   });
 
+  test("--skip-hooks prevents running open hook", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdOpen(["--skip-hooks"]);
+
+    expect(mockRunHook).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
   test("syncs workspace when editor has managedWorkspace", async () => {
     const logSpy = spyOn(console, "log").mockImplementation(() => {});
 

@@ -56,7 +56,7 @@ describe("cmdJump", () => {
     } catch {}
 
     expect(errorSpy).toHaveBeenCalledWith(
-      "Usage: rift jump <name> [--skip-agent]",
+      "Usage: rift jump <name> [--skip-agent] [--skip-hooks]",
     );
     errorSpy.mockRestore();
     exitSpy.mockRestore();
@@ -148,6 +148,27 @@ describe("cmdJump", () => {
     const logSpy = spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["--skip-agent", "calm-bee"]);
+
+    expect(logSpy).toHaveBeenCalledWith("Jumping to: calm-bee");
+    expect(mockWriteCdPath).toHaveBeenCalledWith(
+      "/worktrees/myproject/calm-bee",
+    );
+    logSpy.mockRestore();
+  });
+
+  test("--skip-hooks prevents running jump hook", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdJump(["bold-ant", "--skip-hooks"]);
+
+    expect(mockRunHook).not.toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
+  test("filters --skip-hooks from positional args", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdJump(["--skip-hooks", "calm-bee"]);
 
     expect(logSpy).toHaveBeenCalledWith("Jumping to: calm-bee");
     expect(mockWriteCdPath).toHaveBeenCalledWith(

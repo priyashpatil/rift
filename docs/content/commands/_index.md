@@ -68,6 +68,9 @@ rift open my-feature --base develop
 
 # Skip launching the agent
 rift open my-feature --skip-agent
+
+# Skip running hooks
+rift open my-feature --skip-hooks
 ```
 
 If no name is given, Rift generates a random one (e.g. `bold-eagle`).
@@ -91,6 +94,9 @@ rift jump my-feature
 
 # Jump without launching the agent
 rift jump my-feature --skip-agent
+
+# Jump without running hooks
+rift jump my-feature --skip-hooks
 ```
 
 ### `rift close`
@@ -151,6 +157,7 @@ These flags can be combined with the commands above:
 
 - **`--base <branch>`** (`open`) — base branch for the new worktree (default: current branch)
 - **`--skip-agent`** (`open`, `jump`) — don't launch the AI agent after switching
+- **`--skip-hooks`** (`open`, `jump`) — don't run lifecycle hooks
 - **`--editor <cmd>`** (`init`, `config`) — editor to use
 - **`--agent <cmd>`** (`init`, `config`) — AI agent command to use (any CLI command)
 - **`-f`, `--force`** (`close`, `purge`) — skip confirmation prompts

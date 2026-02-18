@@ -10,7 +10,8 @@ If no name is given, you will be prompted to enter one.
 
 Options:
   --base <branch>   Base branch for the worktree (default: current branch)
-  --skip-agent      Create the worktree without launching an agent`,
+  --skip-agent      Create the worktree without launching an agent
+  --skip-hooks      Create the worktree without running hooks`,
 
   list: `Usage: rift list
 
@@ -37,7 +38,8 @@ Aliases: base`,
 Switch to an existing worktree and start the configured agent.
 
 Options:
-  --skip-agent      Switch without launching an agent`,
+  --skip-agent      Switch without launching an agent
+  --skip-hooks      Switch without running hooks`,
 
   code: `Usage: rift code
 
@@ -112,6 +114,7 @@ Commands:
 Options:
   --base <branch>   Base branch for new worktree (default: current branch)
   --skip-agent      Don't launch agent after opening worktree
+  --skip-hooks      Don't run hooks (open, jump)
   --editor <cmd>    Editor to use (init, config)
   --agent <cmd>     AI agent to use (init, config)
   -f, --force       Skip confirmation prompts

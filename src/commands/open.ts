@@ -18,6 +18,7 @@ export async function cmdOpen(args: string[]): Promise<void> {
   let name = "";
   let base = "";
   let skipAgent = false;
+  let skipHooks = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -27,6 +28,8 @@ export async function cmdOpen(args: string[]): Promise<void> {
       base = arg.slice(7);
     } else if (arg === "--skip-agent") {
       skipAgent = true;
+    } else if (arg === "--skip-hooks") {
+      skipHooks = true;
     } else if (arg.startsWith("-")) {
       console.error(`Error: unknown option: ${arg}`);
       process.exit(1);
@@ -69,7 +72,7 @@ export async function cmdOpen(args: string[]): Promise<void> {
     try { await syncWorkspace(project, mainRepo); } catch {}
   }
 
-  await runHook("open", wtPath);
+  if (!skipHooks) await runHook("open", wtPath);
   writeCdPath(wtPath);
   if (!skipAgent) signalAgentStart();
 }

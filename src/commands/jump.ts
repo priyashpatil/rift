@@ -10,11 +10,14 @@ import { runHook } from "../hooks";
 
 export async function cmdJump(args: string[]): Promise<void> {
   const skipAgent = args.includes("--skip-agent");
-  const positional = args.filter((a) => a !== "--skip-agent");
+  const skipHooks = args.includes("--skip-hooks");
+  const positional = args.filter(
+    (a) => a !== "--skip-agent" && a !== "--skip-hooks",
+  );
   const name = positional[0];
 
   if (!name) {
-    console.error("Usage: rift jump <name> [--skip-agent]");
+    console.error("Usage: rift jump <name> [--skip-agent] [--skip-hooks]");
     process.exit(1);
   }
 
@@ -43,5 +46,5 @@ export async function cmdJump(args: string[]): Promise<void> {
   console.log(`Jumping to: ${name}`);
   writeCdPath(match.path);
   if (!skipAgent) signalAgentStart();
-  await runHook("jump", match.path);
+  if (!skipHooks) await runHook("jump", match.path);
 }
