@@ -5,26 +5,35 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "rift": "bin/rift.js"
+    "rift": "bin/rift.cjs"
   },
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun build --compile src/index.ts --outfile rift",
     "build:dev": "bun run build && cp rift ~/.local/bin/rift",
     "build:all": "bun run scripts/build-all.js",
-    "postinstall": "node scripts/postinstall.js",
+    "postinstall": "node scripts/postinstall.cjs",
     "test": "bun test",
     "test:coverage": "bun test --coverage"
   },
   "files": [
-    "bin/rift.js",
-    "scripts/postinstall.js"
+    "bin/rift.cjs",
+    "scripts/postinstall.cjs"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/github": "^11.0.0",
+    "@semantic-release/npm": "^12.0.0",
+    "@semantic-release/release-notes-generator": "^14.0.0",
     "@types/js-yaml": "^4.0.9",
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "semantic-release": "^24.0.0"
   }
 }
