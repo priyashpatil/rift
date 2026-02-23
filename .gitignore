@@ -2,3 +2,16 @@ node_modules/
 rift
 
 .env
+
+# Build artifacts
+dist/
+*.tsbuildinfo
+coverage/
+
+# OS files
+.DS_Store
+*.swp
+*.swo
+
+# IDE
+.idea/
