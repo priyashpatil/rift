@@ -111,6 +111,9 @@ rift close
 
 # Skip the confirmation prompt
 rift close --force
+
+# Close without running hooks
+rift close --skip-hooks
 ```
 
 Must be run from inside a Rift worktree (not the main repo).
@@ -150,7 +153,7 @@ These flags can be combined with the commands above:
 
 - **`--base <branch>`** (`open`) — base branch for the new worktree (default: current branch)
 - **`--skip-agent`** (`open`, `jump`) — don't launch the AI agent after switching
-- **`--skip-hooks`** (`open`, `jump`) — don't run lifecycle hooks
+- **`--skip-hooks`** (`open`, `jump`, `close`) — don't run lifecycle hooks
 - **`--editor <cmd>`** (`init`, `config`) — editor to use
 - **`--agent <cmd>`** (`init`, `config`) — AI agent command to use (any CLI command)
 - **`-f`, `--force`** (`close`, `purge`) — skip confirmation prompts

@@ -25,7 +25,8 @@ Close the current worktree and switch back to the main repository.
 Must be run from inside a rift worktree.
 
 Options:
-  -f, --force       Skip confirmation prompt`,
+  -f, --force       Skip confirmation prompt
+  --skip-hooks      Close without running hooks`,
 
   jump: `Usage: rift jump <name> [options]
 
@@ -107,7 +108,7 @@ Commands:
 Options:
   --base <branch>   Base branch for new worktree (default: current branch)
   --skip-agent      Don't launch agent after opening worktree
-  --skip-hooks      Don't run hooks (open, jump)
+  --skip-hooks      Don't run hooks (open, jump, close)
   --editor <cmd>    Editor to use (init, config)
   --agent <cmd>     AI agent to use (init, config)
   -f, --force       Skip confirmation prompts

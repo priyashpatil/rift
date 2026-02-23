@@ -224,6 +224,16 @@ describe("cmdClose", () => {
     logSpy.mockRestore();
   });
 
+  test("--skip-hooks prevents running close hook", async () => {
+    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdClose(["-f", "--skip-hooks"]);
+
+    expect(mockRunHook).not.toHaveBeenCalled();
+    expect(mockWorktreeRemove).toHaveBeenCalled();
+    logSpy.mockRestore();
+  });
+
   test("logs agent shutdown message when agents are running", async () => {
     mockRemoveWorktreeAgents.mockReturnValue([
       { shellPid: 111, agentPid: 222, mainWorktreePath: "/main/repo" },

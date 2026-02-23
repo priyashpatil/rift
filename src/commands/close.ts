@@ -18,6 +18,7 @@ import { removeWorktreeAgents } from "../agents";
 
 export async function cmdClose(args: string[]): Promise<void> {
   const force = args.includes("-f") || args.includes("--force");
+  const skipHooks = args.includes("--skip-hooks");
 
   if (!(await isGitRepo())) {
     console.error("Error: not in a git repository");
@@ -53,7 +54,9 @@ export async function cmdClose(args: string[]): Promise<void> {
     await Bun.sleep(2000);
   }
 
-  await runHook("close", wtPath);
+  if (!skipHooks) {
+    await runHook("close", wtPath);
+  }
   await worktreeRemove(mainRepo, wtPath);
   console.log(`Removed worktree: ${wtName}`);
 
