@@ -1,6 +1,6 @@
 {
   "name": "@priyashpatil/rift",
-  "version": "0.0.0-development",
+  "version": "0.1.0",
   "description": "Git worktree manager for parallel AI agent development",
   "type": "module",
   "license": "MIT",
