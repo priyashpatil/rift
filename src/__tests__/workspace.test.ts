@@ -123,4 +123,24 @@ describe("workspace", () => {
     expect(content.folders).toHaveLength(1);
     expect(content.folders[0].name).toBe("main");
   });
+
+  test("includes extra workspace folders after worktrees", async () => {
+    const mainRepo = "/fake/main/repo";
+    const projectWtDir = join(testWorktreesDir, "myproject");
+    mkdirSync(projectWtDir, { recursive: true });
+    mkdirSync(join(projectWtDir, "alpha"), { recursive: true });
+
+    await syncWorkspace("myproject", mainRepo, [
+      "/other/shared-lib",
+      "/other/docs",
+    ]);
+
+    const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
+    const content = JSON.parse(readFileSync(wsPath, "utf-8"));
+    expect(content.folders).toHaveLength(4);
+    expect(content.folders[0].name).toBe("main");
+    expect(content.folders[1].name).toBe("alpha");
+    expect(content.folders[2]).toEqual({ name: "shared-lib", path: "/other/shared-lib" });
+    expect(content.folders[3]).toEqual({ name: "docs", path: "/other/docs" });
+  });
 });

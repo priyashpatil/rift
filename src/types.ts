@@ -1,6 +1,7 @@
 export interface RiftConfig {
   editor?: string;
   agent?: string;
+  "extra-workspaces"?: string[];
   hooks?: {
     open?: string;
     jump?: string;

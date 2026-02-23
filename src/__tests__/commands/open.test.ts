@@ -221,7 +221,7 @@ describe("cmdOpen", () => {
 
     await cmdOpen([]);
 
-    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo");
+    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo", undefined);
     logSpy.mockRestore();
   });
 

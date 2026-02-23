@@ -91,7 +91,7 @@ describe("cmdCode", () => {
       await cmdCode();
     } catch {}
 
-    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo");
+    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo", undefined);
     logSpy.mockRestore();
   });
 

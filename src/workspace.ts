@@ -23,6 +23,7 @@ interface WorkspaceFile {
 export async function syncWorkspace(
   project: string,
   mainRepo: string,
+  extraFolders?: string[],
 ): Promise<void> {
   const wsPath = join(WORKSPACES_DIR, `${project}.code-workspace`);
   const wtDir = join(WORKTREES_DIR, project);
@@ -45,6 +46,12 @@ export async function syncWorkspace(
       .sort();
     for (const entry of entries) {
       folders.push({ name: entry, path: join(wtDir, entry) });
+    }
+  }
+
+  if (extraFolders) {
+    for (const folder of extraFolders) {
+      folders.push({ name: basename(folder), path: folder });
     }
   }
 

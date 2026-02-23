@@ -12,7 +12,7 @@ import { generateName } from "../names";
 import { syncWorkspace } from "../workspace";
 import { runHook } from "../hooks";
 import { writeCdPath, signalAgentStart } from "../ipc";
-import { getEditor, warnIfAgentMissing } from "../config";
+import { getEditor, getRiftConfig, warnIfAgentMissing } from "../config";
 
 export async function cmdOpen(args: string[]): Promise<void> {
   let name = "";
@@ -69,7 +69,8 @@ export async function cmdOpen(args: string[]): Promise<void> {
   console.log(`Path: ${wtPath}`);
 
   if ((await getEditor()).managedWorkspace) {
-    try { await syncWorkspace(project, mainRepo); } catch {}
+    const config = await getRiftConfig(mainRepo);
+    try { await syncWorkspace(project, mainRepo, config["extra-workspaces"]); } catch {}
   }
 
   if (!skipHooks) await runHook("open", wtPath);

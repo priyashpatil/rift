@@ -13,7 +13,7 @@ import { syncWorkspace } from "../workspace";
 import { runHook } from "../hooks";
 import { writeCdPath } from "../ipc";
 import { promptYesNo } from "../prompt";
-import { getEditor } from "../config";
+import { getEditor, getRiftConfig } from "../config";
 import { removeWorktreeAgents } from "../agents";
 
 export async function cmdClose(args: string[]): Promise<void> {
@@ -67,7 +67,8 @@ export async function cmdClose(args: string[]): Promise<void> {
   }
 
   if ((await getEditor()).managedWorkspace) {
-    try { await syncWorkspace(project, mainRepo); } catch {}
+    const config = await getRiftConfig(mainRepo);
+    try { await syncWorkspace(project, mainRepo, config["extra-workspaces"]); } catch {}
   }
 
   writeCdPath(mainRepo);

@@ -4,7 +4,7 @@ import { join } from "path";
 import { isGitRepo, getMainWorktree, getProjectName } from "../git";
 import { WORKSPACES_DIR } from "../constants";
 import { syncWorkspace } from "../workspace";
-import { getEditor } from "../config";
+import { getEditor, getRiftConfig } from "../config";
 
 export async function cmdCode(): Promise<void> {
   if (!(await isGitRepo())) {
@@ -20,7 +20,8 @@ export async function cmdCode(): Promise<void> {
     const wsPath = join(WORKSPACES_DIR, `${project}.code-workspace`);
 
     try {
-      await syncWorkspace(project, mainRepo);
+      const config = await getRiftConfig(mainRepo);
+      await syncWorkspace(project, mainRepo, config["extra-workspaces"]);
     } catch {}
 
     if (!existsSync(wsPath)) {

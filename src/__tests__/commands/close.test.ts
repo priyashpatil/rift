@@ -179,7 +179,7 @@ describe("cmdClose", () => {
       "/worktrees/myproject/bold-ant",
     );
     expect(mockBranchDelete).toHaveBeenCalledWith("/main/repo", "bold-ant");
-    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo");
+    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo", undefined);
     expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
     logSpy.mockRestore();
   });

@@ -12,7 +12,7 @@ import { syncWorkspace } from "../workspace";
 import { runHook } from "../hooks";
 import { writeCdPath } from "../ipc";
 import { promptYesNo } from "../prompt";
-import { getEditor } from "../config";
+import { getEditor, getRiftConfig } from "../config";
 import { removeProjectAgents } from "../agents";
 
 export async function cmdPurge(args: string[]): Promise<void> {
@@ -71,7 +71,8 @@ export async function cmdPurge(args: string[]): Promise<void> {
   await worktreePrune(mainRepo);
 
   if ((await getEditor()).managedWorkspace) {
-    try { await syncWorkspace(project, mainRepo); } catch {}
+    const config = await getRiftConfig(mainRepo);
+    try { await syncWorkspace(project, mainRepo, config["extra-workspaces"]); } catch {}
   }
 
   console.log(`\nPurged all worktrees for ${project}.`);
