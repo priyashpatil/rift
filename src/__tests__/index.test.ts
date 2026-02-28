@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 
 // The index.ts module is the CLI entry point that reads process.argv and
 // dispatches commands. It's tested indirectly through the command tests.

@@ -1,19 +1,45 @@
-import { describe, expect, test, mock, spyOn, beforeEach } from "bun:test";
+import { describe, expect, test, vi, beforeEach } from "vitest";
 
-const mockIsGitRepo = mock(() => Promise.resolve(true));
-const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
-const mockGetProjectName = mock(() => Promise.resolve("myproject"));
-const mockListRiftWorktrees = mock(() =>
-  Promise.resolve([
-    { path: "/worktrees/myproject/bold-ant", branch: "bold-ant" },
-    { path: "/worktrees/myproject/calm-bee", branch: "calm-bee" },
-  ]),
-);
-const mockWorktreeRemove = mock(() => Promise.resolve());
-const mockBranchDelete = mock(() => Promise.resolve(true));
-const mockWorktreePrune = mock(() => Promise.resolve());
+const {
+  mockIsGitRepo,
+  mockGetMainWorktree,
+  mockGetProjectName,
+  mockListRiftWorktrees,
+  mockWorktreeRemove,
+  mockBranchDelete,
+  mockWorktreePrune,
+  mockSyncWorkspace,
+  mockRunHook,
+  mockWriteCdPath,
+  mockPromptYesNo,
+  mockGetEditor,
+  mockRemoveProjectAgents,
+} = vi.hoisted(() => ({
+  mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
+  mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
+  mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
+  mockListRiftWorktrees: vi.fn(() =>
+    Promise.resolve([
+      { path: "/worktrees/myproject/bold-ant", branch: "bold-ant" },
+      { path: "/worktrees/myproject/calm-bee", branch: "calm-bee" },
+    ]),
+  ),
+  mockWorktreeRemove: vi.fn(() => Promise.resolve()),
+  mockBranchDelete: vi.fn(() => Promise.resolve(true)),
+  mockWorktreePrune: vi.fn(() => Promise.resolve()),
+  mockSyncWorkspace: vi.fn(() => Promise.resolve()),
+  mockRunHook: vi.fn(() => Promise.resolve()),
+  mockWriteCdPath: vi.fn(() => {}),
+  mockPromptYesNo: vi.fn(() => Promise.resolve(true)),
+  mockGetEditor: vi.fn(() => ({
+    name: "VS Code",
+    cmd: "code",
+    managedWorkspace: true,
+  })),
+  mockRemoveProjectAgents: vi.fn(() => []),
+}));
 
-mock.module("../../git", () => ({
+vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
   getMainWorktree: mockGetMainWorktree,
   getProjectName: mockGetProjectName,
@@ -23,42 +49,32 @@ mock.module("../../git", () => ({
   worktreePrune: mockWorktreePrune,
 }));
 
-const mockSyncWorkspace = mock(() => Promise.resolve());
-mock.module("../../workspace", () => ({
+vi.mock("../../workspace", () => ({
   syncWorkspace: mockSyncWorkspace,
 }));
 
-const mockRunHook = mock(() => Promise.resolve());
-mock.module("../../hooks", () => ({
+vi.mock("../../hooks", () => ({
   runHook: mockRunHook,
 }));
 
-const mockWriteCdPath = mock(() => {});
-mock.module("../../ipc", () => ({
+vi.mock("../../ipc", () => ({
   writeCdPath: mockWriteCdPath,
 }));
 
-const mockPromptYesNo = mock(() => Promise.resolve(true));
-mock.module("../../prompt", () => ({
+vi.mock("../../prompt", () => ({
   promptYesNo: mockPromptYesNo,
 }));
 
-const mockGetEditor = mock(() => ({
-  name: "VS Code",
-  cmd: "code",
-  managedWorkspace: true,
-}));
-mock.module("../../config", () => ({
+vi.mock("../../config", () => ({
   getEditor: mockGetEditor,
-  getRiftConfig: mock(() => Promise.resolve({})),
-  getGlobalConfig: mock(() => ({})),
-  saveGlobalConfig: mock(() => {}),
-  getAgentCommand: mock(() => "claude"),
+  getRiftConfig: vi.fn(() => Promise.resolve({})),
+  getGlobalConfig: vi.fn(() => ({})),
+  saveGlobalConfig: vi.fn(() => {}),
+  getAgentCommand: vi.fn(() => "claude"),
   EDITORS: [],
 }));
 
-const mockRemoveProjectAgents = mock(() => []);
-mock.module("../../agents", () => ({
+vi.mock("../../agents", () => ({
   removeProjectAgents: mockRemoveProjectAgents,
 }));
 
@@ -90,8 +106,8 @@ describe("cmdPurge", () => {
 
   test("exits with error when not in a git repo", async () => {
     mockIsGitRepo.mockResolvedValue(false);
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -106,7 +122,7 @@ describe("cmdPurge", () => {
 
   test("reports no worktrees when list is empty", async () => {
     mockListRiftWorktrees.mockResolvedValue([]);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge([]);
 
@@ -116,7 +132,7 @@ describe("cmdPurge", () => {
   });
 
   test("prompts for confirmation without force flag", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge([]);
 
@@ -126,7 +142,7 @@ describe("cmdPurge", () => {
 
   test("cancels when user declines", async () => {
     mockPromptYesNo.mockResolvedValue(false);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge([]);
 
@@ -136,7 +152,7 @@ describe("cmdPurge", () => {
   });
 
   test("skips confirmation with -f flag", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 
@@ -146,7 +162,7 @@ describe("cmdPurge", () => {
   });
 
   test("skips confirmation with --force flag", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["--force"]);
 
@@ -155,7 +171,7 @@ describe("cmdPurge", () => {
   });
 
   test("removes all worktrees and deletes branches", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 
@@ -177,8 +193,8 @@ describe("cmdPurge", () => {
 
   test("warns when branch deletion fails", async () => {
     mockBranchDelete.mockResolvedValue(false);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 
@@ -193,7 +209,7 @@ describe("cmdPurge", () => {
   });
 
   test("syncs workspace after purge", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 
@@ -207,7 +223,7 @@ describe("cmdPurge", () => {
       cmd: "other",
       managedWorkspace: false,
     });
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 
@@ -216,7 +232,7 @@ describe("cmdPurge", () => {
   });
 
   test("shows summary of worktrees to remove", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 
@@ -233,7 +249,7 @@ describe("cmdPurge", () => {
   });
 
   test("removes project agent registrations before purging", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 
@@ -245,7 +261,7 @@ describe("cmdPurge", () => {
     mockRemoveProjectAgents.mockReturnValue([
       { shellPid: 111, agentPid: 222, mainWorktreePath: "/main/repo" },
     ]);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 

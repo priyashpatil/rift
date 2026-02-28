@@ -1,12 +1,52 @@
-import { describe, expect, test, mock, spyOn, beforeEach, afterEach } from "bun:test";
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 
-const mockIsGitRepo = mock(() => Promise.resolve(true));
-const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
-const mockGetProjectName = mock(() => Promise.resolve("myproject"));
-const mockGetCurrentBranch = mock(() => Promise.resolve("main"));
-const mockWorktreeAdd = mock(() => Promise.resolve());
+const { mockExistsSyncOpen, mockMkdirSyncOpen } = vi.hoisted(() => ({
+  mockExistsSyncOpen: vi.fn(() => false),
+  mockMkdirSyncOpen: vi.fn(),
+}));
 
-mock.module("../../git", () => ({
+vi.mock("fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("fs")>();
+  return {
+    ...actual,
+    existsSync: mockExistsSyncOpen,
+    mkdirSync: mockMkdirSyncOpen,
+  };
+});
+
+const {
+  mockIsGitRepo,
+  mockGetMainWorktree,
+  mockGetProjectName,
+  mockGetCurrentBranch,
+  mockWorktreeAdd,
+  mockGenerateName,
+  mockSyncWorkspace,
+  mockRunHook,
+  mockWriteCdPath,
+  mockSignalAgentStart,
+  mockGetEditor,
+  mockWarnIfAgentMissing,
+} = vi.hoisted(() => ({
+  mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
+  mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
+  mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
+  mockGetCurrentBranch: vi.fn(() => Promise.resolve("main")),
+  mockWorktreeAdd: vi.fn(() => Promise.resolve()),
+  mockGenerateName: vi.fn(() => "bold-ant"),
+  mockSyncWorkspace: vi.fn(() => Promise.resolve()),
+  mockRunHook: vi.fn(() => Promise.resolve()),
+  mockWriteCdPath: vi.fn(() => {}),
+  mockSignalAgentStart: vi.fn(() => {}),
+  mockGetEditor: vi.fn(() => ({
+    name: "VS Code",
+    cmd: "code",
+    managedWorkspace: true,
+  })),
+  mockWarnIfAgentMissing: vi.fn(() => Promise.resolve()),
+}));
+
+vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
   getMainWorktree: mockGetMainWorktree,
   getProjectName: mockGetProjectName,
@@ -14,50 +54,32 @@ mock.module("../../git", () => ({
   worktreeAdd: mockWorktreeAdd,
 }));
 
-const mockGenerateName = mock(() => "bold-ant");
-mock.module("../../names", () => ({
+vi.mock("../../names", () => ({
   generateName: mockGenerateName,
 }));
 
-const mockSyncWorkspace = mock(() => Promise.resolve());
-mock.module("../../workspace", () => ({
+vi.mock("../../workspace", () => ({
   syncWorkspace: mockSyncWorkspace,
 }));
 
-const mockRunHook = mock(() => Promise.resolve());
-mock.module("../../hooks", () => ({
+vi.mock("../../hooks", () => ({
   runHook: mockRunHook,
 }));
 
-const mockWriteCdPath = mock(() => {});
-const mockSignalAgentStart = mock(() => {});
-mock.module("../../ipc", () => ({
+vi.mock("../../ipc", () => ({
   writeCdPath: mockWriteCdPath,
   signalAgentStart: mockSignalAgentStart,
 }));
 
-const mockGetEditor = mock(() => ({
-  name: "VS Code",
-  cmd: "code",
-  managedWorkspace: true,
-}));
-const mockWarnIfAgentMissing = mock(() => Promise.resolve());
-mock.module("../../config", () => ({
+vi.mock("../../config", () => ({
   getEditor: mockGetEditor,
   warnIfAgentMissing: mockWarnIfAgentMissing,
-  getRiftConfig: mock(() => Promise.resolve({})),
-  getGlobalConfig: mock(() => ({})),
-  saveGlobalConfig: mock(() => {}),
-  getAgentCommand: mock(() => "claude"),
+  getRiftConfig: vi.fn(() => Promise.resolve({})),
+  getGlobalConfig: vi.fn(() => ({})),
+  saveGlobalConfig: vi.fn(() => {}),
+  getAgentCommand: vi.fn(() => "claude"),
   EDITORS: [],
 }));
-
-// Mock fs.existsSync to return false (worktree doesn't exist yet)
-const origExistsSync = (await import("fs")).existsSync;
-const mockExistsSync = mock((path: string) => {
-  if (typeof path === "string" && path.includes("worktrees")) return false;
-  return origExistsSync(path);
-});
 
 import { cmdOpen } from "../../commands/open";
 
@@ -66,6 +88,8 @@ describe("cmdOpen", () => {
 
   beforeEach(() => {
     process.env.RIFT_SHELL_PID = "12345";
+    mockExistsSyncOpen.mockClear().mockReturnValue(false);
+    mockMkdirSyncOpen.mockClear();
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockGetMainWorktree.mockClear().mockResolvedValue("/main/repo");
     mockGetProjectName.mockClear().mockResolvedValue("myproject");
@@ -94,8 +118,8 @@ describe("cmdOpen", () => {
 
   test("exits with error when not in a git repo", async () => {
     mockIsGitRepo.mockResolvedValue(false);
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -109,8 +133,8 @@ describe("cmdOpen", () => {
   });
 
   test("exits with error on unknown option", async () => {
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -124,8 +148,8 @@ describe("cmdOpen", () => {
   });
 
   test("exits with error on unexpected argument", async () => {
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -141,7 +165,7 @@ describe("cmdOpen", () => {
   });
 
   test("generates a name when none provided", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen([]);
 
@@ -150,7 +174,7 @@ describe("cmdOpen", () => {
   });
 
   test("uses provided name", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen(["my-worktree"]);
 
@@ -160,7 +184,7 @@ describe("cmdOpen", () => {
   });
 
   test("parses --base flag", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen(["--base", "develop"]);
 
@@ -171,7 +195,7 @@ describe("cmdOpen", () => {
   });
 
   test("parses --base= syntax", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen(["--base=develop"]);
 
@@ -181,7 +205,7 @@ describe("cmdOpen", () => {
   });
 
   test("--skip-agent prevents signalAgentStart", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen(["--skip-agent"]);
 
@@ -190,7 +214,7 @@ describe("cmdOpen", () => {
   });
 
   test("signals agent start by default", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen([]);
 
@@ -199,7 +223,7 @@ describe("cmdOpen", () => {
   });
 
   test("runs open hook", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen([]);
 
@@ -208,7 +232,7 @@ describe("cmdOpen", () => {
   });
 
   test("--skip-hooks prevents running open hook", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen(["--skip-hooks"]);
 
@@ -217,7 +241,7 @@ describe("cmdOpen", () => {
   });
 
   test("syncs workspace when editor has managedWorkspace", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen([]);
 
@@ -231,7 +255,7 @@ describe("cmdOpen", () => {
       cmd: "other",
       managedWorkspace: false,
     });
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen([]);
 
@@ -241,12 +265,30 @@ describe("cmdOpen", () => {
 
   test("shows hint instead of cd/agent when shell wrapper is not active", async () => {
     delete process.env.RIFT_SHELL_PID;
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdOpen([]);
 
     expect(mockWriteCdPath).not.toHaveBeenCalled();
     expect(mockSignalAgentStart).not.toHaveBeenCalled();
     logSpy.mockRestore();
+  });
+
+  test("exits with error when worktree already exists", async () => {
+    mockExistsSyncOpen.mockReturnValue(true);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("process.exit");
+    });
+
+    try {
+      await cmdOpen(["my-worktree"]);
+    } catch {}
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Error: worktree "my-worktree" already exists',
+    );
+    errorSpy.mockRestore();
+    exitSpy.mockRestore();
   });
 });

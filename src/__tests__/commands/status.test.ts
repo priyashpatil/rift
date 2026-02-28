@@ -1,14 +1,24 @@
-import { describe, expect, test, mock, spyOn, beforeEach } from "bun:test";
+import { describe, expect, test, vi, beforeEach } from "vitest";
 
-const mockIsGitRepo = mock(() => Promise.resolve(true));
-const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
-const mockGetProjectName = mock(() => Promise.resolve("myproject"));
-const mockGetCurrentBranch = mock(() => Promise.resolve("main"));
-const mockIsRiftWorktree = mock(() => Promise.resolve(false));
-const mockGetWorktreeName = mock(() => Promise.resolve("bold-ant"));
-const mockGetRepoRoot = mock(() => Promise.resolve("/main/repo"));
+const {
+  mockIsGitRepo,
+  mockGetMainWorktree,
+  mockGetProjectName,
+  mockGetCurrentBranch,
+  mockIsRiftWorktree,
+  mockGetWorktreeName,
+  mockGetRepoRoot,
+} = vi.hoisted(() => ({
+  mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
+  mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
+  mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
+  mockGetCurrentBranch: vi.fn(() => Promise.resolve("main")),
+  mockIsRiftWorktree: vi.fn(() => Promise.resolve(false)),
+  mockGetWorktreeName: vi.fn(() => Promise.resolve("bold-ant")),
+  mockGetRepoRoot: vi.fn(() => Promise.resolve("/main/repo")),
+}));
 
-mock.module("../../git", () => ({
+vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
   getMainWorktree: mockGetMainWorktree,
   getProjectName: mockGetProjectName,
@@ -33,8 +43,8 @@ describe("cmdStatus", () => {
 
   test("exits with error when not in a git repo", async () => {
     mockIsGitRepo.mockResolvedValue(false);
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -48,7 +58,7 @@ describe("cmdStatus", () => {
   });
 
   test("shows project, main repo, and branch info", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdStatus();
 
@@ -60,7 +70,7 @@ describe("cmdStatus", () => {
 
   test("shows main repository when not in rift worktree", async () => {
     mockIsRiftWorktree.mockResolvedValue(false);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdStatus();
 
@@ -72,7 +82,7 @@ describe("cmdStatus", () => {
     mockIsRiftWorktree.mockResolvedValue(true);
     mockGetWorktreeName.mockResolvedValue("bold-ant");
     mockGetRepoRoot.mockResolvedValue("/rift/worktrees/proj/bold-ant");
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdStatus();
 

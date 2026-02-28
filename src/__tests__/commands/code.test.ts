@@ -1,49 +1,62 @@
-import { describe, expect, test, mock, spyOn, beforeEach, afterEach } from "bun:test";
-import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "fs";
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
+import { writeFileSync, mkdirSync, rmSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 
-const mockIsGitRepo = mock(() => Promise.resolve(true));
-const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
-const mockGetProjectName = mock(() => Promise.resolve("myproject"));
+const {
+  testDir,
+  testWorkspacesDir,
+  mockIsGitRepo,
+  mockGetMainWorktree,
+  mockGetProjectName,
+  mockSyncWorkspace,
+  mockGetEditor,
+} = vi.hoisted(() => {
+  const _join = (...parts: string[]) => parts.join("/");
+  const _testDir = _join(require("os").tmpdir(), `.rift-test-code-${process.pid}`);
+  const _testWorkspacesDir = _join(_testDir, "workspaces");
+  return {
+    testDir: _testDir,
+    testWorkspacesDir: _testWorkspacesDir,
+    mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
+    mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
+    mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
+    mockSyncWorkspace: vi.fn(() => Promise.resolve()),
+    mockGetEditor: vi.fn(() => ({
+      name: "VS Code",
+      cmd: "true",
+      managedWorkspace: true,
+    })),
+  };
+});
 
-mock.module("../../git", () => ({
+vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
   getMainWorktree: mockGetMainWorktree,
   getProjectName: mockGetProjectName,
 }));
 
-const mockSyncWorkspace = mock(() => Promise.resolve());
-mock.module("../../workspace", () => ({
+vi.mock("../../workspace", () => ({
   syncWorkspace: mockSyncWorkspace,
 }));
 
-const mockGetEditor = mock(() => ({
-  name: "VS Code",
-  cmd: "true", // use 'true' command to avoid actually opening an editor
-  managedWorkspace: true,
-}));
-mock.module("../../config", () => ({
+vi.mock("../../config", () => ({
   getEditor: mockGetEditor,
-  getRiftConfig: mock(() => Promise.resolve({})),
-  getGlobalConfig: mock(() => ({})),
-  saveGlobalConfig: mock(() => {}),
-  getAgentCommand: mock(() => "claude"),
+  getRiftConfig: vi.fn(() => Promise.resolve({})),
+  getGlobalConfig: vi.fn(() => ({})),
+  saveGlobalConfig: vi.fn(() => {}),
+  getAgentCommand: vi.fn(() => "claude"),
   EDITORS: [],
 }));
 
-// We need to mock the WORKSPACES_DIR to control workspace file existence
-const testDir = join(tmpdir(), `.rift-test-code-${process.pid}`);
-const testWorkspacesDir = join(testDir, "workspaces");
-
-mock.module("../../constants", () => ({
+vi.mock("../../constants", () => ({
   WORKSPACES_DIR: testWorkspacesDir,
-  WORKTREES_DIR: join(testDir, "worktrees"),
+  WORKTREES_DIR: testDir + "/worktrees",
   RIFT_DIR: testDir,
-  CONFIG_DIR: join(testDir, "config"),
-  GLOBAL_CONFIG_PATH: join(testDir, "config", "config.yaml"),
-  CD_PATH_FILE: join(testDir, ".rift_cd_path"),
-  AGENT_START_FILE: join(testDir, ".rift_start_agent"),
+  CONFIG_DIR: testDir + "/config",
+  GLOBAL_CONFIG_PATH: testDir + "/config/config.yaml",
+  CD_PATH_FILE: testDir + "/.rift_cd_path",
+  AGENT_START_FILE: testDir + "/.rift_start_agent",
   ADJECTIVES: ["bold"],
   NOUNS: ["ant"],
 }));
@@ -70,8 +83,8 @@ describe("cmdCode", () => {
 
   test("exits with error when not in a git repo", async () => {
     mockIsGitRepo.mockResolvedValue(false);
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -85,7 +98,7 @@ describe("cmdCode", () => {
   });
 
   test("syncs workspace for managed editors", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     try {
       await cmdCode();
@@ -97,7 +110,7 @@ describe("cmdCode", () => {
 
   test("shows message when no workspace file exists", async () => {
     // Don't create workspace file
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdCode();
 
@@ -110,7 +123,7 @@ describe("cmdCode", () => {
   test("shows message when workspace has zero folders", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, JSON.stringify({ folders: [] }, null, 2) + "\n");
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdCode();
 
@@ -130,7 +143,7 @@ describe("cmdCode", () => {
         2,
       ) + "\n",
     );
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     // cmdCode will try to Bun.spawn the editor which may fail,
     // but we can verify the log output
@@ -148,7 +161,7 @@ describe("cmdCode", () => {
       cmd: "true",
       managedWorkspace: false,
     });
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     try {
       await cmdCode();
@@ -160,7 +173,7 @@ describe("cmdCode", () => {
 
   test("handles workspace sync errors gracefully", async () => {
     mockSyncWorkspace.mockRejectedValue(new Error("sync failed"));
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     // Should not throw
     await cmdCode();
@@ -171,7 +184,7 @@ describe("cmdCode", () => {
   test("handles invalid JSON in workspace file gracefully", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, "not valid json");
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     // Should handle the JSON parse error in the try/catch
     await cmdCode();

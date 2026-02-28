@@ -1,4 +1,4 @@
-import { describe, expect, test, spyOn } from "bun:test";
+import { describe, expect, test, vi } from "vitest";
 import { promptYesNo, promptChoice, promptString } from "../prompt";
 
 describe("prompt module", () => {
@@ -19,7 +19,7 @@ describe("prompt module", () => {
   // structure and that they write prompts to stdout.
 
   test("promptYesNo writes question to stdout", async () => {
-    const writeSpy = spyOn(process.stdout, "write").mockImplementation(
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(
       () => true,
     );
     // promptYesNo will hang waiting for input, so we race with a timeout
@@ -32,8 +32,8 @@ describe("prompt module", () => {
   });
 
   test("promptChoice prints label and items", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
-    const writeSpy = spyOn(process.stdout, "write").mockImplementation(
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(
       () => true,
     );
 
@@ -52,7 +52,7 @@ describe("prompt module", () => {
   });
 
   test("promptString writes question to stdout", async () => {
-    const writeSpy = spyOn(process.stdout, "write").mockImplementation(
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(
       () => true,
     );
 

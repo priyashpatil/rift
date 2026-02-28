@@ -1,36 +1,47 @@
-import { describe, expect, test, mock, spyOn, beforeEach, afterEach } from "bun:test";
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 
-const mockIsGitRepo = mock(() => Promise.resolve(true));
-const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
-const mockGetProjectName = mock(() => Promise.resolve("myproject"));
-const mockListRiftWorktrees = mock(() =>
-  Promise.resolve([
-    { path: "/worktrees/myproject/bold-ant", branch: "bold-ant" },
-    { path: "/worktrees/myproject/calm-bee", branch: "calm-bee" },
-  ]),
-);
+const {
+  mockIsGitRepo,
+  mockGetMainWorktree,
+  mockGetProjectName,
+  mockListRiftWorktrees,
+  mockWriteCdPath,
+  mockSignalAgentStart,
+  mockRunHook,
+  mockWarnIfAgentMissing,
+} = vi.hoisted(() => ({
+  mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
+  mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
+  mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
+  mockListRiftWorktrees: vi.fn(() =>
+    Promise.resolve([
+      { path: "/worktrees/myproject/bold-ant", branch: "bold-ant" },
+      { path: "/worktrees/myproject/calm-bee", branch: "calm-bee" },
+    ]),
+  ),
+  mockWriteCdPath: vi.fn(() => {}),
+  mockSignalAgentStart: vi.fn(() => {}),
+  mockRunHook: vi.fn(() => Promise.resolve()),
+  mockWarnIfAgentMissing: vi.fn(() => Promise.resolve()),
+}));
 
-mock.module("../../git", () => ({
+vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
   getMainWorktree: mockGetMainWorktree,
   getProjectName: mockGetProjectName,
   listRiftWorktrees: mockListRiftWorktrees,
 }));
 
-const mockWriteCdPath = mock(() => {});
-const mockSignalAgentStart = mock(() => {});
-mock.module("../../ipc", () => ({
+vi.mock("../../ipc", () => ({
   writeCdPath: mockWriteCdPath,
   signalAgentStart: mockSignalAgentStart,
 }));
 
-const mockRunHook = mock(() => Promise.resolve());
-mock.module("../../hooks", () => ({
+vi.mock("../../hooks", () => ({
   runHook: mockRunHook,
 }));
 
-const mockWarnIfAgentMissing = mock(() => Promise.resolve());
-mock.module("../../config", () => ({
+vi.mock("../../config", () => ({
   warnIfAgentMissing: mockWarnIfAgentMissing,
 }));
 
@@ -63,8 +74,8 @@ describe("cmdJump", () => {
   });
 
   test("exits with usage error when no name provided", async () => {
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -81,8 +92,8 @@ describe("cmdJump", () => {
 
   test("exits with error when not in a git repo", async () => {
     mockIsGitRepo.mockResolvedValue(false);
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -96,8 +107,8 @@ describe("cmdJump", () => {
   });
 
   test("exits with error when worktree not found", async () => {
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -116,8 +127,8 @@ describe("cmdJump", () => {
 
   test("shows no available worktrees list when none exist", async () => {
     mockListRiftWorktrees.mockResolvedValue([]);
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -136,7 +147,7 @@ describe("cmdJump", () => {
   });
 
   test("jumps to matching worktree", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["bold-ant"]);
 
@@ -153,7 +164,7 @@ describe("cmdJump", () => {
   });
 
   test("--skip-agent prevents agent start", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["bold-ant", "--skip-agent"]);
 
@@ -162,7 +173,7 @@ describe("cmdJump", () => {
   });
 
   test("filters --skip-agent from positional args", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["--skip-agent", "calm-bee"]);
 
@@ -174,7 +185,7 @@ describe("cmdJump", () => {
   });
 
   test("--skip-hooks prevents running jump hook", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["bold-ant", "--skip-hooks"]);
 
@@ -183,7 +194,7 @@ describe("cmdJump", () => {
   });
 
   test("filters --skip-hooks from positional args", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["--skip-hooks", "calm-bee"]);
 
@@ -196,7 +207,7 @@ describe("cmdJump", () => {
 
   test("shows hint when shell wrapper is not active", async () => {
     delete process.env.RIFT_SHELL_PID;
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["bold-ant"]);
 
@@ -210,7 +221,7 @@ describe("cmdJump", () => {
   });
 
   test("jump base switches to main repo and starts agent", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["base"]);
 
@@ -222,7 +233,7 @@ describe("cmdJump", () => {
   });
 
   test("jump main switches to main repo and starts agent", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["main"]);
 
@@ -233,7 +244,7 @@ describe("cmdJump", () => {
   });
 
   test("jump base with --skip-agent prevents agent start", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["base", "--skip-agent"]);
 
@@ -243,7 +254,7 @@ describe("cmdJump", () => {
   });
 
   test("jump base with --skip-hooks skips hooks", async () => {
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["base", "--skip-hooks"]);
 
@@ -254,7 +265,7 @@ describe("cmdJump", () => {
 
   test("jump base shows hint when shell wrapper is not active", async () => {
     delete process.env.RIFT_SHELL_PID;
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdJump(["base"]);
 

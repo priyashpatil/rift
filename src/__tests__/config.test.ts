@@ -1,13 +1,5 @@
-import { describe, expect, test, beforeEach, afterEach } from "bun:test";
-import {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  mkdirSync,
-  rmSync,
-} from "fs";
-import { join } from "path";
-import { tmpdir } from "os";
+import { describe, expect, test } from "vitest";
+import { readFileSync } from "fs";
 import yaml from "js-yaml";
 
 describe("config", () => {
@@ -110,7 +102,6 @@ describe("config", () => {
 
     test("returns object (possibly empty) for current directory", async () => {
       const { getRiftConfig } = await import("../config");
-      // Tests the catch path when mock.module leaks
       const config = await getRiftConfig(".");
       expect(config).toBeDefined();
       expect(typeof config).toBe("object");

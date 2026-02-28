@@ -12,11 +12,15 @@ import { isGitRepo } from "../git";
 
 const GUARD_COMMENT = "# Added by rift";
 
+const SUPPORTED_SHELLS = ["zsh", "bash", "fish"];
+
 function detectShell(): string {
   const shell = process.env.SHELL || "";
   const name = basename(shell);
-  if (["zsh", "bash", "fish"].includes(name)) return name;
-  return "zsh";
+  if (SUPPORTED_SHELLS.includes(name)) return name;
+  throw new Error(
+    `unsupported shell "${name || "(unknown)"}". Supported shells: ${SUPPORTED_SHELLS.join(", ")}`,
+  );
 }
 
 function getRcPath(shell: string): string {
@@ -30,7 +34,7 @@ function getRcPath(shell: string): string {
     case "fish":
       return join(home, ".config", "fish", "config.fish");
     default:
-      return join(home, ".zshrc");
+      throw new Error(`no rc path for shell "${shell}"`);
   }
 }
 

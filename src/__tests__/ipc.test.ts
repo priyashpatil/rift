@@ -1,4 +1,4 @@
-import { describe, expect, test, afterEach } from "bun:test";
+import { describe, expect, test, afterEach } from "vitest";
 import { existsSync, readFileSync, unlinkSync } from "fs";
 import { writeCdPath, signalAgentStart } from "../ipc";
 import { CD_PATH_FILE, AGENT_START_FILE } from "../constants";

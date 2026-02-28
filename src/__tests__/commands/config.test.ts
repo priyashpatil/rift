@@ -1,25 +1,43 @@
-import { describe, expect, test, mock, spyOn, beforeEach, afterEach } from "bun:test";
-import {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-  mkdirSync,
-  rmSync,
-} from "fs";
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import { join } from "path";
-import { tmpdir } from "os";
 
-const mockGetGlobalConfig = mock(() => ({ agent: "claude", editor: "code" }));
-const mockSaveGlobalConfig = mock((_config: any) => {});
-const mockGetRiftConfig = mock(async () => ({ agent: "claude", editor: "code" }));
-const mockSaveRiftConfig = mock(async (_updates: any) => {});
-const mockIsGitRepo = mock(async () => true);
-const mockEditors = [
-  { name: "VS Code", cmd: "code", managedWorkspace: true },
-  { name: "Cursor", cmd: "cursor", managedWorkspace: true },
-  { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
-];
-mock.module("../../config", () => ({
+const {
+  mockGetGlobalConfig,
+  mockSaveGlobalConfig,
+  mockGetRiftConfig,
+  mockSaveRiftConfig,
+  mockIsGitRepo,
+  mockEditors,
+  mockExistsSync,
+  mockReadFileSync,
+  mockAppendFileSync,
+} = vi.hoisted(() => ({
+  mockGetGlobalConfig: vi.fn(() => ({ agent: "claude", editor: "code" })),
+  mockSaveGlobalConfig: vi.fn((_config: any) => {}),
+  mockGetRiftConfig: vi.fn(async () => ({ agent: "claude", editor: "code" })),
+  mockSaveRiftConfig: vi.fn(async (_updates: any) => {}),
+  mockIsGitRepo: vi.fn(async () => true),
+  mockEditors: [
+    { name: "VS Code", cmd: "code", managedWorkspace: true },
+    { name: "Cursor", cmd: "cursor", managedWorkspace: true },
+    { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
+  ],
+  mockExistsSync: vi.fn(() => true),
+  mockReadFileSync: vi.fn(() => "# Added by rift\neval \"$(rift _shell-init)\"\n"),
+  mockAppendFileSync: vi.fn(),
+}));
+
+vi.mock("fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("fs")>();
+  return {
+    ...actual,
+    existsSync: mockExistsSync,
+    readFileSync: mockReadFileSync,
+    appendFileSync: mockAppendFileSync,
+  };
+});
+
+vi.mock("../../config", () => ({
   getGlobalConfig: mockGetGlobalConfig,
   saveGlobalConfig: mockSaveGlobalConfig,
   getRiftConfig: mockGetRiftConfig,
@@ -27,7 +45,7 @@ mock.module("../../config", () => ({
   EDITORS: mockEditors,
 }));
 
-mock.module("../../git", () => ({
+vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
 }));
 
@@ -42,6 +60,9 @@ describe("cmdConfig", () => {
     mockGetRiftConfig.mockClear().mockResolvedValue({ agent: "claude", editor: "code" });
     mockSaveRiftConfig.mockClear();
     mockIsGitRepo.mockClear().mockResolvedValue(true);
+    mockExistsSync.mockClear().mockReturnValue(true);
+    mockReadFileSync.mockClear().mockReturnValue("# Added by rift\neval \"$(rift _shell-init)\"\n");
+    mockAppendFileSync.mockClear();
   });
 
   afterEach(() => {
@@ -50,7 +71,7 @@ describe("cmdConfig", () => {
 
   test("saves editor to project config by default", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig(["--editor", "cursor"]);
 
@@ -63,7 +84,7 @@ describe("cmdConfig", () => {
 
   test("saves agent to project config by default", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig(["--agent", "amp"]);
 
@@ -76,7 +97,7 @@ describe("cmdConfig", () => {
 
   test("saves to global config with --global flag", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig(["--global", "--editor", "cursor"]);
 
@@ -89,7 +110,7 @@ describe("cmdConfig", () => {
 
   test("saves both editor and agent to project config", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig(["--editor", "windsurf", "--agent", "amp"]);
 
@@ -102,7 +123,7 @@ describe("cmdConfig", () => {
 
   test("saves both editor and agent to global config with --global", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig(["--global", "--editor", "windsurf", "--agent", "amp"]);
 
@@ -115,7 +136,7 @@ describe("cmdConfig", () => {
 
   test("throws on unknown editor", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await expect(cmdConfig(["--editor", "vim"])).rejects.toThrow(
       /unknown editor "vim"/,
@@ -125,7 +146,7 @@ describe("cmdConfig", () => {
 
   test("accepts any agent string", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig(["--agent", "aider --model gpt-4"]);
 
@@ -138,7 +159,7 @@ describe("cmdConfig", () => {
   test("throws when not in git repo without --global", async () => {
     process.env.SHELL = "/bin/zsh";
     mockIsGitRepo.mockResolvedValue(false);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await expect(cmdConfig(["--editor", "cursor"])).rejects.toThrow(
       /not a git repository/,
@@ -149,7 +170,7 @@ describe("cmdConfig", () => {
   test("saves to global config when not in git repo with --global", async () => {
     process.env.SHELL = "/bin/zsh";
     mockIsGitRepo.mockResolvedValue(false);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig(["--global", "--editor", "cursor"]);
 
@@ -159,7 +180,7 @@ describe("cmdConfig", () => {
 
   test("does not save config when no flags passed", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig([]);
 
@@ -170,7 +191,7 @@ describe("cmdConfig", () => {
 
   test("shows current editor and agent when no flags passed", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig([]);
 
@@ -182,7 +203,7 @@ describe("cmdConfig", () => {
 
   test("detects zsh shell", async () => {
     process.env.SHELL = "/bin/zsh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig([]);
 
@@ -195,9 +216,7 @@ describe("cmdConfig", () => {
 
   test("detects fish shell", async () => {
     process.env.SHELL = "/usr/local/bin/fish";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
-    const fishDir = join(require("os").homedir(), ".config", "fish");
-    mkdirSync(fishDir, { recursive: true });
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig([]);
 
@@ -208,14 +227,79 @@ describe("cmdConfig", () => {
     logSpy.mockRestore();
   });
 
-  test("defaults to zsh for unknown shell", async () => {
+  test("throws for unsupported shell", async () => {
     process.env.SHELL = "/bin/csh";
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+
+    await expect(cmdConfig([])).rejects.toThrow(
+      /unsupported shell "csh"/,
+    );
+  });
+
+  test("throws for empty SHELL env var", async () => {
+    process.env.SHELL = "";
+
+    await expect(cmdConfig([])).rejects.toThrow(
+      /unsupported shell "\(unknown\)"/,
+    );
+  });
+  test("detects bash shell and uses .bashrc when it exists", async () => {
+    process.env.SHELL = "/bin/bash";
+    // existsSync is called for rcPath and for .bashrc - return true for both
+    mockExistsSync.mockReturnValue(true);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig([]);
 
-    // Should not throw
-    expect(logSpy).toHaveBeenCalled();
+    const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
+    expect(
+      logCalls.some((c) => c.includes("Shell integration") || c.includes("shell integration")),
+    ).toBe(true);
+    logSpy.mockRestore();
+  });
+
+  test("adds shell integration when rc file exists but has no guard comment", async () => {
+    process.env.SHELL = "/bin/zsh";
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockReturnValue("# existing content\n");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdConfig([]);
+
+    expect(mockAppendFileSync).toHaveBeenCalled();
+    const appended = mockAppendFileSync.mock.calls[0][1] as string;
+    expect(appended).toContain("# Added by rift");
+    expect(appended).toContain('eval "$(rift _shell-init)"');
+    const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
+    expect(logCalls.some((c) => c.includes("Added shell integration"))).toBe(true);
+    logSpy.mockRestore();
+  });
+
+  test("creates rc file when it does not exist", async () => {
+    process.env.SHELL = "/bin/zsh";
+    // existsSync returns false for rcPath
+    mockExistsSync.mockReturnValue(false);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdConfig([]);
+
+    expect(mockAppendFileSync).toHaveBeenCalled();
+    const appended = mockAppendFileSync.mock.calls[0][1] as string;
+    expect(appended).toContain("# Added by rift");
+    const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
+    expect(logCalls.some((c) => c.includes("Created"))).toBe(true);
+    logSpy.mockRestore();
+  });
+
+  test("adds fish init line when rc file is missing and shell is fish", async () => {
+    process.env.SHELL = "/usr/local/bin/fish";
+    mockExistsSync.mockReturnValue(false);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdConfig([]);
+
+    expect(mockAppendFileSync).toHaveBeenCalled();
+    const appended = mockAppendFileSync.mock.calls[0][1] as string;
+    expect(appended).toContain("source");
     logSpy.mockRestore();
   });
 });

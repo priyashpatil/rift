@@ -1,13 +1,22 @@
-import { describe, expect, test, mock, spyOn, beforeEach } from "bun:test";
+import { describe, expect, test, vi, beforeEach } from "vitest";
 
-const mockIsGitRepo = mock(() => Promise.resolve(true));
-const mockGetMainWorktree = mock(() => Promise.resolve("/main/repo"));
-const mockGetCurrentBranch = mock(() => Promise.resolve("main"));
-const mockGetProjectName = mock(() => Promise.resolve("myproject"));
-const mockGetRepoRoot = mock(() => Promise.resolve("/main/repo"));
-const mockListRiftWorktrees = mock(() => Promise.resolve([]));
+const {
+  mockIsGitRepo,
+  mockGetMainWorktree,
+  mockGetCurrentBranch,
+  mockGetProjectName,
+  mockGetRepoRoot,
+  mockListRiftWorktrees,
+} = vi.hoisted(() => ({
+  mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
+  mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
+  mockGetCurrentBranch: vi.fn(() => Promise.resolve("main")),
+  mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
+  mockGetRepoRoot: vi.fn(() => Promise.resolve("/main/repo")),
+  mockListRiftWorktrees: vi.fn(() => Promise.resolve([])),
+}));
 
-mock.module("../../git", () => ({
+vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
   getMainWorktree: mockGetMainWorktree,
   getCurrentBranch: mockGetCurrentBranch,
@@ -30,8 +39,8 @@ describe("cmdList", () => {
 
   test("exits with error when not in a git repo", async () => {
     mockIsGitRepo.mockResolvedValue(false);
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
-    const exitSpy = spyOn(process, "exit").mockImplementation(() => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
 
@@ -46,7 +55,7 @@ describe("cmdList", () => {
 
   test("shows base workspace when no rift worktrees exist", async () => {
     mockListRiftWorktrees.mockResolvedValue([]);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdList();
 
@@ -62,7 +71,7 @@ describe("cmdList", () => {
       { path: "/worktrees/myproject/bold-ant", branch: "bold-ant" },
       { path: "/worktrees/myproject/calm-bee", branch: "calm-bee" },
     ]);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdList();
 
@@ -81,7 +90,7 @@ describe("cmdList", () => {
       { path: "/worktrees/myproject/bold-ant", branch: "bold-ant" },
       { path: "/worktrees/myproject/calm-bee", branch: "calm-bee" },
     ]);
-    const logSpy = spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdList();
 

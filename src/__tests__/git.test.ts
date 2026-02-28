@@ -1,7 +1,8 @@
-import { describe, expect, test, beforeAll, afterAll } from "bun:test";
-import { mkdirSync, rmSync, realpathSync } from "fs";
+import { describe, expect, test, beforeAll, afterAll } from "vitest";
+import { mkdirSync, rmSync, realpathSync, writeFileSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
+import { execSync } from "child_process";
 import {
   isGitRepo,
   getRepoRoot,
@@ -24,24 +25,22 @@ mkdirSync(testDirRaw, { recursive: true });
 const testDir = realpathSync(testDirRaw);
 rmSync(testDir, { recursive: true, force: true });
 
-async function run(cwd: string, ...args: string[]): Promise<string> {
-  const proc = Bun.spawn(args, { cwd, stdout: "pipe", stderr: "pipe" });
-  const out = await new Response(proc.stdout).text();
-  await proc.exited;
-  return out.trim();
+// Helper to run git commands in tests with hardcoded safe arguments
+function run(cwd: string, ...args: string[]): string {
+  return execSync(args.join(" "), { cwd, encoding: "utf-8" }).trim();
 }
 
 describe("git module", () => {
-  beforeAll(async () => {
+  beforeAll(() => {
     mkdirSync(testDir, { recursive: true });
-    await run(testDir, "git", "init");
-    await run(testDir, "git", "config", "user.email", "test@test.com");
-    await run(testDir, "git", "config", "user.name", "Test");
-    await run(testDir, "git", "checkout", "-b", "main");
+    run(testDir, "git", "init");
+    run(testDir, "git", "config", "user.email", "test@test.com");
+    run(testDir, "git", "config", "user.name", "Test");
+    run(testDir, "git", "checkout", "-b", "main");
     const testFile = join(testDir, "test.txt");
-    Bun.write(testFile, "hello");
-    await run(testDir, "git", "add", ".");
-    await run(testDir, "git", "commit", "-m", "initial");
+    writeFileSync(testFile, "hello");
+    run(testDir, "git", "add", ".");
+    run(testDir, "git", "commit", "-m", "initial");
   });
 
   afterAll(() => {
@@ -130,7 +129,6 @@ describe("git module", () => {
     });
 
     test("returns a string branch name", async () => {
-      // getDefaultBranch falls through symbolic-ref -> main -> master
       const branch = await getDefaultBranch(testDir);
       expect(typeof branch).toBe("string");
       expect(branch.length).toBeGreaterThan(0);
@@ -160,7 +158,7 @@ describe("git module", () => {
     });
 
     test("branchDelete deletes a branch", async () => {
-      await run(testDir, "git", "branch", "deleteme");
+      run(testDir, "git", "branch", "deleteme");
       const result = await branchDelete(testDir, "deleteme");
       expect(result).toBe(true);
     });
@@ -177,8 +175,6 @@ describe("git module", () => {
 
   describe("getWorktreeName with nested path", () => {
     test("extracts worktree name from nested WORKTREES_DIR path", async () => {
-      // getWorktreeName strips WORKTREES_DIR/<project>/ prefix
-      // Since this repo is not under WORKTREES_DIR, it returns ""
       const name = await getWorktreeName(testDir);
       expect(name).toBe("");
     });
@@ -199,6 +195,32 @@ describe("git module", () => {
           await branchDelete(testDir, "nonquiet-branch");
         } catch {}
       }
+    });
+  });
+
+  describe("getDefaultBranch with symbolic-ref", () => {
+    test("uses symbolic-ref when remote origin/HEAD is set", async () => {
+      run(testDir, "git", "remote", "add", "origin", testDir);
+      run(
+        testDir,
+        "git",
+        "symbolic-ref",
+        "refs/remotes/origin/HEAD",
+        "refs/remotes/origin/main",
+      );
+
+      const branch = await getDefaultBranch(testDir);
+      expect(branch).toBe("main");
+
+      run(testDir, "git", "remote", "remove", "origin");
+    });
+  });
+
+  describe("worktreeAdd error case", () => {
+    test("throws when worktree creation fails", async () => {
+      await expect(
+        worktreeAdd(testDir, "main", join(testDir, "wt-fail"), "main", true),
+      ).rejects.toThrow("Failed to create worktree");
     });
   });
 });

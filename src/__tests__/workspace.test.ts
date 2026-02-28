@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeEach, afterEach, mock } from "bun:test";
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import {
   existsSync,
   mkdirSync,
@@ -6,15 +6,16 @@ import {
   rmSync,
   writeFileSync,
 } from "fs";
-import { join, resolve } from "path";
+import { join } from "path";
 import { tmpdir } from "os";
 
 const testDir = join(tmpdir(), `.rift-test-workspace-${process.pid}`);
 const testWorkspacesDir = join(testDir, "workspaces");
 const testWorktreesDir = join(testDir, "worktrees");
 
-// Mock constants and git before importing workspace
-mock.module("../constants", () => ({
+let defaultBranchResult: Promise<string> = Promise.resolve("main");
+
+vi.mock("../constants", () => ({
   WORKSPACES_DIR: testWorkspacesDir,
   WORKTREES_DIR: testWorktreesDir,
   RIFT_DIR: testDir,
@@ -26,10 +27,13 @@ mock.module("../constants", () => ({
   NOUNS: ["ant"],
 }));
 
-let defaultBranchResult: Promise<string> = Promise.resolve("main");
-mock.module("../git", () => ({
-  getDefaultBranch: () => defaultBranchResult,
-}));
+vi.mock("../git", async (importOriginal) => {
+  const realGit = await importOriginal<typeof import("../git")>();
+  return {
+    ...realGit,
+    getDefaultBranch: () => defaultBranchResult,
+  };
+});
 
 // Import after mocks
 const { syncWorkspace } = await import("../workspace");

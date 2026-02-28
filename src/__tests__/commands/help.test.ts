@@ -1,9 +1,9 @@
-import { describe, expect, test, spyOn } from "bun:test";
-import { cmdHelp } from "../../commands/help";
+import { describe, expect, test, vi } from "vitest";
+import { cmdHelp, showCommandHelp } from "../../commands/help";
 
 describe("cmdHelp", () => {
   test("prints help text containing usage info", () => {
-    const spy = spyOn(console, "log").mockImplementation(() => {});
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
     cmdHelp();
     expect(spy).toHaveBeenCalledTimes(1);
     const output = spy.mock.calls[0][0] as string;
@@ -23,6 +23,35 @@ describe("cmdHelp", () => {
     expect(output).toContain("--base");
     expect(output).toContain("--skip-agent");
     expect(output).toContain("--force");
+    spy.mockRestore();
+  });
+});
+
+describe("showCommandHelp", () => {
+  test("shows help for a known command", () => {
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    showCommandHelp("open");
+    expect(spy).toHaveBeenCalledTimes(1);
+    const output = spy.mock.calls[0][0] as string;
+    expect(output).toContain("Usage: rift open");
+    spy.mockRestore();
+  });
+
+  test("resolves alias and shows help", () => {
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    showCommandHelp("ls");
+    expect(spy).toHaveBeenCalledTimes(1);
+    const output = spy.mock.calls[0][0] as string;
+    expect(output).toContain("Usage: rift list");
+    spy.mockRestore();
+  });
+
+  test("falls back to cmdHelp for unknown command", () => {
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    showCommandHelp("nonexistent");
+    expect(spy).toHaveBeenCalledTimes(1);
+    const output = spy.mock.calls[0][0] as string;
+    expect(output).toContain("Usage: rift <command>");
     spy.mockRestore();
   });
 });

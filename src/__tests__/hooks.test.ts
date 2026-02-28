@@ -1,11 +1,14 @@
-import { describe, expect, test, mock, spyOn, beforeEach, afterAll } from "bun:test";
-import { runHook } from "../hooks";
+import { describe, expect, test, vi, beforeEach, afterAll } from "vitest";
 
-// Mock getRiftConfig
-const mockGetRiftConfig = mock(() => Promise.resolve({}));
-mock.module("../config", () => ({
+const { mockGetRiftConfig } = vi.hoisted(() => ({
+  mockGetRiftConfig: vi.fn(() => Promise.resolve({})),
+}));
+
+vi.mock("../config", () => ({
   getRiftConfig: mockGetRiftConfig,
 }));
+
+import { runHook } from "../hooks";
 
 describe("runHook", () => {
   beforeEach(() => {
@@ -18,7 +21,7 @@ describe("runHook", () => {
 
   test("does nothing when no hook is configured", async () => {
     mockGetRiftConfig.mockResolvedValue({});
-    const consoleSpy = spyOn(console, "log").mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await runHook("open", "/some/dir");
 
@@ -28,7 +31,7 @@ describe("runHook", () => {
 
   test("does nothing when hooks object exists but specific hook is missing", async () => {
     mockGetRiftConfig.mockResolvedValue({ hooks: { close: "echo done" } });
-    const consoleSpy = spyOn(console, "log").mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await runHook("open", "/some/dir");
 
@@ -40,7 +43,7 @@ describe("runHook", () => {
     mockGetRiftConfig.mockResolvedValue({
       hooks: { open: "echo hello" },
     });
-    const consoleSpy = spyOn(console, "log").mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await runHook("open", "/tmp");
 
@@ -60,8 +63,8 @@ describe("runHook", () => {
     mockGetRiftConfig.mockResolvedValue({
       hooks: { open: "exit 1" },
     });
-    const consoleSpy = spyOn(console, "log").mockImplementation(() => {});
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await runHook("open", "/tmp");
 
@@ -76,8 +79,8 @@ describe("runHook", () => {
     mockGetRiftConfig.mockResolvedValue({
       hooks: { open: "true" },
     });
-    const consoleSpy = spyOn(console, "log").mockImplementation(() => {});
-    const errorSpy = spyOn(console, "error").mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await runHook("open", "/tmp");
 
