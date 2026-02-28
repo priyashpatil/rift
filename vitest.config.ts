@@ -11,7 +11,6 @@ export default defineConfig({
         "src/__tests__/**",
         "src/index.ts",
         "src/types.ts",
-        "src/commands/version.ts",
       ],
     },
   },

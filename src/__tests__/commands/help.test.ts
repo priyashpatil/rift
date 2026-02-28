@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { cmdHelp, showCommandHelp } from "../../commands/help";
+import { cmdVersion } from "../../commands/version";
 
 describe("cmdHelp", () => {
   test("prints help text containing usage info", () => {
@@ -52,6 +53,16 @@ describe("showCommandHelp", () => {
     expect(spy).toHaveBeenCalledTimes(1);
     const output = spy.mock.calls[0][0] as string;
     expect(output).toContain("Usage: rift <command>");
+    spy.mockRestore();
+  });
+});
+
+describe("cmdVersion", () => {
+  test("prints the package version", () => {
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    cmdVersion();
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0][0]).toMatch(/^\d+\.\d+\.\d+/);
     spy.mockRestore();
   });
 });
