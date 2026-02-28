@@ -1,5 +1,5 @@
 import { join } from "path";
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, unlinkSync } from "fs";
 import pkg from "../package.json";
 import { RIFT_DIR } from "./constants";
 
@@ -70,10 +70,18 @@ export async function checkForUpdates(): Promise<void> {
 
     if (latestVersion && compareVersions(pkg.version, latestVersion) < 0) {
       console.error(
-        `\n  Update available: ${pkg.version} → ${latestVersion}\n  Run \`npm update -g ${pkg.name}\` to update\n`
+        `\n  Update available: ${pkg.version} → ${latestVersion}\n  Run \`rift update\` to update\n`
       );
     }
   } catch {
     // Never let update checks break the CLI
+  }
+}
+
+export function clearUpdateCache(): void {
+  try {
+    unlinkSync(CACHE_FILE);
+  } catch {
+    // Ignore if file doesn't exist
   }
 }

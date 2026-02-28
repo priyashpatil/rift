@@ -1,15 +1,17 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 
-import { compareVersions, checkForUpdates } from "../update-check";
+import { compareVersions, checkForUpdates, clearUpdateCache } from "../update-check";
 
 const {
   mockReadFileSync,
   mockWriteFileSync,
   mockMkdirSync,
+  mockUnlinkSync,
 } = vi.hoisted(() => ({
   mockReadFileSync: vi.fn(() => "{}"),
   mockWriteFileSync: vi.fn(() => {}),
   mockMkdirSync: vi.fn(() => undefined as any),
+  mockUnlinkSync: vi.fn(() => {}),
 }));
 
 vi.mock("fs", async (importOriginal) => {
@@ -19,6 +21,7 @@ vi.mock("fs", async (importOriginal) => {
     readFileSync: mockReadFileSync,
     writeFileSync: mockWriteFileSync,
     mkdirSync: mockMkdirSync,
+    unlinkSync: mockUnlinkSync,
   };
 });
 
@@ -165,6 +168,43 @@ describe("update-check", () => {
       await checkForUpdates();
       expect(errorSpy).toHaveBeenCalled();
       errorSpy.mockRestore();
+    });
+
+    test("update message suggests rift update", async () => {
+      mockReadFileSync.mockImplementation(() => {
+        throw new Error("ENOENT");
+      });
+      globalThis.fetch = vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ version: "99.0.0" }),
+        }),
+      ) as any;
+
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      await checkForUpdates();
+      const msg = errorSpy.mock.calls[0][0] as string;
+      expect(msg).toContain("rift update");
+      errorSpy.mockRestore();
+    });
+  });
+
+  describe("clearUpdateCache", () => {
+    beforeEach(() => {
+      mockUnlinkSync.mockClear();
+    });
+
+    test("deletes the cache file", () => {
+      clearUpdateCache();
+      expect(mockUnlinkSync).toHaveBeenCalledOnce();
+    });
+
+    test("ignores error if cache file doesn't exist", () => {
+      mockUnlinkSync.mockImplementation(() => {
+        throw new Error("ENOENT");
+      });
+      // Should not throw
+      clearUpdateCache();
     });
   });
 });

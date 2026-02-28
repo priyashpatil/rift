@@ -12,6 +12,7 @@ import { cmdInit } from "./commands/init";
 import { cmdShellInit } from "./commands/shell-init";
 import { cmdConfig } from "./commands/config";
 import { cmdVersion } from "./commands/version";
+import { cmdUpdate } from "./commands/update";
 import { getAgentCommand } from "./config";
 import { cmdRunAgent } from "./commands/run-agent";
 import { checkForUpdates } from "./update-check";
@@ -63,6 +64,9 @@ try {
       break;
     case "_run-agent":
       await cmdRunAgent();
+      break;
+    case "update":
+      await cmdUpdate();
       break;
     case "version":
     case "--version":

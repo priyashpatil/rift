@@ -137,6 +137,14 @@ rift purge
 rift purge --force
 ```
 
+### `rift update`
+
+Update Rift to the latest version. Checks npm for a newer release, runs the install, and clears the update-check cache.
+
+```bash
+rift update
+```
+
 ### `rift version`
 
 Print the current Rift version.

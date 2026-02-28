@@ -71,6 +71,10 @@ Run without flags to set up shell integration and show current config.`,
   version: `Usage: rift version
 
 Show the rift version number.`,
+
+  update: `Usage: rift update
+
+Update rift to the latest version.`,
 };
 
 // Resolve aliases to canonical command names
@@ -103,6 +107,7 @@ Commands:
   purge             Remove ALL worktrees for current project
   init              Initialize rift.yaml in current git project
   config            Set up shell integration and preferences
+  update            Update rift to the latest version
   version           Show version number
 
 Options:
