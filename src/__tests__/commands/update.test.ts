@@ -1,16 +1,26 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 
-const { mockExecFileSync } = vi.hoisted(() => ({
-  mockExecFileSync: vi.fn(),
-}));
-
 const { mockClearUpdateCache } = vi.hoisted(() => ({
   mockClearUpdateCache: vi.fn(),
 }));
 
-vi.mock("child_process", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("child_process")>();
-  return { ...actual, execFileSync: mockExecFileSync };
+const { mockWriteFileSync, mockChmodSync, mockUnlinkSync, mockRenameSync } =
+  vi.hoisted(() => ({
+    mockWriteFileSync: vi.fn(),
+    mockChmodSync: vi.fn(),
+    mockUnlinkSync: vi.fn(),
+    mockRenameSync: vi.fn(),
+  }));
+
+vi.mock("fs", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("fs")>();
+  return {
+    ...actual,
+    writeFileSync: mockWriteFileSync,
+    chmodSync: mockChmodSync,
+    unlinkSync: mockUnlinkSync,
+    renameSync: mockRenameSync,
+  };
 });
 
 vi.mock("../../update-check", () => ({
@@ -24,8 +34,11 @@ describe("cmdUpdate", () => {
   const originalExit = process.exit;
 
   beforeEach(() => {
-    mockExecFileSync.mockClear();
     mockClearUpdateCache.mockClear();
+    mockWriteFileSync.mockClear();
+    mockChmodSync.mockClear();
+    mockUnlinkSync.mockClear();
+    mockRenameSync.mockClear();
     vi.spyOn(console, "log").mockImplementation(() => {});
     vi.spyOn(console, "error").mockImplementation(() => {});
     process.exit = vi.fn() as any;
@@ -49,24 +62,29 @@ describe("cmdUpdate", () => {
     await cmdUpdate();
 
     expect(console.log).toHaveBeenCalledWith("Already up to date!");
-    expect(mockExecFileSync).not.toHaveBeenCalled();
+    expect(mockWriteFileSync).not.toHaveBeenCalled();
   });
 
-  test("runs npm install and clears cache on successful update", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
+  test("downloads binary and clears cache on successful update", async () => {
+    const calls: string[] = [];
+    globalThis.fetch = vi.fn((url: string) => {
+      calls.push(url);
+      if (url.includes("registry.npmjs.org")) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ version: "99.0.0" }),
+        });
+      }
+      // GitHub release download
+      return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ version: "99.0.0" }),
-      }),
-    ) as any;
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+      });
+    }) as any;
 
     await cmdUpdate();
 
-    expect(mockExecFileSync).toHaveBeenCalledWith(
-      "npm",
-      ["install", "-g", expect.stringContaining("@latest")],
-      { stdio: "inherit" },
-    );
+    expect(mockWriteFileSync).toHaveBeenCalled();
     expect(mockClearUpdateCache).toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("\nUpdated to 99.0.0!");
   });
@@ -94,23 +112,26 @@ describe("cmdUpdate", () => {
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
-  test("exits on npm install failure", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ version: "99.0.0" }),
-      }),
-    ) as any;
-    mockExecFileSync.mockImplementation(() => {
-      throw new Error("npm error");
-    });
+  test("exits on download failure", async () => {
+    let callCount = 0;
+    globalThis.fetch = vi.fn(() => {
+      callCount++;
+      if (callCount === 1) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ version: "99.0.0" }),
+        });
+      }
+      // Download fails
+      return Promise.resolve({
+        ok: false,
+        status: 404,
+      });
+    }) as any;
 
     await cmdUpdate();
 
     expect(process.exit).toHaveBeenCalledWith(1);
-    expect(console.error).toHaveBeenCalledWith(
-      "\nUpdate failed. Try running manually:",
-    );
   });
 
   test("shows current version and checking message", async () => {
@@ -124,17 +145,27 @@ describe("cmdUpdate", () => {
 
     await cmdUpdate();
 
-    expect(console.log).toHaveBeenCalledWith(`Current version: ${pkg.version}`);
+    expect(console.log).toHaveBeenCalledWith(
+      `Current version: ${pkg.version}`,
+    );
     expect(console.log).toHaveBeenCalledWith("Checking for updates...\n");
   });
 
   test("shows updating message with version range", async () => {
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
+    let callCount = 0;
+    globalThis.fetch = vi.fn(() => {
+      callCount++;
+      if (callCount === 1) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ version: "99.0.0" }),
+        });
+      }
+      return Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ version: "99.0.0" }),
-      }),
-    ) as any;
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+      });
+    }) as any;
 
     await cmdUpdate();
 
