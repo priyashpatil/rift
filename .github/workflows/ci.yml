@@ -18,6 +18,9 @@ jobs:
 
       - run: bunx vitest run --coverage
 
+      - name: Strip branch data from lcov so Codecov reports line coverage only
+        run: sed -i '/^BRDA:/d;/^BRF:/d;/^BRH:/d' coverage/lcov.info
+
       - name: Upload coverage to Codecov
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v5
