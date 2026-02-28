@@ -14,6 +14,7 @@ import { cmdConfig } from "./commands/config";
 import { cmdVersion } from "./commands/version";
 import { getAgentCommand } from "./config";
 import { cmdRunAgent } from "./commands/run-agent";
+import { checkForUpdates } from "./update-check";
 
 const args = process.argv.slice(2);
 const command = args[0] || "help";
@@ -77,6 +78,10 @@ try {
       console.error(`Error: unknown command: ${command}`);
       cmdHelp();
       process.exit(1);
+  }
+  // Check for updates after user-facing commands (skip internal/shell commands)
+  if (!command.startsWith("_")) {
+    await checkForUpdates();
   }
 } catch (err) {
   if (err instanceof Error) {
