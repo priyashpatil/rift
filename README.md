@@ -2,7 +2,6 @@
 
 [![Known Vulnerabilities](https://snyk.io/test/github/priyashpatil/rift/badge.svg)](https://snyk.io/test/github/priyashpatil/rift)
 [![codecov](https://codecov.io/gh/priyashpatil/rift/graph/badge.svg)](https://codecov.io/gh/priyashpatil/rift)
-[![npm version](https://img.shields.io/npm/v/@priyashpatil/rift)](https://www.npmjs.com/package/@priyashpatil/rift)
 
 Git worktree manager for parallel AI agent development.
 
