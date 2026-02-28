@@ -8,6 +8,7 @@ import {
 import { writeCdPath, signalAgentStart } from "../ipc";
 import { runHook } from "../hooks";
 import { warnIfAgentMissing } from "../config";
+import { validateWorktreeName } from "../validate";
 
 const BASE_ALIASES = new Set(["base", "main"]);
 
@@ -22,6 +23,10 @@ export async function cmdJump(args: string[]): Promise<void> {
   if (!name) {
     console.error("Usage: rift jump <name> [--skip-agent] [--skip-hooks]");
     process.exit(1);
+  }
+
+  if (!BASE_ALIASES.has(name)) {
+    validateWorktreeName(name);
   }
 
   if (!(await isGitRepo())) {

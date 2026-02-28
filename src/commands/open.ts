@@ -13,6 +13,7 @@ import { syncWorkspace } from "../workspace";
 import { runHook } from "../hooks";
 import { writeCdPath, signalAgentStart } from "../ipc";
 import { getEditor, getRiftConfig, warnIfAgentMissing } from "../config";
+import { validateWorktreeName, validateBranchName } from "../validate";
 
 export async function cmdOpen(args: string[]): Promise<void> {
   let name = "";
@@ -53,6 +54,9 @@ export async function cmdOpen(args: string[]): Promise<void> {
   const project = await getProjectName();
   if (!name) name = generateName();
   if (!base) base = await getCurrentBranch();
+
+  validateWorktreeName(name);
+  validateBranchName(base);
 
   const wtPath = `${WORKTREES_DIR}/${project}/${name}`;
 
