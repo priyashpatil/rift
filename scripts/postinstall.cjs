@@ -22,6 +22,8 @@ if (!asset) {
 const url = `https://github.com/priyashpatil/rift/releases/download/v${VERSION}/${asset}`;
 const dest = join(__dirname, "..", "bin", "rift");
 
+mkdirSync(join(__dirname, "..", "bin"), { recursive: true });
+
 function download(url) {
   return new Promise((resolve, reject) => {
     https
