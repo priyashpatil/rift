@@ -27,6 +27,7 @@ bun run format           # Auto-format with Prettier
 **CLI routing:** `src/index.ts` is a switch-statement router that dispatches to command functions in `src/commands/`. Commands prefixed with `_` are internal (used by shell integration).
 
 **Key modules:**
+
 - `src/config.ts` — Config cascade: project `rift.yaml` → global `~/.config/rift/config.yaml` → defaults
 - `src/git.ts` — All git operations via `Bun.spawn(["git", ...])`, safe CWD handling
 - `src/agents.ts` — Agent process registration/tracking via JSON files in `~/.rift/agents/`

@@ -187,6 +187,19 @@ describe("cmdCode", () => {
     logSpy.mockRestore();
   });
 
+  test("handles workspace file missing folders property", async () => {
+    const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
+    writeFileSync(wsPath, JSON.stringify({ settings: {} }, null, 2) + "\n");
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdCode();
+
+    expect(logSpy).toHaveBeenCalledWith(
+      "No worktrees found. Use 'rift open' first.",
+    );
+    logSpy.mockRestore();
+  });
+
   test("handles invalid JSON in workspace file gracefully", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, "not valid json");

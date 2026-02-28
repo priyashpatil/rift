@@ -134,6 +134,15 @@ describe("cmdRunAgent", () => {
     mockGetAgentCommand.mockResolvedValue("sleep 60");
     // isRegistered returns false immediately to trigger shutdown path
     mockIsRegistered.mockReturnValue(false);
+
+    // Speed up the 1-second poll interval
+    const originalSetInterval = globalThis.setInterval;
+    vi.spyOn(globalThis, "setInterval").mockImplementation(
+      (fn: any, _ms: any) => {
+        return originalSetInterval(fn, 10);
+      },
+    );
+
     const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
       throw new Error("process.exit");
     });
@@ -144,6 +153,40 @@ describe("cmdRunAgent", () => {
 
     expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
     expect(exitSpy).toHaveBeenCalledWith(0);
+    exitSpy.mockRestore();
+    vi.mocked(globalThis.setInterval).mockRestore();
+  });
+
+  test("base worktree: handles null exit code with ?? 0 fallback", async () => {
+    mockIsRiftWorktree.mockResolvedValue(false);
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("process.exit");
+    });
+
+    try {
+      await cmdRunAgent();
+    } catch {}
+
+    // The exit should be called (covering line 31: code ?? 0)
+    expect(exitSpy).toHaveBeenCalled();
+    exitSpy.mockRestore();
+  });
+
+  test("rift worktree: agent-exit path covers code ?? 0 fallback", async () => {
+    mockIsRiftWorktree.mockResolvedValue(true);
+    // Agent exits immediately — isRegistered stays true so poll doesn't win
+    mockIsRegistered.mockReturnValue(true);
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("process.exit");
+    });
+
+    try {
+      await cmdRunAgent();
+    } catch {}
+
+    // Covers line 62: process.exit(result.code ?? 0)
+    expect(exitSpy).toHaveBeenCalled();
+    expect(mockUnregisterAgent).toHaveBeenCalled();
     exitSpy.mockRestore();
   });
 

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
+import { join } from "path";
 import yaml from "js-yaml";
 
 describe("config", () => {
@@ -105,6 +106,131 @@ describe("config", () => {
       const config = await getRiftConfig(".");
       expect(config).toBeDefined();
       expect(typeof config).toBe("object");
+    });
+  });
+
+  describe("getRiftConfig with falsy YAML content", () => {
+    test("returns empty object when rift.yaml contains empty YAML (null)", async () => {
+      // yaml.load("") returns undefined, so the || {} fallback is exercised
+      const { getRiftConfig } = await import("../config");
+      const { getMainWorktree } = await import("../git");
+
+      const mainRepo = await getMainWorktree(".");
+      const configPath = join(mainRepo, "rift.yaml");
+
+      // Save original if exists
+      let original: string | null = null;
+      try {
+        original = readFileSync(configPath, "utf-8");
+      } catch {}
+
+      try {
+        // Write empty YAML content (yaml.load returns undefined)
+        writeFileSync(configPath, "");
+        const config = await getRiftConfig(".");
+        expect(config).toEqual({});
+      } finally {
+        if (original !== null) {
+          writeFileSync(configPath, original);
+        }
+      }
+    });
+  });
+
+  describe("getGlobalConfig with falsy YAML", () => {
+    test("returns empty object when global config contains empty YAML", async () => {
+      const { getGlobalConfig } = await import("../config");
+      const { GLOBAL_CONFIG_PATH } = await import("../constants");
+
+      let original: string | null = null;
+      try {
+        original = readFileSync(GLOBAL_CONFIG_PATH, "utf-8");
+      } catch {}
+
+      try {
+        writeFileSync(GLOBAL_CONFIG_PATH, "");
+        const config = getGlobalConfig();
+        expect(config).toEqual({});
+      } finally {
+        if (original !== null) {
+          writeFileSync(GLOBAL_CONFIG_PATH, original);
+        } else {
+          try {
+            const { unlinkSync } = await import("fs");
+            unlinkSync(GLOBAL_CONFIG_PATH);
+          } catch {}
+        }
+      }
+    });
+  });
+
+  describe("getEditor with unknown editor in config", () => {
+    test("falls back to default editor when config editor is not in EDITORS list", async () => {
+      const { getEditor, saveGlobalConfig } = await import("../config");
+      const { getMainWorktree } = await import("../git");
+      const { GLOBAL_CONFIG_PATH } = await import("../constants");
+
+      const mainRepo = await getMainWorktree(".");
+      const configPath = join(mainRepo, "rift.yaml");
+
+      let originalRift: string | null = null;
+      let originalGlobal: string | null = null;
+      try {
+        originalRift = readFileSync(configPath, "utf-8");
+      } catch {}
+      try {
+        originalGlobal = readFileSync(GLOBAL_CONFIG_PATH, "utf-8");
+      } catch {}
+
+      try {
+        // Write a rift.yaml with an unknown editor
+        writeFileSync(configPath, yaml.dump({ editor: "nonexistent-editor" }));
+        // Clear global config to avoid interference
+        saveGlobalConfig({});
+
+        const editor = await getEditor();
+        // Should fall back to DEFAULT_EDITOR (VS Code)
+        expect(editor.cmd).toBe("code");
+      } finally {
+        if (originalRift !== null) {
+          writeFileSync(configPath, originalRift);
+        } else {
+          try {
+            const { unlinkSync } = await import("fs");
+            unlinkSync(configPath);
+          } catch {}
+        }
+        if (originalGlobal !== null) {
+          writeFileSync(GLOBAL_CONFIG_PATH, originalGlobal);
+        }
+      }
+    });
+  });
+
+  describe("saveRiftConfig with empty existing YAML", () => {
+    test("handles empty YAML in existing config file", async () => {
+      const { saveRiftConfig, getRiftConfig } = await import("../config");
+      const { getMainWorktree } = await import("../git");
+
+      const mainRepo = await getMainWorktree(".");
+      const configPath = join(mainRepo, "rift.yaml");
+
+      let original: string | null = null;
+      try {
+        original = readFileSync(configPath, "utf-8");
+      } catch {}
+
+      try {
+        // Write empty YAML (yaml.load returns undefined, || {} kicks in)
+        writeFileSync(configPath, "");
+        await saveRiftConfig({ agent: "test-agent" });
+        const config = await getRiftConfig(".");
+        expect(config.agent).toBe("test-agent");
+      } finally {
+        if (original !== null) {
+          writeFileSync(configPath, original);
+        }
+      }
     });
   });
 });

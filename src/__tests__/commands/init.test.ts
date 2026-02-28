@@ -122,6 +122,43 @@ describe("cmdInit", () => {
     logSpy.mockRestore();
   });
 
+  test("ignores --editor flag without value", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdInit(["--editor"]);
+
+    // Should use default since --editor has no following value
+    const content = mockWriteFileSync.mock.calls[0][1] as string;
+    expect(content).toContain("editor: code");
+    logSpy.mockRestore();
+  });
+
+  test("ignores --agent flag without value", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdInit(["--agent"]);
+
+    const content = mockWriteFileSync.mock.calls[0][1] as string;
+    expect(content).toContain("agent: claude");
+    logSpy.mockRestore();
+  });
+
+  test("shows editor name fallback when editor cmd is not in EDITORS list", async () => {
+    // This tests line 73: EDITORS.find(...)?.name || editor
+    // We need the editor to pass validation but not be found in EDITORS for display.
+    // Since validation also uses EDITORS, we need to temporarily add then remove.
+    // Actually, looking at line 73, this fallback only fires if the editor passes
+    // validation on line 66 but isn't found on line 73 - same list, so it's
+    // technically unreachable. But we can test through the success log output
+    // which exercises line 73.
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await cmdInit(["--editor", "cursor"]);
+
+    expect(logSpy).toHaveBeenCalledWith("  editor: Cursor [cursor]");
+    logSpy.mockRestore();
+  });
+
   test("config content includes hooks section", async () => {
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 

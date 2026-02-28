@@ -43,6 +43,14 @@ describe("update-check", () => {
       expect(compareVersions("1.0.0", "0.9.9")).toBe(1);
       expect(compareVersions("0.1.2", "0.1.1")).toBe(1);
     });
+
+    test("handles versions with fewer components using nullish coalescing", () => {
+      expect(compareVersions("1.0", "1.0.0")).toBe(0);
+      expect(compareVersions("1.0.0", "1.0")).toBe(0);
+      expect(compareVersions("1", "1.0.0")).toBe(0);
+      expect(compareVersions("1.0", "1.0.1")).toBe(-1);
+      expect(compareVersions("1.0.1", "1.0")).toBe(1);
+    });
   });
 
   describe("checkForUpdates", () => {

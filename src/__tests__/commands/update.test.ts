@@ -145,10 +145,81 @@ describe("cmdUpdate", () => {
 
     await cmdUpdate();
 
-    expect(console.log).toHaveBeenCalledWith(
-      `Current version: ${pkg.version}`,
-    );
+    expect(console.log).toHaveBeenCalledWith(`Current version: ${pkg.version}`);
     expect(console.log).toHaveBeenCalledWith("Checking for updates...\n");
+  });
+
+  test("exits on unsupported platform", async () => {
+    const originalPlatform = Object.getOwnPropertyDescriptor(
+      process,
+      "platform",
+    );
+    const originalArch = Object.getOwnPropertyDescriptor(process, "arch");
+
+    Object.defineProperty(process, "platform", { value: "freebsd" });
+    Object.defineProperty(process, "arch", { value: "s390x" });
+
+    let callCount = 0;
+    globalThis.fetch = vi.fn(() => {
+      callCount++;
+      if (callCount === 1) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ version: "99.0.0" }),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+      });
+    }) as any;
+
+    await cmdUpdate();
+
+    expect(console.error).toHaveBeenCalledWith(
+      "Unsupported platform: freebsd-s390x",
+    );
+    expect(process.exit).toHaveBeenCalledWith(1);
+
+    if (originalPlatform)
+      Object.defineProperty(process, "platform", originalPlatform);
+    if (originalArch) Object.defineProperty(process, "arch", originalArch);
+  });
+
+  test("exits when binary cannot be replaced via unlink or rename", async () => {
+    let callCount = 0;
+    globalThis.fetch = vi.fn(() => {
+      callCount++;
+      if (callCount === 1) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ version: "99.0.0" }),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+      });
+    }) as any;
+
+    // unlinkSync fails (can't delete running binary)
+    const { unlinkSync } = await import("fs");
+    const mockUnlink = vi.mocked(unlinkSync);
+    mockUnlink.mockImplementation(() => {
+      throw new Error("EBUSY");
+    });
+
+    // renameSync also fails
+    mockRenameSync.mockImplementation(() => {
+      throw new Error("EPERM");
+    });
+
+    await cmdUpdate();
+
+    expect(console.error).toHaveBeenCalledWith(
+      "\nUpdate failed: could not replace binary.",
+    );
+    expect(process.exit).toHaveBeenCalledWith(1);
   });
 
   test("shows updating message with version range", async () => {
