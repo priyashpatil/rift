@@ -1,7 +1,6 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import { writeFileSync, mkdirSync, rmSync } from "fs";
 import { join } from "path";
-import { tmpdir } from "os";
 
 const {
   testDir,
@@ -13,7 +12,10 @@ const {
   mockGetEditor,
 } = vi.hoisted(() => {
   const _join = (...parts: string[]) => parts.join("/");
-  const _testDir = _join(require("os").tmpdir(), `.rift-test-code-${process.pid}`);
+  const _testDir = _join(
+    require("os").tmpdir(),
+    `.rift-test-code-${process.pid}`,
+  );
   const _testWorkspacesDir = _join(_testDir, "workspaces");
   return {
     testDir: _testDir,
@@ -104,7 +106,11 @@ describe("cmdCode", () => {
       await cmdCode();
     } catch {}
 
-    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo", undefined);
+    expect(mockSyncWorkspace).toHaveBeenCalledWith(
+      "myproject",
+      "/main/repo",
+      undefined,
+    );
     logSpy.mockRestore();
   });
 

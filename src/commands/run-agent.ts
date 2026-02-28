@@ -11,7 +11,9 @@ import { writeCdPath } from "../ipc";
 export async function cmdRunAgent(): Promise<void> {
   const shellPid = Number(process.env.RIFT_SHELL_PID);
   if (!shellPid) {
-    console.error("Error: _run-agent requires shell integration (RIFT_SHELL_PID)");
+    console.error(
+      "Error: _run-agent requires shell integration (RIFT_SHELL_PID)",
+    );
     process.exit(1);
   }
 

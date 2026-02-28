@@ -18,8 +18,16 @@ if (typeof globalThis.Bun === "undefined") {
         env: opts.env,
         stdio: [
           "pipe",
-          opts.stdout === "pipe" ? "pipe" : opts.stdout === "inherit" ? "inherit" : "pipe",
-          opts.stderr === "pipe" ? "pipe" : opts.stderr === "inherit" ? "inherit" : "pipe",
+          opts.stdout === "pipe"
+            ? "pipe"
+            : opts.stdout === "inherit"
+              ? "inherit"
+              : "pipe",
+          opts.stderr === "pipe"
+            ? "pipe"
+            : opts.stderr === "inherit"
+              ? "inherit"
+              : "pipe",
         ],
       });
 
@@ -37,7 +45,9 @@ if (typeof globalThis.Bun === "undefined") {
       const stdoutStream = new ReadableStream({
         start(controller) {
           if (proc.stdout) {
-            proc.stdout.on("data", (chunk: Buffer) => controller.enqueue(chunk));
+            proc.stdout.on("data", (chunk: Buffer) =>
+              controller.enqueue(chunk),
+            );
             proc.stdout.on("end", () => controller.close());
           } else {
             controller.close();

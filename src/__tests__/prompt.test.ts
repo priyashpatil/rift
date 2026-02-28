@@ -19,11 +19,11 @@ describe("prompt module", () => {
   // structure and that they write prompts to stdout.
 
   test("promptYesNo writes question to stdout", async () => {
-    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(
-      () => true,
-    );
+    const writeSpy = vi
+      .spyOn(process.stdout, "write")
+      .mockImplementation(() => true);
     // promptYesNo will hang waiting for input, so we race with a timeout
-    const result = await Promise.race([
+    await Promise.race([
       promptYesNo("Test? "),
       new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 50)),
     ]);
@@ -33,9 +33,9 @@ describe("prompt module", () => {
 
   test("promptChoice prints label and items", async () => {
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(
-      () => true,
-    );
+    const writeSpy = vi
+      .spyOn(process.stdout, "write")
+      .mockImplementation(() => true);
 
     await Promise.race([
       promptChoice("Pick one:", ["A", "B", "C"]),
@@ -52,9 +52,9 @@ describe("prompt module", () => {
   });
 
   test("promptString writes question to stdout", async () => {
-    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(
-      () => true,
-    );
+    const writeSpy = vi
+      .spyOn(process.stdout, "write")
+      .mockImplementation(() => true);
 
     await Promise.race([
       promptString("Name: "),

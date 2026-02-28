@@ -14,7 +14,10 @@ describe("cmdShellInit", () => {
     // Find the log call that contains shell wrapper content
     const output = logSpy.mock.calls
       .map((c) => String(c[0] ?? ""))
-      .find((s) => s.includes("rift") && (s.includes("function") || s.includes("()")))!;
+      .find(
+        (s) =>
+          s.includes("rift") && (s.includes("function") || s.includes("()")),
+      )!;
     logSpy.mockRestore();
     return output;
   }

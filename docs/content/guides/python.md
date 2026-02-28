@@ -72,6 +72,7 @@ print(f"Worktree '{worktree}': port={port}, db={db_name}")
 ```
 
 > **MySQL users:** Replace the `psycopg2` block with:
+>
 > ```python
 > import pymysql
 > conn = pymysql.connect(host="localhost", user="root")
@@ -256,7 +257,7 @@ hooks:
 
 When a worktree is closed, its database lingers on the shared server. Use the `close` hook to drop it:
 
-| Framework | Drop command |
-|---|---|
-| Django | `python manage.py flush --no-input` |
-| Flask / FastAPI | `alembic downgrade base` |
+| Framework       | Drop command                        |
+| --------------- | ----------------------------------- |
+| Django          | `python manage.py flush --no-input` |
+| Flask / FastAPI | `alembic downgrade base`            |

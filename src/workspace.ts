@@ -36,9 +36,7 @@ export async function syncWorkspace(
 
   mkdirSync(WORKSPACES_DIR, { recursive: true });
 
-  const folders: WorkspaceFolder[] = [
-    { name: defaultBranch, path: mainRepo },
-  ];
+  const folders: WorkspaceFolder[] = [{ name: defaultBranch, path: mainRepo }];
 
   if (existsSync(wtDir)) {
     const entries = readdirSync(wtDir)
@@ -56,15 +54,10 @@ export async function syncWorkspace(
   }
 
   if (existsSync(wsPath)) {
-    const existing: WorkspaceFile = JSON.parse(
-      readFileSync(wsPath, "utf-8"),
-    );
+    const existing: WorkspaceFile = JSON.parse(readFileSync(wsPath, "utf-8"));
     existing.folders = folders;
     writeFileSync(wsPath, JSON.stringify(existing, null, 2) + "\n");
   } else {
-    writeFileSync(
-      wsPath,
-      JSON.stringify({ folders }, null, 2) + "\n",
-    );
+    writeFileSync(wsPath, JSON.stringify({ folders }, null, 2) + "\n");
   }
 }

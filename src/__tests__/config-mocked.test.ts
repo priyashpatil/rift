@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, test, vi, beforeEach } from "vitest";
 
 const {
   mockExistsSync,
@@ -41,14 +41,15 @@ import {
   getAgentCommand,
   getEditor,
   warnIfAgentMissing,
-  EDITORS,
 } from "../config";
 
 describe("config (mocked)", () => {
   beforeEach(() => {
     mockGetMainWorktree.mockClear().mockResolvedValue("/main/repo");
     mockExistsSync.mockClear().mockReturnValue(true);
-    mockReadFileSync.mockClear().mockReturnValue("agent: claude\neditor: code\n");
+    mockReadFileSync
+      .mockClear()
+      .mockReturnValue("agent: claude\neditor: code\n");
     mockWriteFileSync.mockClear();
     mockMkdirSync.mockClear();
   });

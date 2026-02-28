@@ -120,7 +120,11 @@ describe("cmdRunAgent", () => {
       agentPid: expect.any(Number),
       mainWorktreePath: "/main/repo",
     });
-    expect(mockUnregisterAgent).toHaveBeenCalledWith("myproject", "bold-ant", 12345);
+    expect(mockUnregisterAgent).toHaveBeenCalledWith(
+      "myproject",
+      "bold-ant",
+      12345,
+    );
     exitSpy.mockRestore();
   });
 

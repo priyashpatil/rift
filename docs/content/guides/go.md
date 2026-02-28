@@ -94,6 +94,7 @@ func main() {
 Go migration tools (goose, golang-migrate, atlas) do **not** create the database automatically — the database creation in this script handles that.
 
 > **MySQL users:** Replace the `sql.Open` block with:
+>
 > ```go
 > db, _ := sql.Open("mysql", "root@tcp(localhost:3306)/")
 > db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s`", dbName))

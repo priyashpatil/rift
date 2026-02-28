@@ -70,7 +70,7 @@ export async function checkForUpdates(): Promise<void> {
 
     if (latestVersion && compareVersions(pkg.version, latestVersion) < 0) {
       console.error(
-        `\n  Update available: ${pkg.version} → ${latestVersion}\n  Run \`rift update\` to update\n`
+        `\n  Update available: ${pkg.version} → ${latestVersion}\n  Run \`rift update\` to update\n`,
       );
     }
   } catch {

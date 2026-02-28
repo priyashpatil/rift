@@ -157,9 +157,7 @@ describe("cmdOpen", () => {
       await cmdOpen(["name1", "name2"]);
     } catch {}
 
-    expect(errorSpy).toHaveBeenCalledWith(
-      "Error: unexpected argument: name2",
-    );
+    expect(errorSpy).toHaveBeenCalledWith("Error: unexpected argument: name2");
     errorSpy.mockRestore();
     exitSpy.mockRestore();
   });
@@ -245,7 +243,11 @@ describe("cmdOpen", () => {
 
     await cmdOpen([]);
 
-    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo", undefined);
+    expect(mockSyncWorkspace).toHaveBeenCalledWith(
+      "myproject",
+      "/main/repo",
+      undefined,
+    );
     logSpy.mockRestore();
   });
 

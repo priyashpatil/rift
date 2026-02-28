@@ -65,16 +65,16 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) a
 
 ### Types
 
-| Type | Description | Version Bump |
-|------|-------------|-------------|
-| `feat` | A new feature | Minor (`0.X.0`) |
-| `fix` | A bug fix | Patch (`0.0.X`) |
-| `docs` | Documentation only | None |
-| `style` | Formatting, semicolons, etc. (no code change) | None |
-| `refactor` | Code change that neither fixes a bug nor adds a feature | None |
-| `perf` | Performance improvement | None |
-| `test` | Adding or updating tests | None |
-| `chore` | Build process, tooling, dependencies | None |
+| Type       | Description                                             | Version Bump    |
+| ---------- | ------------------------------------------------------- | --------------- |
+| `feat`     | A new feature                                           | Minor (`0.X.0`) |
+| `fix`      | A bug fix                                               | Patch (`0.0.X`) |
+| `docs`     | Documentation only                                      | None            |
+| `style`    | Formatting, semicolons, etc. (no code change)           | None            |
+| `refactor` | Code change that neither fixes a bug nor adds a feature | None            |
+| `perf`     | Performance improvement                                 | None            |
+| `test`     | Adding or updating tests                                | None            |
+| `chore`    | Build process, tooling, dependencies                    | None            |
 
 ### Breaking Changes
 
@@ -116,12 +116,3 @@ chore: bump bun to 1.2
 3. Run `bun test` and make sure all tests pass.
 4. Use conventional commit messages (see above). If your PR has multiple commits, each should follow the convention.
 5. Open a PR against `main` with a clear description of what changed and why.
-
-## Code Style
-
-- TypeScript with `strict` mode enabled.
-- No external runtime dependencies unless absolutely necessary (currently only `js-yaml`).
-- Each command lives in its own file under `src/commands/` and exports a single `cmd<Name>` function.
-- Use `Bun.spawn()` for subprocesses, not `child_process`.
-- Prefer early returns and guard clauses over nested conditionals.
-- Tests go in `src/__tests__/` and mirror the source structure.

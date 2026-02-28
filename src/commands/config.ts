@@ -28,9 +28,10 @@ function getRcPath(shell: string): string {
   switch (shell) {
     case "zsh":
       return join(home, ".zshrc");
-    case "bash":
+    case "bash": {
       const bashrc = join(home, ".bashrc");
       return existsSync(bashrc) ? bashrc : join(home, ".bash_profile");
+    }
     case "fish":
       return join(home, ".config", "fish", "config.fish");
     default:

@@ -1,18 +1,18 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 
-import { compareVersions, checkForUpdates, clearUpdateCache } from "../update-check";
+import {
+  compareVersions,
+  checkForUpdates,
+  clearUpdateCache,
+} from "../update-check";
 
-const {
-  mockReadFileSync,
-  mockWriteFileSync,
-  mockMkdirSync,
-  mockUnlinkSync,
-} = vi.hoisted(() => ({
-  mockReadFileSync: vi.fn(() => "{}"),
-  mockWriteFileSync: vi.fn(() => {}),
-  mockMkdirSync: vi.fn(() => undefined as any),
-  mockUnlinkSync: vi.fn(() => {}),
-}));
+const { mockReadFileSync, mockWriteFileSync, mockMkdirSync, mockUnlinkSync } =
+  vi.hoisted(() => ({
+    mockReadFileSync: vi.fn(() => "{}"),
+    mockWriteFileSync: vi.fn(() => {}),
+    mockMkdirSync: vi.fn(() => undefined as any),
+    mockUnlinkSync: vi.fn(() => {}),
+  }));
 
 vi.mock("fs", async (importOriginal) => {
   const actual = await importOriginal<typeof import("fs")>();
@@ -64,7 +64,9 @@ describe("update-check", () => {
         latestVersion: "0.0.1",
       });
       mockReadFileSync.mockReturnValue(cache);
-      globalThis.fetch = vi.fn(() => Promise.reject(new Error("should not fetch"))) as any;
+      globalThis.fetch = vi.fn(() =>
+        Promise.reject(new Error("should not fetch")),
+      ) as any;
 
       await checkForUpdates();
       // Should not have fetched since cache is fresh
@@ -115,7 +117,9 @@ describe("update-check", () => {
       mockReadFileSync.mockImplementation(() => {
         throw new Error("ENOENT");
       });
-      globalThis.fetch = vi.fn(() => Promise.reject(new Error("network"))) as any;
+      globalThis.fetch = vi.fn(() =>
+        Promise.reject(new Error("network")),
+      ) as any;
 
       // Should not throw
       await checkForUpdates();
@@ -125,9 +129,7 @@ describe("update-check", () => {
       mockReadFileSync.mockImplementation(() => {
         throw new Error("ENOENT");
       });
-      globalThis.fetch = vi.fn(() =>
-        Promise.resolve({ ok: false }),
-      ) as any;
+      globalThis.fetch = vi.fn(() => Promise.resolve({ ok: false })) as any;
 
       await checkForUpdates();
       expect(mockWriteFileSync).not.toHaveBeenCalled();

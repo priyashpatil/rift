@@ -1,55 +1,82 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      {{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{
+      end }}
+    </title>
+    <meta
+      name="description"
+      content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}"
+    />
 
-    <title>{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
-    <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <link rel="canonical" href="{{ .Permalink }}" />
 
-    <link rel="canonical" href="{{ .Permalink }}">
+    <meta
+      property="og:title"
+      content="{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}"
+    />
+    <meta
+      property="og:description"
+      content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}"
+    />
+    <meta property="og:url" content="{{ .Permalink }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="{{ .Site.Title }}" />
 
-    <meta property="og:title" content="{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}">
-    <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-    <meta property="og:url" content="{{ .Permalink }}">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ .Site.Title }}">
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}"
+    />
+    <meta
+      name="twitter:description"
+      content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}"
+    />
 
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}">
-    <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,{{ `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230d1117'/><text x='16' y='24' text-anchor='middle' font-family='monospace' font-weight='700' font-size='24' fill='%2300ff41'>R</text></svg>` }}"
+    />
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{{ `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230d1117'/><text x='16' y='24' text-anchor='middle' font-family='monospace' font-weight='700' font-size='24' fill='%2300ff41'>R</text></svg>` }}">
-
-{{ $scss := resources.Get "sass/site.scss" }}
-    {{ $style := $scss | toCSS (dict "includePaths" (slice "node_modules")) }}
-    <link rel="stylesheet" href="{{ $style.RelPermalink }}">
+    {{ $scss := resources.Get "sass/site.scss" }} {{ $style := $scss | toCSS
+    (dict "includePaths" (slice "node_modules")) }}
+    <link rel="stylesheet" href="{{ $style.RelPermalink }}" />
 
     {{ block "head" . }}{{ end }}
-</head>
+  </head>
 
-<body>
+  <body>
     {{ partial "header.html" . }}
 
-    <main>
-        {{ block "main" . }}{{ end }}
-    </main>
+    <main>{{ block "main" . }}{{ end }}</main>
 
-    {{ partial "footer.html" . }}
-
-    {{ block "foot" . }}{{ end }}
+    {{ partial "footer.html" . }} {{ block "foot" . }}{{ end }}
     <script>
-    fetch("https://api.github.com/repos/priyashpatil/rift")
-      .then(function(r){return r.json()})
-      .then(function(d){
-        if(!d.stargazers_count&&d.stargazers_count!==0)return;
-        var c=d.stargazers_count>=1000?(d.stargazers_count/1000).toFixed(1)+"k":String(d.stargazers_count);
-        document.querySelectorAll("[data-count]").forEach(function(el){el.textContent=c});
-        document.querySelectorAll(".github-star-count").forEach(function(el){el.classList.add("visible")});
-      })
-      .catch(function(){});
+      fetch("https://api.github.com/repos/priyashpatil/rift")
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (d) {
+          if (!d.stargazers_count && d.stargazers_count !== 0) return;
+          var c =
+            d.stargazers_count >= 1000
+              ? (d.stargazers_count / 1000).toFixed(1) + "k"
+              : String(d.stargazers_count);
+          document.querySelectorAll("[data-count]").forEach(function (el) {
+            el.textContent = c;
+          });
+          document
+            .querySelectorAll(".github-star-count")
+            .forEach(function (el) {
+              el.classList.add("visible");
+            });
+        })
+        .catch(function () {});
     </script>
-</body>
-
+  </body>
 </html>

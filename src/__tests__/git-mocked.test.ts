@@ -1,7 +1,7 @@
 import { describe, expect, test, vi, beforeAll, afterAll } from "vitest";
-import { mkdirSync, rmSync, realpathSync, writeFileSync } from "fs";
+import { mkdirSync, rmSync, writeFileSync } from "fs";
 import { join } from "path";
-import { tmpdir } from "os";
+
 import { execSync } from "child_process";
 
 const { testDir, testWorktreesDir } = vi.hoisted(() => {

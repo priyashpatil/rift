@@ -1,11 +1,5 @@
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
-import {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
 
@@ -144,7 +138,10 @@ describe("workspace", () => {
     expect(content.folders).toHaveLength(4);
     expect(content.folders[0].name).toBe("main");
     expect(content.folders[1].name).toBe("alpha");
-    expect(content.folders[2]).toEqual({ name: "shared-lib", path: "/other/shared-lib" });
+    expect(content.folders[2]).toEqual({
+      name: "shared-lib",
+      path: "/other/shared-lib",
+    });
     expect(content.folders[3]).toEqual({ name: "docs", path: "/other/docs" });
   });
 });

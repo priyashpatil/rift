@@ -53,6 +53,7 @@ puts "Worktree '#{worktree}': port=#{port}, db=#{db_name}"
 ```
 
 > **Sinatra users** without Rails: add database creation using the `pg` gem since you won't have `db:prepare`:
+>
 > ```ruby
 > require "pg"
 > conn = PG.connect(host: "localhost", user: "postgres", password: "postgres", dbname: "postgres")
@@ -206,6 +207,6 @@ hooks:
 
 When a worktree is closed, its database lingers on the shared server. Use the `close` hook to drop it:
 
-| Framework | Drop command |
-|---|---|
-| Rails | `bin/rails db:drop` |
+| Framework | Drop command        |
+| --------- | ------------------- |
+| Rails     | `bin/rails db:drop` |

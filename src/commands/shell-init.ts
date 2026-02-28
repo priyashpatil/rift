@@ -17,7 +17,7 @@ export function cmdShellInit(): void {
   }
 }
 
-function posixWrapper(shell: "zsh" | "bash"): string {
+function posixWrapper(_shell: "zsh" | "bash"): string {
   return `unalias rift 2>/dev/null
 function rift {
     local tmpdir="\${TMPDIR:-/tmp}"

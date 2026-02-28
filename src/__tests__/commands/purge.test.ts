@@ -213,7 +213,11 @@ describe("cmdPurge", () => {
 
     await cmdPurge(["-f"]);
 
-    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo", undefined);
+    expect(mockSyncWorkspace).toHaveBeenCalledWith(
+      "myproject",
+      "/main/repo",
+      undefined,
+    );
     logSpy.mockRestore();
   });
 
@@ -239,12 +243,8 @@ describe("cmdPurge", () => {
     expect(logSpy).toHaveBeenCalledWith(
       "Will remove 2 worktree(s) for myproject:",
     );
-    expect(logSpy).toHaveBeenCalledWith(
-      "  - bold-ant (branch: bold-ant)",
-    );
-    expect(logSpy).toHaveBeenCalledWith(
-      "  - calm-bee (branch: calm-bee)",
-    );
+    expect(logSpy).toHaveBeenCalledWith("  - bold-ant (branch: bold-ant)");
+    expect(logSpy).toHaveBeenCalledWith("  - calm-bee (branch: calm-bee)");
     logSpy.mockRestore();
   });
 

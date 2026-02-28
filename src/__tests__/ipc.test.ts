@@ -5,8 +5,12 @@ import { CD_PATH_FILE, AGENT_START_FILE } from "../constants";
 
 describe("ipc", () => {
   afterEach(() => {
-    try { unlinkSync(CD_PATH_FILE); } catch {}
-    try { unlinkSync(AGENT_START_FILE); } catch {}
+    try {
+      unlinkSync(CD_PATH_FILE);
+    } catch {}
+    try {
+      unlinkSync(AGENT_START_FILE);
+    } catch {}
   });
 
   describe("writeCdPath", () => {

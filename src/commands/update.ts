@@ -11,13 +11,15 @@ export async function cmdUpdate(): Promise<void> {
   try {
     const response = await fetch(
       `https://registry.npmjs.org/${pkg.name}/latest`,
-      { signal: AbortSignal.timeout(5000) }
+      { signal: AbortSignal.timeout(5000) },
     );
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = (await response.json()) as { version: string };
     latestVersion = data.version;
   } catch {
-    console.error("Failed to check for updates. Check your internet connection.");
+    console.error(
+      "Failed to check for updates. Check your internet connection.",
+    );
     process.exit(1);
   }
 

@@ -22,7 +22,9 @@ const {
   mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
   mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
   mockGetWorktreeName: vi.fn(() => Promise.resolve("bold-ant")),
-  mockGetRepoRoot: vi.fn(() => Promise.resolve("/worktrees/myproject/bold-ant")),
+  mockGetRepoRoot: vi.fn(() =>
+    Promise.resolve("/worktrees/myproject/bold-ant"),
+  ),
   mockGetCurrentBranch: vi.fn(() => Promise.resolve("bold-ant")),
   mockWorktreeRemove: vi.fn(() => Promise.resolve()),
   mockBranchDelete: vi.fn(() => Promise.resolve(true)),
@@ -195,7 +197,11 @@ describe("cmdClose", () => {
       "/worktrees/myproject/bold-ant",
     );
     expect(mockBranchDelete).toHaveBeenCalledWith("/main/repo", "bold-ant");
-    expect(mockSyncWorkspace).toHaveBeenCalledWith("myproject", "/main/repo", undefined);
+    expect(mockSyncWorkspace).toHaveBeenCalledWith(
+      "myproject",
+      "/main/repo",
+      undefined,
+    );
     expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
     logSpy.mockRestore();
   });

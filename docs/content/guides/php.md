@@ -208,7 +208,7 @@ hooks:
 
 When a worktree is closed, its database lingers on the shared server. Use the `close` hook to drop it:
 
-| Framework | Drop command |
-|---|---|
-| Laravel | `php artisan db:wipe --force` |
-| Symfony | `php bin/console doctrine:database:drop --force` |
+| Framework | Drop command                                     |
+| --------- | ------------------------------------------------ |
+| Laravel   | `php artisan db:wipe --force`                    |
+| Symfony   | `php bin/console doctrine:database:drop --force` |

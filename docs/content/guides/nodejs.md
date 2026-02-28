@@ -45,7 +45,11 @@ import { readFileSync, writeFileSync } from "fs";
 const worktree = process.env.RIFT_WORKTREE;
 
 // Derive a deterministic base port (range 3000–9999)
-const hash = createHash("sha1").update(worktree).digest("hex").replace(/[a-f]/g, "").slice(0, 4);
+const hash = createHash("sha1")
+  .update(worktree)
+  .digest("hex")
+  .replace(/[a-f]/g, "")
+  .slice(0, 4);
 const port = (Number(hash) % 7000) + 3000;
 
 // Derive a worktree-specific database name
@@ -99,7 +103,9 @@ const client = new pg.Client({
   database: "postgres", // connect to default db first
 });
 await client.connect();
-const res = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [dbName]);
+const res = await client.query("SELECT 1 FROM pg_database WHERE datname = $1", [
+  dbName,
+]);
 if (res.rowCount === 0) {
   await client.query(`CREATE DATABASE "${dbName}"`);
 }
@@ -277,8 +283,8 @@ hooks:
 
 When a worktree is closed, its database lingers on the shared server. Use the `close` hook to drop it:
 
-| ORM | Drop command |
-|---|---|
-| Prisma | `npx prisma db push --force-reset` |
-| Drizzle | `npx drizzle-kit drop` |
-| Knex | `npx knex migrate:rollback --all` |
+| ORM     | Drop command                       |
+| ------- | ---------------------------------- |
+| Prisma  | `npx prisma db push --force-reset` |
+| Drizzle | `npx drizzle-kit drop`             |
+| Knex    | `npx knex migrate:rollback --all`  |

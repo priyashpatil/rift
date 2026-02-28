@@ -91,7 +91,10 @@ describe("cmdInit", () => {
   });
 
   test("uses global config defaults when flags missing", async () => {
-    mockGetGlobalConfig.mockReturnValue({ editor: "windsurf", agent: "copilot" });
+    mockGetGlobalConfig.mockReturnValue({
+      editor: "windsurf",
+      agent: "copilot",
+    });
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdInit([]);

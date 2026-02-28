@@ -27,14 +27,14 @@
 @import "header";
 
 // ── Terminal palette ────────────────────────────────────────
-$term-bg:          #0d1117;
-$term-bg-surface:  #161b22;
-$term-accent:      #00ff41;
-$term-accent-dim:  rgba(0, 255, 65, 0.7);
-$term-text:        #c9d1d9;
-$term-muted:       #8b949e;
-$term-border:      rgba(0, 255, 65, 0.12);
-$term-link:        rgba(0, 255, 65, 0.7);
+$term-bg: #0d1117;
+$term-bg-surface: #161b22;
+$term-accent: #00ff41;
+$term-accent-dim: rgba(0, 255, 65, 0.7);
+$term-text: #c9d1d9;
+$term-muted: #8b949e;
+$term-border: rgba(0, 255, 65, 0.12);
+$term-link: rgba(0, 255, 65, 0.7);
 
 // ── Global ──────────────────────────────────────────────────
 
@@ -70,7 +70,12 @@ a {
 // ── Content ─────────────────────────────────────────────────
 
 article {
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 600;
     margin: 20px 0 15px;
     color: $term-accent;
@@ -197,7 +202,9 @@ code {
   border: 1px solid $term-border;
   border-radius: 0.25rem;
   background-color: rgba(0, 255, 65, 0.06);
-  transition: border-color 0.2s, background-color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
 
   > svg {
     flex-shrink: 0;

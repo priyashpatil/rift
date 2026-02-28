@@ -76,12 +76,7 @@ export async function getDefaultBranch(dir = "."): Promise<string> {
     return stdout.replace("refs/remotes/origin/", "");
   }
   for (const branch of ["main", "master"]) {
-    const { exitCode: rc } = await git(
-      dir,
-      "rev-parse",
-      "--verify",
-      branch,
-    );
+    const { exitCode: rc } = await git(dir, "rev-parse", "--verify", branch);
     if (rc === 0) return branch;
   }
   throw new Error("Could not determine default branch");
@@ -154,17 +149,19 @@ export async function branchDelete(
   mainRepo: string,
   branch: string,
 ): Promise<boolean> {
-  const proc = Bun.spawn(
-    ["git", "-C", mainRepo, "branch", "-D", branch],
-    { cwd: SAFE_CWD, stdout: "pipe", stderr: "pipe" },
-  );
+  const proc = Bun.spawn(["git", "-C", mainRepo, "branch", "-D", branch], {
+    cwd: SAFE_CWD,
+    stdout: "pipe",
+    stderr: "pipe",
+  });
   return (await proc.exited) === 0;
 }
 
 export async function worktreePrune(mainRepo: string): Promise<void> {
-  const proc = Bun.spawn(
-    ["git", "-C", mainRepo, "worktree", "prune"],
-    { cwd: SAFE_CWD, stdout: "pipe", stderr: "pipe" },
-  );
+  const proc = Bun.spawn(["git", "-C", mainRepo, "worktree", "prune"], {
+    cwd: SAFE_CWD,
+    stdout: "pipe",
+    stderr: "pipe",
+  });
   await proc.exited;
 }

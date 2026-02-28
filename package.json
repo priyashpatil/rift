@@ -14,7 +14,12 @@
     "build:all": "bun run scripts/build-all.js",
     "postinstall": "node scripts/postinstall.cjs",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "bun run lint && bun run format:check"
   },
   "files": [
     "bin/rift.cjs",
@@ -27,6 +32,7 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@semantic-release/commit-analyzer": "^13.0.0",
     "@semantic-release/git": "^10.0.0",
     "@semantic-release/github": "^11.0.0",
@@ -35,7 +41,54 @@
     "@types/js-yaml": "^4.0.9",
     "@vitest/coverage-v8": "^4.0.18",
     "bun-types": "latest",
+    "eslint": "^10.0.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.1",
     "semantic-release": "^24.0.0",
+    "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.18"
+  },
+  "prettier": {},
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "dist/rift-darwin-arm64",
+              "label": "rift-darwin-arm64"
+            },
+            {
+              "path": "dist/rift-darwin-x64",
+              "label": "rift-darwin-x64"
+            },
+            {
+              "path": "dist/rift-linux-x64",
+              "label": "rift-linux-x64"
+            },
+            {
+              "path": "dist/rift-linux-arm64",
+              "label": "rift-linux-arm64"
+            }
+          ]
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json"
+          ],
+          "message": "chore(release): ${nextRelease.version}"
+        }
+      ]
+    ]
   }
 }

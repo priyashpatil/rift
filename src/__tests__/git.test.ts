@@ -85,10 +85,7 @@ describe("git module", () => {
     });
 
     test("throws for a non-git directory", async () => {
-      const nonGitDir = join(
-        tmpdir(),
-        `.rift-test-nongit-wt-${process.pid}`,
-      );
+      const nonGitDir = join(tmpdir(), `.rift-test-nongit-wt-${process.pid}`);
       mkdirSync(nonGitDir, { recursive: true });
       const resolvedDir = realpathSync(nonGitDir);
       try {

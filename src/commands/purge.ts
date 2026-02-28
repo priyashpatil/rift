@@ -72,7 +72,9 @@ export async function cmdPurge(args: string[]): Promise<void> {
 
   if ((await getEditor()).managedWorkspace) {
     const config = await getRiftConfig(mainRepo);
-    try { await syncWorkspace(project, mainRepo, config["extra-workspaces"]); } catch {}
+    try {
+      await syncWorkspace(project, mainRepo, config["extra-workspaces"]);
+    } catch {}
   }
 
   console.log(`\nPurged all worktrees for ${project}.`);

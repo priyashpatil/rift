@@ -23,7 +23,9 @@ const {
     { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
   ],
   mockExistsSync: vi.fn(() => true),
-  mockReadFileSync: vi.fn(() => "# Added by rift\neval \"$(rift _shell-init)\"\n"),
+  mockReadFileSync: vi.fn(
+    () => '# Added by rift\neval "$(rift _shell-init)"\n',
+  ),
   mockAppendFileSync: vi.fn(),
 }));
 
@@ -55,13 +57,19 @@ describe("cmdConfig", () => {
   const originalShell = process.env.SHELL;
 
   beforeEach(() => {
-    mockGetGlobalConfig.mockClear().mockReturnValue({ agent: "claude", editor: "code" });
+    mockGetGlobalConfig
+      .mockClear()
+      .mockReturnValue({ agent: "claude", editor: "code" });
     mockSaveGlobalConfig.mockClear();
-    mockGetRiftConfig.mockClear().mockResolvedValue({ agent: "claude", editor: "code" });
+    mockGetRiftConfig
+      .mockClear()
+      .mockResolvedValue({ agent: "claude", editor: "code" });
     mockSaveRiftConfig.mockClear();
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockExistsSync.mockClear().mockReturnValue(true);
-    mockReadFileSync.mockClear().mockReturnValue("# Added by rift\neval \"$(rift _shell-init)\"\n");
+    mockReadFileSync
+      .mockClear()
+      .mockReturnValue('# Added by rift\neval "$(rift _shell-init)"\n');
     mockAppendFileSync.mockClear();
   });
 
@@ -196,7 +204,9 @@ describe("cmdConfig", () => {
     await cmdConfig([]);
 
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
-    expect(logCalls.some((c) => c.includes("VS Code") && c.includes("code"))).toBe(true);
+    expect(
+      logCalls.some((c) => c.includes("VS Code") && c.includes("code")),
+    ).toBe(true);
     expect(logCalls.some((c) => c.includes("claude"))).toBe(true);
     logSpy.mockRestore();
   });
@@ -209,7 +219,10 @@ describe("cmdConfig", () => {
 
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
     expect(
-      logCalls.some((c) => c.includes("Shell integration") || c.includes("shell integration")),
+      logCalls.some(
+        (c) =>
+          c.includes("Shell integration") || c.includes("shell integration"),
+      ),
     ).toBe(true);
     logSpy.mockRestore();
   });
@@ -222,7 +235,10 @@ describe("cmdConfig", () => {
 
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
     expect(
-      logCalls.some((c) => c.includes("Shell integration") || c.includes("shell integration")),
+      logCalls.some(
+        (c) =>
+          c.includes("Shell integration") || c.includes("shell integration"),
+      ),
     ).toBe(true);
     logSpy.mockRestore();
   });
@@ -230,9 +246,7 @@ describe("cmdConfig", () => {
   test("throws for unsupported shell", async () => {
     process.env.SHELL = "/bin/csh";
 
-    await expect(cmdConfig([])).rejects.toThrow(
-      /unsupported shell "csh"/,
-    );
+    await expect(cmdConfig([])).rejects.toThrow(/unsupported shell "csh"/);
   });
 
   test("throws for empty SHELL env var", async () => {
@@ -252,7 +266,10 @@ describe("cmdConfig", () => {
 
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
     expect(
-      logCalls.some((c) => c.includes("Shell integration") || c.includes("shell integration")),
+      logCalls.some(
+        (c) =>
+          c.includes("Shell integration") || c.includes("shell integration"),
+      ),
     ).toBe(true);
     logSpy.mockRestore();
   });
@@ -270,7 +287,9 @@ describe("cmdConfig", () => {
     expect(appended).toContain("# Added by rift");
     expect(appended).toContain('eval "$(rift _shell-init)"');
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
-    expect(logCalls.some((c) => c.includes("Added shell integration"))).toBe(true);
+    expect(logCalls.some((c) => c.includes("Added shell integration"))).toBe(
+      true,
+    );
     logSpy.mockRestore();
   });
 

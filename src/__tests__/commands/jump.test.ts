@@ -212,9 +212,7 @@ describe("cmdJump", () => {
     await cmdJump(["bold-ant"]);
 
     expect(logSpy).toHaveBeenCalledWith("Worktree: bold-ant");
-    expect(logSpy).toHaveBeenCalledWith(
-      "Path: /worktrees/myproject/bold-ant",
-    );
+    expect(logSpy).toHaveBeenCalledWith("Path: /worktrees/myproject/bold-ant");
     expect(mockWriteCdPath).not.toHaveBeenCalled();
     expect(mockSignalAgentStart).not.toHaveBeenCalled();
     logSpy.mockRestore();
