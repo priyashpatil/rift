@@ -1,0 +1,5 @@
+ignore:
+  - "src/index.ts"
+  - "src/types.ts"
+  - "src/commands/version.ts"
+  - "src/__tests__/**"
