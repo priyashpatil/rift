@@ -16,13 +16,14 @@ jobs:
 
       - run: bun install --ignore-scripts
 
-      - run: bunx vitest run --coverage 2>&1 | tee coverage-output.txt
+      - run: bunx vitest run --coverage
 
       - name: Upload coverage to Codecov
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v5
         with:
           files: ./coverage/lcov.info
+          disable_search: true
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
