@@ -30,8 +30,6 @@ describe("prompt module input handling", () => {
       const originalSetRawMode = (process.stdin as any).setRawMode;
       const originalResume = process.stdin.resume;
       const originalPause = process.stdin.pause;
-      const originalOnce = process.stdin.once;
-
       (process.stdin as any).setRawMode = setRawModeMock;
       process.stdin.resume = resumeMock;
       process.stdin.pause = pauseMock;
