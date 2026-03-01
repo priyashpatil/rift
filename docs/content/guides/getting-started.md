@@ -10,12 +10,6 @@ weight: 1
 npm install -g @priyashpatil/rift
 ```
 
-Or try it without installing:
-
-```bash
-npx @priyashpatil/rift
-```
-
 ## 2. Shell integration
 
 Run `rift config` once after installing. It detects your shell and adds a one-liner to your RC file (`.zshrc`, `.bashrc`, or `config.fish`) so Rift can `cd` you into worktrees automatically.

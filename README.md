@@ -22,12 +22,6 @@ Rift lets you spin up isolated git worktrees, each with its own branch, and auto
 npm install -g @priyashpatil/rift
 ```
 
-Or try it without installing:
-
-```bash
-npx @priyashpatil/rift
-```
-
 ## Quick Start
 
 ```bash

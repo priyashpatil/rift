@@ -408,7 +408,7 @@ pre:hover .copy-btn--pre {
     font-size: 0.95rem;
     color: $term-muted;
     line-height: 1.6;
-    max-width: 520px;
+    max-width: 720px;
     margin: 0 auto;
   }
 }
@@ -479,12 +479,13 @@ pre:hover .copy-btn--pre {
   line-height: 1.6;
 
   code {
-    font-size: 0.85em;
+    font-size: 1em;
   }
 }
 
 .install-warn {
   color: #f0b429;
+  font-size: 1em;
 }
 
 
