@@ -168,6 +168,36 @@ article {
   }
 }
 
+// ── Tables ──────────────────────────────────────────────────
+
+table {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid $term-border;
+    text-align: left;
+  }
+
+  th {
+    color: $term-accent;
+    background-color: $term-bg-surface;
+    font-weight: 600;
+  }
+
+  td {
+    color: $term-text;
+  }
+
+  tr:nth-child(even) td {
+    background-color: rgba($term-bg-surface, 0.5);
+  }
+}
+
 // ── Code blocks ─────────────────────────────────────────────
 
 pre {

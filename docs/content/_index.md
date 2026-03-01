@@ -3,7 +3,7 @@ title: "Rift — Git Worktree Manager for AI Agents"
 description: "Git worktree manager for parallel AI agent development."
 ---
 
-**Git worktree manager for parallel AI agent development.**
+# Git worktree manager for parallel AI agent development.
 
 Spin up isolated git worktrees, each with its own branch, and automatically launch an AI coding agent inside them. Work on multiple features simultaneously without stashing or switching branches.
 
