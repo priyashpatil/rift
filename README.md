@@ -9,12 +9,12 @@ Rift lets you spin up isolated git worktrees, each with its own branch, and auto
 
 ## Features
 
-- **Isolated worktrees** — each task gets its own directory and branch under `~/.rift/worktrees/`
-- **Any AI agent** — configure any CLI command as your agent (`claude`, `aider`, `copilot`, a custom script, etc.)
-- **Truly parallel services** — hash-based port mapping gives each worktree deterministic, collision-free ports so services run simultaneously
-- **Lifecycle hooks** — run commands on worktree events (install deps, set up databases, assign ports)
-- **Editor workspaces** — `rift code` creates a `.code-workspace` file with all active worktrees
-- **Shell integration** — `cd`s you into worktrees and launches agents automatically
+- **Work on everything at once** — every task gets its own isolated worktree and branch, so you never stash, switch, or wait again
+- **Bring any agent** — Claude Code, Copilot, Codex, Aider, or any CLI command — just plug it in
+- **Zero port conflicts** — deterministic hash-based port mapping means every worktree runs services simultaneously without collisions
+- **Hooks that handle the busywork** — auto-install deps, seed databases, assign ports — all triggered by worktree lifecycle events
+- **One workspace, all worktrees** — `rift code` opens every active worktree in a single VS Code, Cursor, or Windsurf workspace
+- **Launch and go** — `rift open` creates the branch, sets up the worktree, and drops you in with your agent running
 
 ## Install
 

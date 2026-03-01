@@ -21,6 +21,15 @@ npx @priyashpatil/rift
 
 Then run `rift config` to set up shell integration, and `rift init` inside a git project to create a `rift.yaml`. See the [Getting Started guide](/guides/getting-started/) for the full walkthrough.
 
+## Features
+
+- **Work on everything at once** — every task gets its own isolated worktree and branch, so you never stash, switch, or wait again
+- **Bring any agent** — Claude Code, Copilot, Codex, Aider, or any CLI command — just plug it in
+- **Zero port conflicts** — deterministic hash-based port mapping means every worktree runs services simultaneously without collisions
+- **Hooks that handle the busywork** — auto-install deps, seed databases, assign ports — all triggered by worktree lifecycle events
+- **One workspace, all worktrees** — `rift code` opens every active worktree in a single VS Code, Cursor, or Windsurf workspace
+- **Launch and go** — `rift open` creates the branch, sets up the worktree, and drops you in with your agent running
+
 ## Supported editors
 
 VS Code, Cursor, and Windsurf. All three support managed workspaces — `rift code` creates a `.code-workspace` file that includes all active worktrees.
