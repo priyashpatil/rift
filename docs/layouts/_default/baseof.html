@@ -23,8 +23,8 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{{ `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230d1117'/><text x='16' y='24' text-anchor='middle' font-family='monospace' font-weight='700' font-size='24' fill='%2300ff41'>R</text></svg>` }}">
 
     {{ $scss := resources.Get "sass/site.scss" }}
-    {{ $style := $scss | toCSS (dict "includePaths" (slice "node_modules")) }}
-    <link rel="stylesheet" href="{{ $style.RelPermalink }}">
+    {{ $style := $scss | toCSS (dict "includePaths" (slice "node_modules")) | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
 
     {{ block "head" . }}{{ end }}
 </head>
@@ -38,7 +38,53 @@
 
     {{ partial "footer.html" . }}
 
+    {{/* Hidden SVG templates for JS cloning */}}
+    <template id="icon-copy">{{ partial "icons/copy.html" }}</template>
+    <template id="icon-check">{{ partial "icons/check.html" }}</template>
+
     {{ block "foot" . }}{{ end }}
+    <script>
+    (function(){
+      var copyTpl=document.getElementById("icon-copy");
+      var checkTpl=document.getElementById("icon-check");
+      function cloneCopyIcon(){return copyTpl.content.firstElementChild.cloneNode(true)}
+      function cloneCheckIcon(){return checkTpl.content.firstElementChild.cloneNode(true)}
+      function flash(btn){
+        var original=Array.prototype.slice.call(btn.childNodes);
+        while(btn.firstChild) btn.removeChild(btn.firstChild);
+        btn.appendChild(cloneCheckIcon());
+        btn.classList.add("copied");
+        setTimeout(function(){
+          btn.classList.remove("copied");
+          while(btn.firstChild) btn.removeChild(btn.firstChild);
+          original.forEach(function(n){btn.appendChild(n)});
+        },1500);
+      }
+      // Copy button for all <pre> code blocks
+      document.querySelectorAll("pre > code").forEach(function(block){
+        var pre=block.parentElement;
+        pre.style.position="relative";
+        var btn=document.createElement("button");
+        btn.className="copy-btn copy-btn--pre";
+        btn.setAttribute("aria-label","Copy to clipboard");
+        btn.appendChild(cloneCopyIcon());
+        pre.appendChild(btn);
+        btn.addEventListener("click",function(){
+          navigator.clipboard.writeText(block.textContent.trim());
+          flash(btn);
+        });
+      });
+      // Copy button for install blocks
+      document.querySelectorAll("[data-copy]").forEach(function(el){
+        var btn=el.querySelector(".copy-btn");
+        if(!btn)return;
+        btn.addEventListener("click",function(){
+          navigator.clipboard.writeText(el.getAttribute("data-copy"));
+          flash(btn);
+        });
+      });
+    })();
+    </script>
     <script>
     fetch("https://api.github.com/repos/priyashpatil/rift")
       .then(function(r){return r.json()})
@@ -50,6 +96,7 @@
       })
       .catch(function(){});
     </script>
+    <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "f85e8e390a9e422c872dd43ae0353f64"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 
 </html>

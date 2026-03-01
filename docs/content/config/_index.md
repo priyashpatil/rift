@@ -41,7 +41,7 @@ The editor command used by `rift code` to open your project.
 | Value | Editor | Workspace managed |
 |-------|--------|-------------------|
 | `code` | VS Code | Yes |
-| `cursor` | Cursor | Yes |
+| `cursor` | Cursor\* | Yes |
 | `windsurf` | Windsurf | Yes |
 
 Managed editors get a `.code-workspace` file (at `~/.rift/workspaces/<project>.code-workspace`) that is kept in sync with your active worktrees. Each worktree appears as a folder in the workspace.
@@ -74,7 +74,9 @@ extra-workspaces:
 
 This is useful when you have related code that lives outside the repository — shared libraries, monorepo packages, or design systems — and you want them visible alongside your worktrees in the editor sidebar.
 
-Only applies to managed editors (VS Code, Cursor, Windsurf).
+Only applies to managed editors (VS Code, Cursor\*, Windsurf).
+
+\*Cursor is a VS Code fork and supports `.code-workspace` files, but has known rough edges — particularly around file association on macOS and multi-root workspace context for AI features.
 
 #### `hooks`
 

@@ -1,5 +1,74 @@
+{{ define "head" }}
+{{ with .Params.video_src }}
+<link href="/vendor/videojs/video-js.css" rel="stylesheet">
+<link href="/vendor/videojs/forest.css" rel="stylesheet">
+{{ end }}
+{{ end }}
+
 {{ define "main" }}
 <div class="container py-4">
-  <article>{{ .Content }}</article>
+
+  {{/* ── Hero ──────────────────────────────────────────────── */}}
+  <section class="hero">
+    <h1 class="hero-headline">{{ .Params.headline }}</h1>
+    <p class="hero-tagline">{{ .Params.tagline }}</p>
+  </section>
+
+  {{/* ── Get started (video + install) ─────────────────────── */}}
+  <section class="get-started">
+    {{ with .Params.video_src }}
+    <div class="video-section">
+      <video-js id="demo-video" class="video-js vjs-theme-forest vjs-fluid" controls preload="metadata" playsinline data-setup='{}'>
+        <source src="{{ . }}" type="video/mp4">
+      </video-js>
+    </div>
+    {{ end }}
+
+    <div class="install-commands">
+      <div class="install-block" data-copy="npm install -g @priyashpatil/rift">
+        <code><span class="install-prompt">$</span> npm install -g @priyashpatil/rift</code>
+        <button class="copy-btn" aria-label="Copy to clipboard">
+          {{ partial "icons/copy.html" }}
+        </button>
+      </div>
+      <span class="install-or">or try without installing</span>
+      <div class="install-block" data-copy="npx @priyashpatil/rift">
+        <code><span class="install-prompt">$</span> npx @priyashpatil/rift</code>
+        <button class="copy-btn" aria-label="Copy to clipboard">
+          {{ partial "icons/copy.html" }}
+        </button>
+      </div>
+    </div>
+    <p class="install-hint">
+      Then run <code>rift config</code> for shell integration, and <code>rift init</code> inside a git project.
+      <span class="install-warn">Restart your shell after the first run.</span>
+      See the <a href="/guides/getting-started/">Getting Started guide</a>.
+    </p>
+  </section>
+
+  {{/* ── Features grid ─────────────────────────────────────── */}}
+  {{ with .Params.features }}
+  <section class="features-section">
+    <h2 class="section-heading">Features</h2>
+    <div class="features-grid">
+      {{ range . }}
+      <div class="feature-card">
+        <h3 class="feature-title">{{ .title }}</h3>
+        <p class="feature-desc">{{ .description }}</p>
+      </div>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  {{/* ── Remaining prose (editors, agents, etc.) ────────── */}}
+  <article class="prose-section">{{ .Content }}</article>
+
 </div>
+{{ end }}
+
+{{ define "foot" }}
+{{ with .Params.video_src }}
+<script src="/vendor/videojs/video.min.js"></script>
+{{ end }}
 {{ end }}

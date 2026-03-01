@@ -3,7 +3,7 @@ title: "Command Reference"
 description: "CLI reference for all Rift commands and options."
 ---
 
-### `rift config`
+## `rift config`
 
 Set up shell integration and configure preferences. By default writes to the project-level `rift.yaml`. Use `--global` to set global defaults.
 
@@ -24,7 +24,7 @@ rift config --global --editor cursor --agent claude
 
 Running without flags detects your shell, adds the Rift shell wrapper to your RC file, and prints the current editor and agent. Use `--editor` and `--agent` flags to change them. A `rift.yaml` must exist for project-level changes — run `rift init` first.
 
-### `rift init`
+## `rift init`
 
 Initialize a `rift.yaml` in the current git project. The editor defaults to VS Code and the agent to Claude Code, unless overridden by global config.
 
@@ -44,7 +44,7 @@ rift init --editor cursor --agent aider
 
 The generated `rift.yaml` includes commented-out hook examples. See [Config](/config/) for the full `rift.yaml` reference and [Hooks](/hooks/) for lifecycle hook patterns.
 
-### `rift status`
+## `rift status`
 
 Show current context — project name, branch, and whether you're in a worktree or the main repo.
 
@@ -52,7 +52,7 @@ Show current context — project name, branch, and whether you're in a worktree 
 rift status
 ```
 
-### `rift open [name]`
+## `rift open [name]`
 
 Create a new worktree and launch your configured AI agent inside it.
 
@@ -75,7 +75,7 @@ rift open my-feature --skip-hooks
 
 If no name is given, Rift generates a random one (e.g. `bold-eagle`).
 
-### `rift list`
+## `rift list`
 
 List all worktrees for the current project. The base (main) workspace is always shown first, followed by Rift-managed worktrees. The active worktree is marked with `*`.
 
@@ -85,7 +85,7 @@ rift list
 
 Alias: `rift ls`
 
-### `rift jump <name>`
+## `rift jump <name>`
 
 Switch to an existing worktree and start the agent. Use `base` (or `main`) to jump to the main repository.
 
@@ -102,7 +102,7 @@ rift jump my-feature --skip-agent
 rift jump my-feature --skip-hooks
 ```
 
-### `rift close`
+## `rift close`
 
 Close the current worktree, delete its branch, and return to the main repo.
 
@@ -118,7 +118,7 @@ rift close --skip-hooks
 
 Must be run from inside a Rift worktree (not the main repo).
 
-### `rift code`
+## `rift code`
 
 Open the project in your configured editor. Creates a `.code-workspace` file containing all active worktrees as folders.
 
@@ -126,7 +126,7 @@ Open the project in your configured editor. Creates a `.code-workspace` file con
 rift code
 ```
 
-### `rift purge`
+## `rift purge`
 
 Remove **all** worktrees for the current project and delete their branches.
 
@@ -137,7 +137,7 @@ rift purge
 rift purge --force
 ```
 
-### `rift update`
+## `rift update`
 
 Update Rift to the latest version. Checks npm for a newer release, runs the install, and clears the update-check cache.
 
@@ -145,7 +145,7 @@ Update Rift to the latest version. Checks npm for a newer release, runs the inst
 rift update
 ```
 
-### `rift version`
+## `rift version`
 
 Print the current Rift version.
 

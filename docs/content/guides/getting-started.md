@@ -30,7 +30,9 @@ Shell integration added to /Users/you/.zshrc
   agent:  claude
 ```
 
+{{< callout type="warning" >}}
 Restart your shell after the first run to load shell integration.
+{{< /callout >}}
 
 ## 3. Initialize a project
 

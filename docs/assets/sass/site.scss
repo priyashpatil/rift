@@ -40,8 +40,11 @@ $term-link: rgba(0, 255, 65, 0.7);
 
 html {
   font-family: "iA Writer Mono", monospace;
+  font-size: 16px;
   background-color: $term-bg;
   color: $term-text;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -49,10 +52,12 @@ body {
   overflow-x: hidden;
   background-color: inherit;
   color: inherit;
+  line-height: 1.7;
 }
 
 p {
-  line-height: 1.8;
+  line-height: 1.7;
+  margin-bottom: 1rem;
 }
 
 a {
@@ -70,14 +75,34 @@ a {
 // ── Content ─────────────────────────────────────────────────
 
 article {
-  h1,
-  h2,
-  h3,
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    color: $term-accent;
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin: 2rem 0 0.75rem;
+    color: $term-accent;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem;
+    color: $term-accent;
+  }
+
   h4,
   h5,
   h6 {
+    font-size: 1rem;
     font-weight: 600;
-    margin: 20px 0 15px;
+    margin: 1.25rem 0 0.5rem;
     color: $term-accent;
   }
 
@@ -168,13 +193,65 @@ article {
   }
 }
 
+// ── Callouts ────────────────────────────────────────────────
+
+.callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  margin: 1.25rem 0;
+  border-radius: 0.375rem;
+  border-left: 3px solid;
+  font-size: 0.95rem;
+  line-height: 1.6;
+
+  .callout-icon {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .callout-content p {
+    margin: 0;
+  }
+}
+
+.callout--warning {
+  border-color: #f0b429;
+  background-color: rgba(240, 180, 41, 0.08);
+  color: #f0b429;
+
+  .callout-content {
+    color: $term-text;
+  }
+}
+
+.callout--tip {
+  border-color: $term-accent;
+  background-color: rgba(0, 255, 65, 0.06);
+  color: $term-accent;
+
+  .callout-content {
+    color: $term-text;
+  }
+}
+
+.callout--info {
+  border-color: #58a6ff;
+  background-color: rgba(88, 166, 255, 0.08);
+  color: #58a6ff;
+
+  .callout-content {
+    color: $term-text;
+  }
+}
+
 // ── Tables ──────────────────────────────────────────────────
 
 table {
   width: 100%;
   margin: 1rem 0;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 
   th,
   td {
@@ -217,6 +294,50 @@ pre code {
 
 code {
   color: $term-accent;
+  font-size: 0.95em;
+}
+
+// ── Copy button ─────────────────────────────────────────────
+
+.copy-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: $term-muted;
+  cursor: pointer;
+  padding: 0.2rem 0.35rem;
+  border-radius: 0.2rem;
+  transition: color 0.15s;
+  min-width: 22px;
+  min-height: 22px;
+
+  &:hover {
+    color: $term-accent;
+  }
+
+  &.copied {
+    color: $term-accent;
+  }
+}
+
+
+.copy-btn--pre {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+
+  &.copied {
+    opacity: 1;
+  }
+}
+
+pre:hover .copy-btn--pre {
+  opacity: 1;
 }
 
 // ── GitHub link ─────────────────────────────────────────────
@@ -269,20 +390,183 @@ code {
   padding: 0.2rem 0.6rem;
 }
 
+// ── Homepage ────────────────────────────────────────────────
+
+.hero {
+  text-align: center;
+  padding: 2.5rem 0 1.5rem;
+
+  .hero-headline {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: $term-accent;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+
+  .hero-tagline {
+    font-size: 0.95rem;
+    color: $term-muted;
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+}
+
+.get-started {
+  text-align: center;
+  margin: 0 0 2.5rem;
+}
+
+.video-section {
+  margin: 0 0 1.75rem;
+  border: 1px solid $term-border;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.video-section .video-js {
+  background-color: $term-bg;
+}
+
+// Tint the forest theme green to match our terminal accent
+.vjs-theme-forest {
+  --vjs-theme-forest--primary: #{$term-accent};
+}
+
+.install-commands {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.install-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: $term-bg-surface;
+  border: 1px solid $term-border;
+  border-radius: 0.25rem;
+  padding: 0.6rem 0.75rem 0.6rem 1rem;
+
+  code {
+    font-size: 0.9rem;
+    color: $term-text;
+    white-space: nowrap;
+  }
+
+  .copy-btn {
+    flex-shrink: 0;
+  }
+}
+
+.install-prompt {
+  color: $term-accent;
+  margin-right: 0.4rem;
+}
+
+.install-or {
+  font-size: 0.8rem;
+  color: $term-muted;
+}
+
+.install-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: $term-muted;
+  line-height: 1.6;
+
+  code {
+    font-size: 0.85em;
+  }
+}
+
+.install-warn {
+  color: #f0b429;
+}
+
+
+.features-section {
+  margin: 2.5rem 0 0;
+  padding-top: 2rem;
+  border-top: 1px solid $term-border;
+
+  .section-heading {
+    color: $term-accent;
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+.prose-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid $term-border;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature-card {
+  padding: 1rem 1.25rem;
+  background-color: $term-bg-surface;
+  border: 1px solid $term-border;
+  border-radius: 0.375rem;
+
+  .feature-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: $term-accent;
+    margin: 0 0 0.35rem;
+  }
+
+  .feature-desc {
+    font-size: 0.95rem;
+    color: $term-text;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
 // ── Footer ──────────────────────────────────────────────────
 
 footer {
   border-top: 1px solid $term-border;
 
-  .text-muted {
-    color: $term-muted !important;
+  .footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
-  .nav-link {
-    color: $term-accent-dim;
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 
-    &:hover {
-      color: $term-accent;
+    > a:not(.github-link) {
+      color: $term-muted;
+      text-decoration: none;
+      font-size: 0.85rem;
+
+      &:hover {
+        color: $term-accent;
+      }
     }
+  }
+
+  .text-muted {
+    color: $term-muted !important;
   }
 }

@@ -13,7 +13,7 @@ Rift lets you spin up isolated git worktrees, each with its own branch, and auto
 - **Bring any agent** — Claude Code, Copilot, Codex, Aider, or any CLI command — just plug it in
 - **Zero port conflicts** — deterministic hash-based port mapping means every worktree runs services simultaneously without collisions
 - **Hooks that handle the busywork** — auto-install deps, seed databases, assign ports — all triggered by worktree lifecycle events
-- **One workspace, all worktrees** — `rift code` opens every active worktree in a single VS Code, Cursor, or Windsurf workspace
+- **One workspace, all worktrees** — `rift code` opens every active worktree in a single VS Code, Cursor\*, or Windsurf workspace
 - **Launch and go** — `rift open` creates the branch, sets up the worktree, and drops you in with your agent running
 
 ## Install
@@ -47,7 +47,9 @@ rift close
 
 ## Supported Editors
 
-VS Code, Cursor, and Windsurf. All three support managed workspaces via `rift code`.
+VS Code, Cursor\*, and Windsurf. All three support managed workspaces via `rift code`.
+
+\*Cursor is a VS Code fork and supports `.code-workspace` files, but has known rough edges — particularly around file association on macOS and multi-root workspace context for AI features.
 
 ## Supported Agents
 

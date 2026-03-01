@@ -3,5 +3,9 @@
   "private": true,
   "devDependencies": {
     "bootstrap": "^5.3.8"
+  },
+  "dependencies": {
+    "@videojs/themes": "^1.0.1",
+    "video.js": "^8.23.7"
   }
 }
