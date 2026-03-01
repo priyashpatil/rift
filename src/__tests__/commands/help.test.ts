@@ -63,9 +63,7 @@ describe("cmdVersion", () => {
     cmdVersion();
     expect(spy).toHaveBeenCalledTimes(1);
     const output = spy.mock.calls[0][0] as string;
-    expect(output).toMatch(
-      /^\d+\.\d+\.\d+ [a-z]+\/[a-z0-9]+$/,
-    );
+    expect(output).toMatch(/^\d+\.\d+\.\d+ [a-z]+\/[a-z0-9]+$/);
     spy.mockRestore();
   });
 });
