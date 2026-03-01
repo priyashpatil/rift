@@ -3,21 +3,7 @@ title: "Lifecycle Hooks"
 description: "Configure lifecycle hooks in rift.yaml to run commands on worktree events."
 ---
 
-Run `rift init` inside a git project to create a `rift.yaml` at the repo root. This file configures per-project settings and lifecycle hooks.
-
-## Project Overrides
-
-You can override the global `editor` and `agent` settings on a per-project basis:
-
-```yaml
-editor: cursor
-agent: claude
-hooks:
-  open: "bun install"
-```
-
-- **`editor`** — the editor command to use for this project (e.g. `code`, `cursor`, `windsurf`). Overrides the global config.
-- **`agent`** — the coding agent command to use for this project (e.g. `claude`, `copilot`, `codex`). Overrides the global config.
+Hooks are shell commands defined in [`rift.yaml`](/config/) that run at worktree lifecycle events.
 
 ## Hooks
 

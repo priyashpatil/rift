@@ -42,7 +42,7 @@ rift init --agent aider
 rift init --editor cursor --agent aider
 ```
 
-The generated `rift.yaml` includes commented-out hook examples. See [Hooks](/hooks/) for details on configuring lifecycle hooks.
+The generated `rift.yaml` includes commented-out hook examples. See [Config](/config/) for the full `rift.yaml` reference and [Hooks](/hooks/) for lifecycle hook patterns.
 
 ### `rift status`
 

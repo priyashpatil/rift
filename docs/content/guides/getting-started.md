@@ -146,9 +146,11 @@ agent: claude
 hooks:
   # open: bash scripts/bootstrap.sh
   # jump: bash scripts/bootstrap.sh
+# extra-workspaces:
+#   - /path/to/shared-lib
 ```
 
-Change settings with `rift config --editor cursor` or edit the file directly. See the [Hooks](/hooks/) page for the full reference and patterns.
+See the [Config](/config/) page for the full `rift.yaml` reference, and [Hooks](/hooks/) for lifecycle hook patterns.
 
 ### Global config
 
