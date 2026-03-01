@@ -12,7 +12,7 @@ import { cmdInit } from "./commands/init";
 import { cmdShellInit } from "./commands/shell-init";
 import { cmdConfig } from "./commands/config";
 import { cmdVersion } from "./commands/version";
-import { cmdUpdate } from "./commands/update";
+import { cmdUpdate, didUpdate } from "./commands/update";
 import { getAgentCommand } from "./config";
 import { cmdRunAgent } from "./commands/run-agent";
 import { checkForUpdates } from "./update-check";
@@ -84,7 +84,7 @@ try {
       process.exit(1);
   }
   // Check for updates after user-facing commands (skip internal/shell commands)
-  if (!command.startsWith("_")) {
+  if (!command.startsWith("_") && !didUpdate) {
     await checkForUpdates();
   }
 } catch (err) {

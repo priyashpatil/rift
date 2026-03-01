@@ -27,7 +27,7 @@ vi.mock("../../update-check", () => ({
   clearUpdateCache: mockClearUpdateCache,
 }));
 
-import { cmdUpdate } from "../../commands/update";
+import { cmdUpdate, didUpdate } from "../../commands/update";
 
 describe("cmdUpdate", () => {
   const originalFetch = globalThis.fetch;
@@ -87,6 +87,7 @@ describe("cmdUpdate", () => {
     expect(mockWriteFileSync).toHaveBeenCalled();
     expect(mockClearUpdateCache).toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("\nUpdated to 99.0.0!");
+    expect(didUpdate).toBe(true);
   });
 
   test("exits on fetch failure", async () => {

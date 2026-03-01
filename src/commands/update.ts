@@ -11,6 +11,8 @@ const PLATFORMS: Record<string, string> = {
   "linux-arm64": "rift-linux-arm64",
 };
 
+export let didUpdate = false;
+
 export async function cmdUpdate(): Promise<void> {
   console.log(`Current version: ${pkg.version}`);
   console.log("Checking for updates...\n");
@@ -93,5 +95,6 @@ export async function cmdUpdate(): Promise<void> {
   }
 
   clearUpdateCache();
+  didUpdate = true;
   console.log(`\nUpdated to ${latestVersion}!`);
 }
