@@ -62,7 +62,10 @@ describe("cmdVersion", () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
     cmdVersion();
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy.mock.calls[0][0]).toMatch(/^\d+\.\d+\.\d+/);
+    const output = spy.mock.calls[0][0] as string;
+    expect(output).toMatch(
+      /^\d+\.\d+\.\d+ [a-z]+\/[a-z0-9]+$/,
+    );
     spy.mockRestore();
   });
 });
