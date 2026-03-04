@@ -155,3 +155,15 @@ Optional. Stored at `~/.config/rift/config.yaml`. Sets defaults for `rift init` 
 ```bash
 rift config --global --editor cursor --agent copilot
 ```
+
+## Editor workspace trust
+
+VS Code, Cursor, and Windsurf prompt you to trust each new folder before allowing extensions and tasks to run. Since every rift worktree lives under `~/.rift/`, you can trust this folder once to silence all future prompts:
+
+1. Open the command palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
+2. Run **Workspaces: Manage Workspace Trust**
+3. Add `~/.rift` to the trusted folders list
+
+{{< callout type="tip" >}}
+Trusting `~/.rift` covers both worktrees (`~/.rift/worktrees/`) and workspace files (`~/.rift/workspaces/`), so you won't be prompted again for any project.
+{{< /callout >}}
