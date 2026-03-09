@@ -8,6 +8,7 @@ const {
   mockIsGitRepo,
   mockGetMainWorktree,
   mockGetProjectName,
+  mockListRiftWorktrees,
   mockSyncWorkspace,
   mockGetEditor,
 } = vi.hoisted(() => {
@@ -23,6 +24,9 @@ const {
     mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
     mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
     mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
+    mockListRiftWorktrees: vi.fn(() =>
+      Promise.resolve([{ path: "/worktrees/myproject/wt1", branch: "wt1" }]),
+    ),
     mockSyncWorkspace: vi.fn(() => Promise.resolve()),
     mockGetEditor: vi.fn(() => ({
       name: "VS Code",
@@ -36,6 +40,7 @@ vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
   getMainWorktree: mockGetMainWorktree,
   getProjectName: mockGetProjectName,
+  listRiftWorktrees: mockListRiftWorktrees,
 }));
 
 vi.mock("../../workspace", () => ({
@@ -71,6 +76,9 @@ describe("cmdCode", () => {
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockGetMainWorktree.mockClear().mockResolvedValue("/main/repo");
     mockGetProjectName.mockClear().mockResolvedValue("myproject");
+    mockListRiftWorktrees
+      .mockClear()
+      .mockResolvedValue([{ path: "/worktrees/myproject/wt1", branch: "wt1" }]);
     mockSyncWorkspace.mockClear().mockResolvedValue(undefined);
     mockGetEditor.mockClear().mockReturnValue({
       name: "VS Code",
@@ -101,6 +109,7 @@ describe("cmdCode", () => {
 
   test("syncs workspace for managed editors", async () => {
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     try {
       await cmdCode();
@@ -112,10 +121,11 @@ describe("cmdCode", () => {
       undefined,
     );
     logSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 
-  test("shows message when no workspace file exists", async () => {
-    // Don't create workspace file
+  test("shows message when no rift worktrees exist", async () => {
+    mockListRiftWorktrees.mockResolvedValue([]);
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdCode();
@@ -123,20 +133,34 @@ describe("cmdCode", () => {
     expect(logSpy).toHaveBeenCalledWith(
       "No worktrees found. Use 'rift open' first.",
     );
+    expect(mockSyncWorkspace).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
 
-  test("shows message when workspace has zero folders", async () => {
+  test("shows error when workspace file not created", async () => {
+    // syncWorkspace fails silently, file doesn't exist
+    mockSyncWorkspace.mockRejectedValue(new Error("sync failed"));
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await cmdCode();
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error: failed to create workspace file",
+    );
+    errorSpy.mockRestore();
+  });
+
+  test("shows error when workspace has zero folders", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, JSON.stringify({ folders: [] }, null, 2) + "\n");
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await cmdCode();
 
-    expect(logSpy).toHaveBeenCalledWith(
-      "No worktrees found. Use 'rift open' first.",
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error: workspace file is empty or corrupt",
     );
-    logSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 
   test("launches editor when workspace file has folders", async () => {
@@ -177,41 +201,31 @@ describe("cmdCode", () => {
     logSpy.mockRestore();
   });
 
-  test("handles workspace sync errors gracefully", async () => {
-    mockSyncWorkspace.mockRejectedValue(new Error("sync failed"));
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    // Should not throw
-    await cmdCode();
-
-    logSpy.mockRestore();
-  });
-
   test("handles workspace file missing folders property", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, JSON.stringify({ settings: {} }, null, 2) + "\n");
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await cmdCode();
 
-    expect(logSpy).toHaveBeenCalledWith(
-      "No worktrees found. Use 'rift open' first.",
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error: workspace file is empty or corrupt",
     );
-    logSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 
   test("handles invalid JSON in workspace file gracefully", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, "not valid json");
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     // Should handle the JSON parse error in the try/catch
     await cmdCode();
 
-    // With invalid JSON, count will be 0, so it shows "No worktrees found"
-    expect(logSpy).toHaveBeenCalledWith(
-      "No worktrees found. Use 'rift open' first.",
+    // With invalid JSON, count will be 0
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Error: workspace file is empty or corrupt",
     );
-    logSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 });
