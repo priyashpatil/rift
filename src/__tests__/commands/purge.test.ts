@@ -1,6 +1,10 @@
-import { describe, expect, test, vi, beforeEach } from "vitest";
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
+import { existsSync, mkdirSync, writeFileSync, rmSync } from "fs";
+import { join } from "path";
 
 const {
+  testDir,
+  testWorkspacesDir,
   mockIsGitRepo,
   mockGetMainWorktree,
   mockGetProjectName,
@@ -8,36 +12,44 @@ const {
   mockWorktreeRemove,
   mockBranchDelete,
   mockWorktreePrune,
-  mockSyncWorkspace,
   mockRunHook,
   mockWriteCdPath,
   mockPromptYesNo,
   mockGetEditor,
   mockRemoveProjectAgents,
-} = vi.hoisted(() => ({
-  mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
-  mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
-  mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
-  mockListRiftWorktrees: vi.fn(() =>
-    Promise.resolve([
-      { path: "/worktrees/myproject/bold-ant", branch: "bold-ant" },
-      { path: "/worktrees/myproject/calm-bee", branch: "calm-bee" },
-    ]),
-  ),
-  mockWorktreeRemove: vi.fn(() => Promise.resolve()),
-  mockBranchDelete: vi.fn(() => Promise.resolve(true)),
-  mockWorktreePrune: vi.fn(() => Promise.resolve()),
-  mockSyncWorkspace: vi.fn(() => Promise.resolve()),
-  mockRunHook: vi.fn(() => Promise.resolve()),
-  mockWriteCdPath: vi.fn(() => {}),
-  mockPromptYesNo: vi.fn(() => Promise.resolve(true)),
-  mockGetEditor: vi.fn(() => ({
-    name: "VS Code",
-    cmd: "code",
-    managedWorkspace: true,
-  })),
-  mockRemoveProjectAgents: vi.fn(() => []),
-}));
+} = vi.hoisted(() => {
+  const _join = (...parts: string[]) => parts.join("/");
+  const _testDir = _join(
+    require("os").tmpdir(),
+    `.rift-test-purge-${process.pid}`,
+  );
+  const _testWorkspacesDir = _join(_testDir, "workspaces");
+  return {
+    testDir: _testDir,
+    testWorkspacesDir: _testWorkspacesDir,
+    mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
+    mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
+    mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
+    mockListRiftWorktrees: vi.fn(() =>
+      Promise.resolve([
+        { path: "/worktrees/myproject/bold-ant", branch: "bold-ant" },
+        { path: "/worktrees/myproject/calm-bee", branch: "calm-bee" },
+      ]),
+    ),
+    mockWorktreeRemove: vi.fn(() => Promise.resolve()),
+    mockBranchDelete: vi.fn(() => Promise.resolve(true)),
+    mockWorktreePrune: vi.fn(() => Promise.resolve()),
+    mockRunHook: vi.fn(() => Promise.resolve()),
+    mockWriteCdPath: vi.fn(() => {}),
+    mockPromptYesNo: vi.fn(() => Promise.resolve(true)),
+    mockGetEditor: vi.fn(() => ({
+      name: "VS Code",
+      cmd: "code",
+      managedWorkspace: true,
+    })),
+    mockRemoveProjectAgents: vi.fn(() => []),
+  };
+});
 
 vi.mock("../../git", () => ({
   isGitRepo: mockIsGitRepo,
@@ -47,10 +59,6 @@ vi.mock("../../git", () => ({
   worktreeRemove: mockWorktreeRemove,
   branchDelete: mockBranchDelete,
   worktreePrune: mockWorktreePrune,
-}));
-
-vi.mock("../../workspace", () => ({
-  syncWorkspace: mockSyncWorkspace,
 }));
 
 vi.mock("../../hooks", () => ({
@@ -67,11 +75,22 @@ vi.mock("../../prompt", () => ({
 
 vi.mock("../../config", () => ({
   getEditor: mockGetEditor,
-  getRiftConfig: vi.fn(() => Promise.resolve({})),
   getGlobalConfig: vi.fn(() => ({})),
   saveGlobalConfig: vi.fn(() => {}),
   getAgentCommand: vi.fn(() => "claude"),
   EDITORS: [],
+}));
+
+vi.mock("../../constants", () => ({
+  WORKSPACES_DIR: testWorkspacesDir,
+  WORKTREES_DIR: testDir + "/worktrees",
+  RIFT_DIR: testDir,
+  CONFIG_DIR: testDir + "/config",
+  GLOBAL_CONFIG_PATH: testDir + "/config/config.yaml",
+  CD_PATH_FILE: testDir + "/.rift_cd_path",
+  AGENT_START_FILE: testDir + "/.rift_start_agent",
+  ADJECTIVES: ["bold"],
+  NOUNS: ["ant"],
 }));
 
 vi.mock("../../agents", () => ({
@@ -82,6 +101,7 @@ import { cmdPurge } from "../../commands/purge";
 
 describe("cmdPurge", () => {
   beforeEach(() => {
+    mkdirSync(testWorkspacesDir, { recursive: true });
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockGetMainWorktree.mockClear().mockResolvedValue("/main/repo");
     mockGetProjectName.mockClear().mockResolvedValue("myproject");
@@ -92,7 +112,6 @@ describe("cmdPurge", () => {
     mockWorktreeRemove.mockClear().mockResolvedValue(undefined);
     mockBranchDelete.mockClear().mockResolvedValue(true);
     mockWorktreePrune.mockClear().mockResolvedValue(undefined);
-    mockSyncWorkspace.mockClear().mockResolvedValue(undefined);
     mockRunHook.mockClear().mockResolvedValue(undefined);
     mockWriteCdPath.mockClear();
     mockPromptYesNo.mockClear().mockResolvedValue(true);
@@ -102,6 +121,10 @@ describe("cmdPurge", () => {
       managedWorkspace: true,
     });
     mockRemoveProjectAgents.mockClear().mockReturnValue([]);
+  });
+
+  afterEach(() => {
+    rmSync(testDir, { recursive: true, force: true });
   });
 
   test("exits with error when not in a git repo", async () => {
@@ -208,20 +231,20 @@ describe("cmdPurge", () => {
     errorSpy.mockRestore();
   });
 
-  test("syncs workspace after purge", async () => {
+  test("deletes workspace file after purge", async () => {
+    const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
+    writeFileSync(wsPath, JSON.stringify({ folders: [] }));
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdPurge(["-f"]);
 
-    expect(mockSyncWorkspace).toHaveBeenCalledWith(
-      "myproject",
-      "/main/repo",
-      undefined,
-    );
+    expect(existsSync(wsPath)).toBe(false);
     logSpy.mockRestore();
   });
 
-  test("skips workspace sync when editor is not managed", async () => {
+  test("skips workspace cleanup when editor is not managed", async () => {
+    const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
+    writeFileSync(wsPath, JSON.stringify({ folders: [] }));
     mockGetEditor.mockReturnValue({
       name: "Other",
       cmd: "other",
@@ -231,7 +254,7 @@ describe("cmdPurge", () => {
 
     await cmdPurge(["-f"]);
 
-    expect(mockSyncWorkspace).not.toHaveBeenCalled();
+    expect(existsSync(wsPath)).toBe(true);
     logSpy.mockRestore();
   });
 
