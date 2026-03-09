@@ -78,9 +78,7 @@ describe("cmdCode", () => {
     mockGetProjectName.mockClear().mockResolvedValue("myproject");
     mockListRiftWorktrees
       .mockClear()
-      .mockResolvedValue([
-        { path: "/worktrees/myproject/wt1", branch: "wt1" },
-      ]);
+      .mockResolvedValue([{ path: "/worktrees/myproject/wt1", branch: "wt1" }]);
     mockSyncWorkspace.mockClear().mockResolvedValue(undefined);
     mockGetEditor.mockClear().mockReturnValue({
       name: "VS Code",
@@ -111,9 +109,7 @@ describe("cmdCode", () => {
 
   test("syncs workspace for managed editors", async () => {
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-    const errorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     try {
       await cmdCode();
@@ -144,9 +140,7 @@ describe("cmdCode", () => {
   test("shows error when workspace file not created", async () => {
     // syncWorkspace fails silently, file doesn't exist
     mockSyncWorkspace.mockRejectedValue(new Error("sync failed"));
-    const errorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await cmdCode();
 
@@ -159,9 +153,7 @@ describe("cmdCode", () => {
   test("shows error when workspace has zero folders", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, JSON.stringify({ folders: [] }, null, 2) + "\n");
-    const errorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await cmdCode();
 
@@ -212,9 +204,7 @@ describe("cmdCode", () => {
   test("handles workspace file missing folders property", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, JSON.stringify({ settings: {} }, null, 2) + "\n");
-    const errorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await cmdCode();
 
@@ -227,9 +217,7 @@ describe("cmdCode", () => {
   test("handles invalid JSON in workspace file gracefully", async () => {
     const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
     writeFileSync(wsPath, "not valid json");
-    const errorSpy = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     // Should handle the JSON parse error in the try/catch
     await cmdCode();
