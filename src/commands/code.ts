@@ -1,7 +1,12 @@
 import { existsSync, readFileSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-import { isGitRepo, getMainWorktree, getProjectName } from "../git";
+import {
+  isGitRepo,
+  getMainWorktree,
+  getProjectName,
+  listRiftWorktrees,
+} from "../git";
 import { WORKSPACES_DIR } from "../constants";
 import { syncWorkspace } from "../workspace";
 import { getEditor, getRiftConfig } from "../config";
@@ -17,6 +22,12 @@ export async function cmdCode(): Promise<void> {
   const editor = await getEditor();
 
   if (editor.managedWorkspace) {
+    const worktrees = await listRiftWorktrees(mainRepo, project);
+    if (worktrees.length === 0) {
+      console.log("No worktrees found. Use 'rift open' first.");
+      return;
+    }
+
     const wsPath = join(WORKSPACES_DIR, `${project}.code-workspace`);
 
     try {
@@ -25,7 +36,7 @@ export async function cmdCode(): Promise<void> {
     } catch {}
 
     if (!existsSync(wsPath)) {
-      console.log("No worktrees found. Use 'rift open' first.");
+      console.error("Error: failed to create workspace file");
       return;
     }
 
@@ -36,7 +47,7 @@ export async function cmdCode(): Promise<void> {
     } catch {}
 
     if (count === 0) {
-      console.log("No worktrees found. Use 'rift open' first.");
+      console.error("Error: workspace file is empty or corrupt");
       return;
     }
 
