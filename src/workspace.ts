@@ -53,11 +53,12 @@ export async function syncWorkspace(
     }
   }
 
+  let base: WorkspaceFile = { folders };
   if (existsSync(wsPath)) {
-    const existing: WorkspaceFile = JSON.parse(readFileSync(wsPath, "utf-8"));
-    existing.folders = folders;
-    writeFileSync(wsPath, JSON.stringify(existing, null, 2) + "\n");
-  } else {
-    writeFileSync(wsPath, JSON.stringify({ folders }, null, 2) + "\n");
+    try {
+      base = JSON.parse(readFileSync(wsPath, "utf-8")) as WorkspaceFile;
+    } catch {}
   }
+  base.folders = folders;
+  writeFileSync(wsPath, JSON.stringify(base, null, 2) + "\n");
 }

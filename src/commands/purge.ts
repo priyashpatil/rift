@@ -1,4 +1,5 @@
-import { basename } from "path";
+import { unlinkSync } from "fs";
+import { basename, join } from "path";
 import {
   isGitRepo,
   getMainWorktree,
@@ -8,12 +9,12 @@ import {
   branchDelete,
   worktreePrune,
 } from "../git";
-import { syncWorkspace } from "../workspace";
 import { runHook } from "../hooks";
 import { writeCdPath } from "../ipc";
 import { promptYesNo } from "../prompt";
-import { getEditor, getRiftConfig } from "../config";
+import { getEditor } from "../config";
 import { removeProjectAgents } from "../agents";
+import { WORKSPACES_DIR } from "../constants";
 
 export async function cmdPurge(args: string[]): Promise<void> {
   const force = args.includes("-f") || args.includes("--force");
@@ -71,9 +72,9 @@ export async function cmdPurge(args: string[]): Promise<void> {
   await worktreePrune(mainRepo);
 
   if ((await getEditor()).managedWorkspace) {
-    const config = await getRiftConfig(mainRepo);
+    const wsPath = join(WORKSPACES_DIR, `${project}.code-workspace`);
     try {
-      await syncWorkspace(project, mainRepo, config["extra-workspaces"]);
+      unlinkSync(wsPath);
     } catch {}
   }
 
