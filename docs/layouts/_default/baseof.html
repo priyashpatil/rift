@@ -15,12 +15,17 @@
     <meta property="og:url" content="{{ .Permalink }}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ .Site.Title }}">
+    <meta property="og:image" content="{{ .Site.BaseURL }}images/logo-512.png">
 
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}">
     <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <meta name="twitter:image" content="{{ .Site.BaseURL }}images/logo-512.png">
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,{{ `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230d1117'/><text x='16' y='24' text-anchor='middle' font-family='monospace' font-weight='700' font-size='24' fill='%2300ff41'>R</text></svg>` }}">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
 
     {{ $scss := resources.Get "sass/site.scss" }}
     {{ $style := $scss | toCSS (dict "includePaths" (slice "node_modules")) | minify | fingerprint }}
