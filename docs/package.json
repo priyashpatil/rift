@@ -4,6 +4,11 @@
   "devDependencies": {
     "bootstrap": "^5.3.8"
   },
+  "overrides": {
+    "@xmldom/xmldom": "^0.8.12",
+    "nth-check": "^2.0.1",
+    "postcss": "^8.4.31"
+  },
   "dependencies": {
     "@videojs/themes": "^1.0.1",
     "video.js": "^8.23.7"
