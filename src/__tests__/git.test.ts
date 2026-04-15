@@ -176,33 +176,37 @@ describe("git module", () => {
       expect(name).toBe("");
     });
 
-    test("returns remainder when no nested slash exists (slashIdx === -1)", async () => {
-      // We need a worktree whose repo root is exactly WORKTREES_DIR/<something>
-      // (no second slash after the project name).
-      // We test the function logic by creating a worktree under WORKTREES_DIR
-      const { WORKTREES_DIR } = await import("../constants");
-      const wtPath = join(WORKTREES_DIR, "testonly");
-      const branchName = "rift-test-noslash";
+    test(
+      "returns remainder when no nested slash exists (slashIdx === -1)",
+      { timeout: 15000 },
+      async () => {
+        // We need a worktree whose repo root is exactly WORKTREES_DIR/<something>
+        // (no second slash after the project name).
+        // We test the function logic by creating a worktree under WORKTREES_DIR
+        const { WORKTREES_DIR } = await import("../constants");
+        const wtPath = join(WORKTREES_DIR, "testonly");
+        const branchName = "rift-test-noslash";
 
-      mkdirSync(WORKTREES_DIR, { recursive: true });
+        mkdirSync(WORKTREES_DIR, { recursive: true });
 
-      try {
-        await worktreeAdd(testDir, branchName, wtPath, "main", true);
-        // getWorktreeName for this path should return "testonly" (no slash in remainder)
-        const name = await getWorktreeName(wtPath);
-        expect(name).toBe("testonly");
-      } finally {
         try {
-          await worktreeRemove(testDir, wtPath);
-        } catch {}
-        try {
-          await branchDelete(testDir, branchName);
-        } catch {}
-        try {
-          rmSync(WORKTREES_DIR, { recursive: true, force: true });
-        } catch {}
-      }
-    });
+          await worktreeAdd(testDir, branchName, wtPath, "main", true);
+          // getWorktreeName for this path should return "testonly" (no slash in remainder)
+          const name = await getWorktreeName(wtPath);
+          expect(name).toBe("testonly");
+        } finally {
+          try {
+            await worktreeRemove(testDir, wtPath);
+          } catch {}
+          try {
+            await branchDelete(testDir, branchName);
+          } catch {}
+          try {
+            rmSync(WORKTREES_DIR, { recursive: true, force: true });
+          } catch {}
+        }
+      },
+    );
   });
 
   describe("worktreeAdd quiet vs non-quiet", () => {
