@@ -1,5 +1,7 @@
 # Rift
 
+> Pacakge is Deprecated: Codex and Zed now has built in support for worktrees and I've also moved to Zed + Codex ACP so I won't be contributing to this. Feel free to fork and extend.
+
 [![codecov](https://codecov.io/gh/priyashpatil/rift/graph/badge.svg)](https://codecov.io/gh/priyashpatil/rift)
 
 Git worktree manager for parallel AI agent development.
