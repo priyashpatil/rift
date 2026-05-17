@@ -13,19 +13,9 @@ features:
     description: "Deterministic hash-based port mapping means every worktree runs services simultaneously without collisions."
   - title: "Hooks that handle the busywork"
     description: "Auto-install deps, seed databases, assign ports — all triggered by worktree lifecycle events."
-  - title: "One workspace, all worktrees"
-    description: "rift code opens every active worktree in a single VS Code, Cursor*, or Windsurf workspace."
   - title: "Launch and go"
     description: "rift open creates the branch, sets up the worktree, and drops you in with your agent running."
 ---
-
-## Supported editors
-
-VS Code, Cursor\*, and Windsurf. All three support managed workspaces — `rift code` creates a `.code-workspace` file that includes all active worktrees.
-
-\*Cursor is a VS Code fork and supports `.code-workspace` files, but has known rough edges — particularly around file association on macOS and multi-root workspace context for AI features.
-
-> **JetBrains IDEs and Zed** have multi-root workspace support that is either in early stages or only partially implemented. Rift does not have built-in support for these editors at the moment. You can still use them by setting a custom editor command in `rift.yaml`, but `rift code` won't manage a shared workspace file for them.
 
 ## Supported agents
 

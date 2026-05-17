@@ -1,7 +1,5 @@
 export interface RiftConfig {
-  editor?: string;
   agent?: string;
-  "extra-workspaces"?: string[];
   hooks?: {
     open?: string;
     jump?: string;
@@ -12,18 +10,11 @@ export interface RiftConfig {
 
 export interface GlobalConfig {
   agent?: string;
-  editor?: string;
 }
 
 export interface WorktreeInfo {
   path: string;
   branch: string;
-}
-
-export interface Editor {
-  name: string;
-  cmd: string;
-  managedWorkspace: boolean;
 }
 
 export interface AgentRegistration {

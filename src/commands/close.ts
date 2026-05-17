@@ -9,11 +9,9 @@ import {
   worktreeRemove,
   branchDelete,
 } from "../git";
-import { syncWorkspace } from "../workspace";
 import { runHook } from "../hooks";
 import { writeCdPath } from "../ipc";
 import { promptYesNo } from "../prompt";
-import { getEditor, getRiftConfig } from "../config";
 import { removeWorktreeAgents } from "../agents";
 
 export async function cmdClose(args: string[]): Promise<void> {
@@ -64,13 +62,6 @@ export async function cmdClose(args: string[]): Promise<void> {
     console.log(`Deleted branch: ${branch}`);
   } else {
     console.error(`Warning: failed to delete branch ${branch}`);
-  }
-
-  if ((await getEditor()).managedWorkspace) {
-    const config = await getRiftConfig(mainRepo);
-    try {
-      await syncWorkspace(project, mainRepo, config["extra-workspaces"]);
-    } catch {}
   }
 
   writeCdPath(mainRepo);

@@ -16,7 +16,6 @@ describe("cmdHelp", () => {
     expect(output).toContain("list");
     expect(output).toContain("close");
     expect(output).toContain("jump");
-    expect(output).toContain("code");
     expect(output).toContain("purge");
     expect(output).toContain("config");
     expect(output).toContain("init");
@@ -24,6 +23,7 @@ describe("cmdHelp", () => {
     expect(output).toContain("--base");
     expect(output).toContain("--skip-agent");
     expect(output).toContain("--force");
+    expect(output).not.toContain(["rift", "code"].join(" "));
     spy.mockRestore();
   });
 });

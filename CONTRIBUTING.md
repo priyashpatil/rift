@@ -40,7 +40,6 @@ src/
 ├── config.ts         # Config loading (rift.yaml + global)
 ├── git.ts            # Git operations wrapper
 ├── hooks.ts          # Lifecycle hook runner
-├── workspace.ts      # VS Code workspace sync
 ├── ipc.ts            # Shell ↔ CLI communication
 ├── names.ts          # Random name generator
 ├── prompt.ts         # Interactive prompts

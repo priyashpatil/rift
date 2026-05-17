@@ -2,7 +2,6 @@ import { describe, expect, test } from "vitest";
 import {
   RIFT_DIR,
   WORKTREES_DIR,
-  WORKSPACES_DIR,
   AGENTS_DIR,
   CONFIG_DIR,
   GLOBAL_CONFIG_PATH,
@@ -15,10 +14,6 @@ import {
 describe("constants", () => {
   test("WORKTREES_DIR is under RIFT_DIR", () => {
     expect(WORKTREES_DIR).toBe(`${RIFT_DIR}/worktrees`);
-  });
-
-  test("WORKSPACES_DIR is under RIFT_DIR", () => {
-    expect(WORKSPACES_DIR).toBe(`${RIFT_DIR}/workspaces`);
   });
 
   test("AGENTS_DIR ends with .rift/agents", () => {

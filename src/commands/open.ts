@@ -9,10 +9,9 @@ import {
 } from "../git";
 import { RIFT_DIR, WORKTREES_DIR } from "../constants";
 import { generateName } from "../names";
-import { syncWorkspace } from "../workspace";
 import { runHook } from "../hooks";
 import { writeCdPath, signalAgentStart } from "../ipc";
-import { getEditor, getRiftConfig, warnIfAgentMissing } from "../config";
+import { warnIfAgentMissing } from "../config";
 import { validateWorktreeName, validateBranchName } from "../validate";
 
 export async function cmdOpen(args: string[]): Promise<void> {
@@ -71,13 +70,6 @@ export async function cmdOpen(args: string[]): Promise<void> {
   console.log(`Created worktree: ${name}`);
   console.log(`Branch: ${name} (based on ${base})`);
   console.log(`Path: ${wtPath}`);
-
-  if ((await getEditor()).managedWorkspace) {
-    const config = await getRiftConfig(mainRepo);
-    try {
-      await syncWorkspace(project, mainRepo, config["extra-workspaces"]);
-    } catch {}
-  }
 
   if (!skipHooks) await runHook("open", wtPath);
   if (process.env.RIFT_SHELL_PID) {

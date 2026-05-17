@@ -8,7 +8,7 @@ const {
   mockGetMainWorktree,
 } = vi.hoisted(() => ({
   mockExistsSync: vi.fn(() => true),
-  mockReadFileSync: vi.fn(() => "agent: codex\neditor: code\n"),
+  mockReadFileSync: vi.fn(() => "agent: codex\n"),
   mockWriteFileSync: vi.fn(() => {}),
   mockMkdirSync: vi.fn(() => undefined as any),
   mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
@@ -39,7 +39,6 @@ import {
   getGlobalConfig,
   saveGlobalConfig,
   getAgentCommand,
-  getEditor,
   warnIfAgentMissing,
 } from "../config";
 
@@ -47,9 +46,7 @@ describe("config (mocked)", () => {
   beforeEach(() => {
     mockGetMainWorktree.mockClear().mockResolvedValue("/main/repo");
     mockExistsSync.mockClear().mockReturnValue(true);
-    mockReadFileSync
-      .mockClear()
-      .mockReturnValue("agent: codex\neditor: code\n");
+    mockReadFileSync.mockClear().mockReturnValue("agent: codex\n");
     mockWriteFileSync.mockClear();
     mockMkdirSync.mockClear();
   });
@@ -57,7 +54,7 @@ describe("config (mocked)", () => {
   describe("getRiftConfig", () => {
     test("returns parsed config when rift.yaml exists", async () => {
       const config = await getRiftConfig();
-      expect(config).toEqual({ agent: "codex", editor: "code" });
+      expect(config).toEqual({ agent: "codex" });
     });
 
     test("returns empty object when config file doesn't exist", async () => {
@@ -96,14 +93,13 @@ describe("config (mocked)", () => {
 
     test("merges updates with existing config", async () => {
       mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue("agent: codex\neditor: code\n");
+      mockReadFileSync.mockReturnValue("agent: codex\n");
 
       await saveRiftConfig({ agent: "aider" });
 
       expect(mockWriteFileSync).toHaveBeenCalled();
       const written = mockWriteFileSync.mock.calls[0][1] as string;
       expect(written).toContain("aider");
-      expect(written).toContain("code");
     });
   });
 
@@ -116,9 +112,9 @@ describe("config (mocked)", () => {
 
     test("returns parsed config when file exists", () => {
       mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue("editor: cursor\n");
+      mockReadFileSync.mockReturnValue("agent: amp\n");
       const config = getGlobalConfig();
-      expect(config).toEqual({ editor: "cursor" });
+      expect(config).toEqual({ agent: "amp" });
     });
 
     test("returns empty object on parse error", () => {
@@ -152,20 +148,6 @@ describe("config (mocked)", () => {
       mockExistsSync.mockReturnValue(false);
       const cmd = await getAgentCommand();
       expect(cmd).toBe("codex");
-    });
-  });
-
-  describe("getEditor", () => {
-    test("returns editor from project config", async () => {
-      mockReadFileSync.mockReturnValue("editor: cursor\n");
-      const editor = await getEditor();
-      expect(editor.cmd).toBe("cursor");
-    });
-
-    test("falls back to default editor", async () => {
-      mockExistsSync.mockReturnValue(false);
-      const editor = await getEditor();
-      expect(editor.cmd).toBe("code");
     });
   });
 

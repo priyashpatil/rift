@@ -6,7 +6,6 @@ import { cmdOpen } from "./commands/open";
 import { cmdList } from "./commands/list";
 import { cmdClose } from "./commands/close";
 import { cmdJump } from "./commands/jump";
-import { cmdCode } from "./commands/code";
 import { cmdPurge } from "./commands/purge";
 import { cmdInit } from "./commands/init";
 import { cmdShellInit } from "./commands/shell-init";
@@ -43,9 +42,6 @@ try {
       break;
     case "jump":
       await cmdJump(rest);
-      break;
-    case "code":
-      await cmdCode();
       break;
     case "purge":
       await cmdPurge(rest);

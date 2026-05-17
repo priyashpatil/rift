@@ -42,6 +42,14 @@ describe("validateBranchName", () => {
     expect(() => validateBranchName("--upload-pack")).toThrow("must not start");
   });
 
+  it("rejects empty branch names", () => {
+    expect(() => validateBranchName("")).toThrow();
+  });
+
+  it("rejects branch names exceeding 200 characters", () => {
+    expect(() => validateBranchName("a".repeat(201))).toThrow();
+  });
+
   it("rejects branch names with shell metacharacters", () => {
     expect(() => validateBranchName("main;echo hacked")).toThrow();
     expect(() => validateBranchName("$(cmd)")).toThrow();

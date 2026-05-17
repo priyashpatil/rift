@@ -3,15 +3,7 @@ import { join } from "path";
 import yaml from "js-yaml";
 import { CONFIG_DIR, GLOBAL_CONFIG_PATH } from "./constants";
 import { getMainWorktree } from "./git";
-import type { RiftConfig, GlobalConfig, Editor } from "./types";
-
-export const EDITORS: Editor[] = [
-  { name: "VS Code", cmd: "code", managedWorkspace: true },
-  { name: "Cursor", cmd: "cursor", managedWorkspace: true },
-  { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
-];
-
-const DEFAULT_EDITOR: Editor = EDITORS.find((e) => e.cmd === "code")!;
+import type { RiftConfig, GlobalConfig } from "./types";
 
 export async function getRiftConfig(dir = "."): Promise<RiftConfig> {
   try {
@@ -69,13 +61,4 @@ export async function warnIfAgentMissing(): Promise<void> {
   if (!Bun.which(bin)) {
     console.error(`Warning: agent command "${bin}" not found on PATH`);
   }
-}
-
-export async function getEditor(): Promise<Editor> {
-  const riftConfig = await getRiftConfig();
-  if (riftConfig.editor) {
-    return EDITORS.find((e) => e.cmd === riftConfig.editor) || DEFAULT_EDITOR;
-  }
-  const config = getGlobalConfig();
-  return EDITORS.find((e) => e.cmd === config.editor) || DEFAULT_EDITOR;
 }

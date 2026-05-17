@@ -10,11 +10,9 @@ const {
   mockGetCurrentBranch,
   mockWorktreeRemove,
   mockBranchDelete,
-  mockSyncWorkspace,
   mockRunHook,
   mockWriteCdPath,
   mockPromptYesNo,
-  mockGetEditor,
   mockRemoveWorktreeAgents,
 } = vi.hoisted(() => ({
   mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
@@ -28,15 +26,9 @@ const {
   mockGetCurrentBranch: vi.fn(() => Promise.resolve("bold-ant")),
   mockWorktreeRemove: vi.fn(() => Promise.resolve()),
   mockBranchDelete: vi.fn(() => Promise.resolve(true)),
-  mockSyncWorkspace: vi.fn(() => Promise.resolve()),
   mockRunHook: vi.fn(() => Promise.resolve()),
   mockWriteCdPath: vi.fn(() => {}),
   mockPromptYesNo: vi.fn(() => Promise.resolve(true)),
-  mockGetEditor: vi.fn(() => ({
-    name: "VS Code",
-    cmd: "code",
-    managedWorkspace: true,
-  })),
   mockRemoveWorktreeAgents: vi.fn(() => []),
 }));
 
@@ -52,10 +44,6 @@ vi.mock("../../git", () => ({
   branchDelete: mockBranchDelete,
 }));
 
-vi.mock("../../workspace", () => ({
-  syncWorkspace: mockSyncWorkspace,
-}));
-
 vi.mock("../../hooks", () => ({
   runHook: mockRunHook,
 }));
@@ -66,15 +54,6 @@ vi.mock("../../ipc", () => ({
 
 vi.mock("../../prompt", () => ({
   promptYesNo: mockPromptYesNo,
-}));
-
-vi.mock("../../config", () => ({
-  getEditor: mockGetEditor,
-  getRiftConfig: vi.fn(() => Promise.resolve({})),
-  getGlobalConfig: vi.fn(() => ({})),
-  saveGlobalConfig: vi.fn(() => {}),
-  getAgentCommand: vi.fn(() => "codex"),
-  EDITORS: [],
 }));
 
 vi.mock("../../agents", () => ({
@@ -96,15 +75,9 @@ describe("cmdClose", () => {
     mockGetCurrentBranch.mockClear().mockResolvedValue("bold-ant");
     mockWorktreeRemove.mockClear().mockResolvedValue(undefined);
     mockBranchDelete.mockClear().mockResolvedValue(true);
-    mockSyncWorkspace.mockClear().mockResolvedValue(undefined);
     mockRunHook.mockClear().mockResolvedValue(undefined);
     mockWriteCdPath.mockClear();
     mockPromptYesNo.mockClear().mockResolvedValue(true);
-    mockGetEditor.mockClear().mockReturnValue({
-      name: "VS Code",
-      cmd: "code",
-      managedWorkspace: true,
-    });
     mockRemoveWorktreeAgents.mockClear().mockReturnValue([]);
   });
 
@@ -183,7 +156,7 @@ describe("cmdClose", () => {
     logSpy.mockRestore();
   });
 
-  test("removes worktree, deletes branch, syncs workspace", async () => {
+  test("removes worktree, deletes branch, and returns to main repo", async () => {
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdClose(["-f"]);
@@ -197,11 +170,6 @@ describe("cmdClose", () => {
       "/worktrees/myproject/bold-ant",
     );
     expect(mockBranchDelete).toHaveBeenCalledWith("/main/repo", "bold-ant");
-    expect(mockSyncWorkspace).toHaveBeenCalledWith(
-      "myproject",
-      "/main/repo",
-      undefined,
-    );
     expect(mockWriteCdPath).toHaveBeenCalledWith("/main/repo");
     logSpy.mockRestore();
   });
@@ -218,20 +186,6 @@ describe("cmdClose", () => {
     );
     logSpy.mockRestore();
     errorSpy.mockRestore();
-  });
-
-  test("skips workspace sync when editor is not managed", async () => {
-    mockGetEditor.mockReturnValue({
-      name: "Other",
-      cmd: "other",
-      managedWorkspace: false,
-    });
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdClose(["-f"]);
-
-    expect(mockSyncWorkspace).not.toHaveBeenCalled();
-    logSpy.mockRestore();
   });
 
   test("removes worktree agent registrations before closing", async () => {
