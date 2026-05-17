@@ -24,7 +24,7 @@ function generateConfig(editor: string, agent: string): string {
 editor: ${editor}
 
 # AI coding agent to launch in new worktrees (any CLI command).
-# Examples: codex, amp, claude, aider, copilot
+# Examples: codex, amp, claude, opencode, aider, copilot
 agent: ${agent}
 
 # Hooks run shell commands at worktree lifecycle events.

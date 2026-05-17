@@ -6,7 +6,7 @@
 editor: code
 
 # AI coding agent to launch in new worktrees.
-# Options: codex, amp, claude, cn, copilot, gemini, kiro-cli, opencode
+# Options: codex, amp, claude, opencode, cn, copilot, gemini, kiro-cli
 agent: codex
 
 # Hooks run shell commands at worktree lifecycle events.

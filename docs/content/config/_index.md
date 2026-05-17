@@ -15,7 +15,7 @@ Created by `rift init` at the root of your git repository. This is the primary c
 editor: code
 
 # AI coding agent to launch in new worktrees (any CLI command).
-# Examples: codex, amp, claude, aider, copilot
+# Examples: codex, amp, claude, opencode, aider, copilot
 agent: codex
 
 # Extra folders to include in the generated .code-workspace file.
@@ -65,6 +65,11 @@ agent: amp
 ```yaml
 # Command with arguments
 agent: claude --model opus
+```
+
+```yaml
+# Another alternate command
+agent: opencode
 ```
 
 **Default:** `codex`

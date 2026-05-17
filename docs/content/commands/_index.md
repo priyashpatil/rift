@@ -18,6 +18,7 @@ rift config --editor cursor
 rift config --agent codex
 rift config --agent amp
 rift config --agent "claude --model opus"
+rift config --agent opencode
 
 # Set global defaults (for new projects)
 rift config --global --editor cursor --agent codex

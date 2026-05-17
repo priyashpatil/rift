@@ -54,7 +54,7 @@ Initialize a rift.yaml configuration file in the current git project.
 
 Options:
   --editor <cmd>    Editor command (e.g. "code", "cursor")
-  --agent <cmd>     AI agent command — any CLI command (e.g. "codex", "amp")`,
+  --agent <cmd>     AI agent command — any CLI command (e.g. "codex", "opencode")`,
 
   config: `Usage: rift config [options]
 
@@ -63,7 +63,7 @@ By default, writes to project-level rift.yaml. Use --global for global defaults.
 
 Options:
   --editor <cmd>    Set editor (e.g. "code", "cursor", "windsurf")
-  --agent <cmd>     Set AI agent — any CLI command (e.g. "codex", "amp")
+  --agent <cmd>     Set AI agent — any CLI command (e.g. "codex", "opencode")
   --global          Write to global config (~/.config/rift/config.yaml)
 
 Run without flags to set up shell integration and show current config.`,
