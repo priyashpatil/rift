@@ -6,7 +6,6 @@ import {
   saveGlobalConfig,
   getRiftConfig,
   saveRiftConfig,
-  EDITORS,
 } from "../config";
 import { isGitRepo } from "../git";
 
@@ -25,18 +24,11 @@ function detectShell(): string {
 
 function getRcPath(shell: string): string {
   const home = homedir();
-  switch (shell) {
-    case "zsh":
-      return join(home, ".zshrc");
-    case "bash": {
-      const bashrc = join(home, ".bashrc");
-      return existsSync(bashrc) ? bashrc : join(home, ".bash_profile");
-    }
-    case "fish":
-      return join(home, ".config", "fish", "config.fish");
-    default:
-      throw new Error(`no rc path for shell "${shell}"`);
-  }
+  if (shell === "zsh") return join(home, ".zshrc");
+  if (shell === "fish") return join(home, ".config", "fish", "config.fish");
+
+  const bashrc = join(home, ".bashrc");
+  return existsSync(bashrc) ? bashrc : join(home, ".bash_profile");
 }
 
 function getInitLine(shell: string): string {
@@ -45,17 +37,14 @@ function getInitLine(shell: string): string {
 }
 
 function parseFlags(args: string[]): {
-  editor?: string;
   agent?: string;
   global: boolean;
 } {
-  const flags: { editor?: string; agent?: string; global: boolean } = {
+  const flags: { agent?: string; global: boolean } = {
     global: false,
   };
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--editor" && args[i + 1]) {
-      flags.editor = args[++i];
-    } else if (args[i] === "--agent" && args[i + 1]) {
+    if (args[i] === "--agent" && args[i + 1]) {
       flags.agent = args[++i];
     } else if (args[i] === "--global") {
       flags.global = true;
@@ -87,23 +76,12 @@ export async function cmdConfig(args: string[]): Promise<void> {
   const flags = parseFlags(args);
   let changed = false;
 
-  if (flags.editor) {
-    if (!EDITORS.some((e) => e.cmd === flags.editor)) {
-      const valid = EDITORS.map((e) => e.cmd).join(", ");
-      throw new Error(
-        `unknown editor "${flags.editor}". Available editors: ${valid}`,
-      );
-    }
-    changed = true;
-  }
-
   if (flags.agent) {
     changed = true;
   }
 
   if (changed) {
     const updates: Record<string, string> = {};
-    if (flags.editor) updates.editor = flags.editor;
     if (flags.agent) updates.agent = flags.agent;
 
     if (flags.global) {
@@ -126,11 +104,7 @@ export async function cmdConfig(args: string[]): Promise<void> {
   const riftConfig = (await isGitRepo()) ? await getRiftConfig() : {};
   const globalConfig = getGlobalConfig();
 
-  const editorCmd = riftConfig.editor || globalConfig.editor || "code";
   const agentCmd = riftConfig.agent || globalConfig.agent || "codex";
-  const editorName =
-    EDITORS.find((e) => e.cmd === editorCmd)?.name || editorCmd;
 
-  console.log(`  editor: ${editorName} [${editorCmd}]`);
   console.log(`  agent:  ${agentCmd}`);
 }

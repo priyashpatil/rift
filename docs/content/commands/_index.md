@@ -11,9 +11,6 @@ Set up shell integration and configure preferences. By default writes to the pro
 # Set up shell integration and show current config
 rift config
 
-# Set editor in project config (rift.yaml)
-rift config --editor cursor
-
 # Set agent in project config (any CLI command)
 rift config --agent codex
 rift config --agent amp
@@ -21,27 +18,21 @@ rift config --agent "claude --model opus"
 rift config --agent opencode
 
 # Set global defaults (for new projects)
-rift config --global --editor cursor --agent codex
+rift config --global --agent codex
 ```
 
-Running without flags detects your shell, adds the Rift shell wrapper to your RC file, and prints the current editor and agent. Use `--editor` and `--agent` flags to change them. A `rift.yaml` must exist for project-level changes — run `rift init` first.
+Running without flags detects your shell, adds the Rift shell wrapper to your RC file, and prints the current agent. Use `--agent` to change it. A `rift.yaml` must exist for project-level changes — run `rift init` first.
 
 ## `rift init`
 
-Initialize a `rift.yaml` in the current git project. The editor defaults to VS Code and the agent to Codex, unless overridden by global config.
+Initialize a `rift.yaml` in the current git project. The agent defaults to Codex, unless overridden by global config.
 
 ```bash
 # Use global defaults
 rift init
 
-# Override editor
-rift init --editor cursor
-
 # Override agent (any CLI command)
 rift init --agent amp
-
-# Override both
-rift init --editor cursor --agent amp
 ```
 
 The generated `rift.yaml` includes commented-out hook examples. See [Config](/config/) for the full `rift.yaml` reference and [Hooks](/hooks/) for lifecycle hook patterns.
@@ -79,7 +70,7 @@ If no name is given, Rift generates a random one (e.g. `bold-eagle`).
 
 ## `rift list`
 
-List all worktrees for the current project. The base (main) workspace is always shown first, followed by Rift-managed worktrees. The active worktree is marked with `*`.
+List all worktrees for the current project. The base (main) checkout is always shown first, followed by Rift-managed worktrees. The active worktree is marked with `*`.
 
 ```bash
 rift list
@@ -120,14 +111,6 @@ rift close --skip-hooks
 
 Must be run from inside a Rift worktree (not the main repo).
 
-## `rift code`
-
-Open the project in your configured editor. Creates a `.code-workspace` file containing all active worktrees as folders.
-
-```bash
-rift code
-```
-
 ## `rift purge`
 
 Remove **all** worktrees for the current project and delete their branches.
@@ -164,7 +147,6 @@ These flags can be combined with the commands above:
 - **`--base <branch>`** (`open`) — base branch for the new worktree (default: current branch)
 - **`--skip-agent`** (`open`, `jump`) — don't launch the AI agent after switching
 - **`--skip-hooks`** (`open`, `jump`, `close`) — don't run lifecycle hooks
-- **`--editor <cmd>`** (`init`, `config`) — editor to use
 - **`--agent <cmd>`** (`init`, `config`) — AI agent command to use (any CLI command)
 - **`-f`, `--force`** (`close`, `purge`) — skip confirmation prompts
 

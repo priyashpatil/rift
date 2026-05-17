@@ -13,7 +13,6 @@ describe("index module", () => {
       import("../commands/list"),
       import("../commands/close"),
       import("../commands/jump"),
-      import("../commands/code"),
       import("../commands/purge"),
       import("../commands/init"),
       import("../commands/config"),
@@ -26,11 +25,10 @@ describe("index module", () => {
     expect(results[3].cmdList).toBeDefined();
     expect(results[4].cmdClose).toBeDefined();
     expect(results[5].cmdJump).toBeDefined();
-    expect(results[6].cmdCode).toBeDefined();
-    expect(results[7].cmdPurge).toBeDefined();
-    expect(results[8].cmdInit).toBeDefined();
-    expect(results[9].cmdConfig).toBeDefined();
-    expect(results[10].cmdRunAgent).toBeDefined();
+    expect(results[6].cmdPurge).toBeDefined();
+    expect(results[7].cmdInit).toBeDefined();
+    expect(results[8].cmdConfig).toBeDefined();
+    expect(results[9].cmdRunAgent).toBeDefined();
   });
 
   test("getAgentCommand is importable from config", async () => {

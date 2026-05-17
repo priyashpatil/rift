@@ -7,21 +7,15 @@ const {
   mockGetRiftConfig,
   mockSaveRiftConfig,
   mockIsGitRepo,
-  mockEditors,
   mockExistsSync,
   mockReadFileSync,
   mockAppendFileSync,
 } = vi.hoisted(() => ({
-  mockGetGlobalConfig: vi.fn(() => ({ agent: "codex", editor: "code" })),
+  mockGetGlobalConfig: vi.fn(() => ({ agent: "codex" })),
   mockSaveGlobalConfig: vi.fn((_config: any) => {}),
-  mockGetRiftConfig: vi.fn(async () => ({ agent: "codex", editor: "code" })),
+  mockGetRiftConfig: vi.fn(async () => ({ agent: "codex" })),
   mockSaveRiftConfig: vi.fn(async (_updates: any) => {}),
   mockIsGitRepo: vi.fn(async () => true),
-  mockEditors: [
-    { name: "VS Code", cmd: "code", managedWorkspace: true },
-    { name: "Cursor", cmd: "cursor", managedWorkspace: true },
-    { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
-  ],
   mockExistsSync: vi.fn(() => true),
   mockReadFileSync: vi.fn(
     () => '# Added by rift\neval "$(rift _shell-init)"\n',
@@ -44,7 +38,6 @@ vi.mock("../../config", () => ({
   saveGlobalConfig: mockSaveGlobalConfig,
   getRiftConfig: mockGetRiftConfig,
   saveRiftConfig: mockSaveRiftConfig,
-  EDITORS: mockEditors,
 }));
 
 vi.mock("../../git", () => ({
@@ -57,13 +50,9 @@ describe("cmdConfig", () => {
   const originalShell = process.env.SHELL;
 
   beforeEach(() => {
-    mockGetGlobalConfig
-      .mockClear()
-      .mockReturnValue({ agent: "codex", editor: "code" });
+    mockGetGlobalConfig.mockClear().mockReturnValue({ agent: "codex" });
     mockSaveGlobalConfig.mockClear();
-    mockGetRiftConfig
-      .mockClear()
-      .mockResolvedValue({ agent: "codex", editor: "code" });
+    mockGetRiftConfig.mockClear().mockResolvedValue({ agent: "codex" });
     mockSaveRiftConfig.mockClear();
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockExistsSync.mockClear().mockReturnValue(true);
@@ -77,78 +66,27 @@ describe("cmdConfig", () => {
     process.env.SHELL = originalShell;
   });
 
-  test("saves editor to project config by default", async () => {
-    process.env.SHELL = "/bin/zsh";
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdConfig(["--editor", "cursor"]);
-
-    expect(mockSaveRiftConfig).toHaveBeenCalled();
-    const updates = mockSaveRiftConfig.mock.calls[0][0];
-    expect(updates.editor).toBe("cursor");
-    expect(mockSaveGlobalConfig).not.toHaveBeenCalled();
-    logSpy.mockRestore();
-  });
-
   test("saves agent to project config by default", async () => {
     process.env.SHELL = "/bin/zsh";
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig(["--agent", "amp"]);
 
-    expect(mockSaveRiftConfig).toHaveBeenCalled();
-    const updates = mockSaveRiftConfig.mock.calls[0][0];
-    expect(updates.agent).toBe("amp");
+    expect(mockSaveRiftConfig).toHaveBeenCalledWith({ agent: "amp" });
     expect(mockSaveGlobalConfig).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
 
-  test("saves to global config with --global flag", async () => {
+  test("saves agent to global config with --global", async () => {
     process.env.SHELL = "/bin/zsh";
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
-    await cmdConfig(["--global", "--editor", "cursor"]);
+    await cmdConfig(["--global", "--agent", "amp"]);
 
     expect(mockSaveGlobalConfig).toHaveBeenCalled();
     const savedConfig = mockSaveGlobalConfig.mock.calls[0][0];
-    expect(savedConfig.editor).toBe("cursor");
-    expect(mockSaveRiftConfig).not.toHaveBeenCalled();
-    logSpy.mockRestore();
-  });
-
-  test("saves both editor and agent to project config", async () => {
-    process.env.SHELL = "/bin/zsh";
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdConfig(["--editor", "windsurf", "--agent", "amp"]);
-
-    expect(mockSaveRiftConfig).toHaveBeenCalled();
-    const updates = mockSaveRiftConfig.mock.calls[0][0];
-    expect(updates.editor).toBe("windsurf");
-    expect(updates.agent).toBe("amp");
-    logSpy.mockRestore();
-  });
-
-  test("saves both editor and agent to global config with --global", async () => {
-    process.env.SHELL = "/bin/zsh";
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdConfig(["--global", "--editor", "windsurf", "--agent", "amp"]);
-
-    expect(mockSaveGlobalConfig).toHaveBeenCalled();
-    const savedConfig = mockSaveGlobalConfig.mock.calls[0][0];
-    expect(savedConfig.editor).toBe("windsurf");
     expect(savedConfig.agent).toBe("amp");
-    logSpy.mockRestore();
-  });
-
-  test("throws on unknown editor", async () => {
-    process.env.SHELL = "/bin/zsh";
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await expect(cmdConfig(["--editor", "vim"])).rejects.toThrow(
-      /unknown editor "vim"/,
-    );
+    expect(mockSaveRiftConfig).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
 
@@ -158,9 +96,9 @@ describe("cmdConfig", () => {
 
     await cmdConfig(["--agent", "aider --model gpt-4"]);
 
-    expect(mockSaveRiftConfig).toHaveBeenCalled();
-    const updates = mockSaveRiftConfig.mock.calls[0][0];
-    expect(updates.agent).toBe("aider --model gpt-4");
+    expect(mockSaveRiftConfig).toHaveBeenCalledWith({
+      agent: "aider --model gpt-4",
+    });
     logSpy.mockRestore();
   });
 
@@ -169,7 +107,7 @@ describe("cmdConfig", () => {
     mockIsGitRepo.mockResolvedValue(false);
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
-    await expect(cmdConfig(["--editor", "cursor"])).rejects.toThrow(
+    await expect(cmdConfig(["--agent", "amp"])).rejects.toThrow(
       /not a git repository/,
     );
     logSpy.mockRestore();
@@ -180,7 +118,7 @@ describe("cmdConfig", () => {
     mockIsGitRepo.mockResolvedValue(false);
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
-    await cmdConfig(["--global", "--editor", "cursor"]);
+    await cmdConfig(["--global", "--agent", "amp"]);
 
     expect(mockSaveGlobalConfig).toHaveBeenCalled();
     logSpy.mockRestore();
@@ -197,7 +135,7 @@ describe("cmdConfig", () => {
     logSpy.mockRestore();
   });
 
-  test("falls back to defaults when both rift and global config are empty", async () => {
+  test("falls back to default agent when both configs are empty", async () => {
     process.env.SHELL = "/bin/zsh";
     mockGetRiftConfig.mockResolvedValue({});
     mockGetGlobalConfig.mockReturnValue({});
@@ -205,54 +143,31 @@ describe("cmdConfig", () => {
 
     await cmdConfig([]);
 
-    // Should fall back to "code" and "codex"
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
-    expect(
-      logCalls.some((c) => c.includes("VS Code") && c.includes("code")),
-    ).toBe(true);
     expect(logCalls.some((c) => c.includes("codex"))).toBe(true);
     logSpy.mockRestore();
   });
 
-  test("uses global config when rift config is empty", async () => {
+  test("uses global agent when project config is empty", async () => {
     process.env.SHELL = "/bin/zsh";
     mockGetRiftConfig.mockResolvedValue({});
-    mockGetGlobalConfig.mockReturnValue({ editor: "cursor", agent: "aider" });
+    mockGetGlobalConfig.mockReturnValue({ agent: "aider" });
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig([]);
 
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
-    expect(
-      logCalls.some((c) => c.includes("Cursor") && c.includes("cursor")),
-    ).toBe(true);
     expect(logCalls.some((c) => c.includes("aider"))).toBe(true);
     logSpy.mockRestore();
   });
 
-  test("shows editorCmd as name when editor not in EDITORS list", async () => {
-    process.env.SHELL = "/bin/zsh";
-    mockGetRiftConfig.mockResolvedValue({ editor: "unknown-editor" });
-    mockGetGlobalConfig.mockReturnValue({});
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdConfig([]);
-
-    const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
-    expect(logCalls.some((c) => c.includes("unknown-editor"))).toBe(true);
-    logSpy.mockRestore();
-  });
-
-  test("shows current editor and agent when no flags passed", async () => {
+  test("shows current agent when no flags passed", async () => {
     process.env.SHELL = "/bin/zsh";
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdConfig([]);
 
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
-    expect(
-      logCalls.some((c) => c.includes("VS Code") && c.includes("code")),
-    ).toBe(true);
     expect(logCalls.some((c) => c.includes("codex"))).toBe(true);
     logSpy.mockRestore();
   });
@@ -302,9 +217,9 @@ describe("cmdConfig", () => {
       /unsupported shell "\(unknown\)"/,
     );
   });
+
   test("detects bash shell and uses .bashrc when it exists", async () => {
     process.env.SHELL = "/bin/bash";
-    // existsSync is called for rcPath and for .bashrc - return true for both
     mockExistsSync.mockReturnValue(true);
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
@@ -324,8 +239,6 @@ describe("cmdConfig", () => {
     process.env.SHELL = "/bin/bash";
     const home = require("os").homedir();
     const bashrc = join(home, ".bashrc");
-    // existsSync returns false for .bashrc (so it falls back to .bash_profile)
-    // then false for rcPath (so it creates it)
     mockExistsSync.mockImplementation((path: string) => {
       if (path === bashrc) return false;
       return false;
@@ -334,22 +247,9 @@ describe("cmdConfig", () => {
 
     await cmdConfig([]);
 
-    // Should have used .bash_profile path
     expect(mockAppendFileSync).toHaveBeenCalled();
     const rcPath = mockAppendFileSync.mock.calls[0][0] as string;
     expect(rcPath).toContain(".bash_profile");
-    logSpy.mockRestore();
-  });
-
-  test("ignores --editor flag without value", async () => {
-    process.env.SHELL = "/bin/zsh";
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdConfig(["--editor"]);
-
-    // Should not save config since --editor has no value
-    expect(mockSaveRiftConfig).not.toHaveBeenCalled();
-    expect(mockSaveGlobalConfig).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
 
@@ -385,7 +285,6 @@ describe("cmdConfig", () => {
 
   test("creates rc file when it does not exist", async () => {
     process.env.SHELL = "/bin/zsh";
-    // existsSync returns false for rcPath
     mockExistsSync.mockReturnValue(false);
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 

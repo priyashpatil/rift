@@ -1,6 +1,6 @@
 ---
 title: "Getting Started with Rift"
-description: "Install Rift, configure your editor and agent, and open your first worktree."
+description: "Install Rift, configure your agent, and open your first worktree."
 weight: 1
 ---
 
@@ -20,7 +20,6 @@ rift config
 
 ```
 Shell integration added to /Users/you/.zshrc
-  editor: VS Code [code]
   agent:  codex
 ```
 
@@ -37,16 +36,15 @@ cd my-project
 rift init
 ```
 
-The editor defaults to VS Code and the agent to `codex`. Override with flags — the agent can be any CLI command:
+The agent defaults to `codex`. Override it with any CLI command:
 
 ```bash
-rift init --editor cursor --agent amp
+rift init --agent amp
 ```
 
 The result is a `rift.yaml` committed to your repo:
 
 ```yaml
-editor: code
 agent: codex
 hooks:
   # open: bash scripts/bootstrap.sh
@@ -61,10 +59,10 @@ To change settings later, use `rift config`:
 
 ```bash
 # Update the project config (rift.yaml)
-rift config --editor cursor --agent amp
+rift config --agent amp
 
 # Update global defaults (for new projects)
-rift config --global --editor cursor --agent codex
+rift config --global --agent codex
 ```
 
 ## 4. Open a worktree
@@ -117,7 +115,6 @@ Your shell is returned to the main repository. Use `-f` to skip the confirmation
 | `rift status`      | Show current context (project, worktree, branch)                          |
 | `rift list`        | List all worktrees for the current project                                |
 | `rift jump <name>` | Switch to a worktree and start the agent (`rift jump base` for main repo) |
-| `rift code`        | Open the project in your configured editor                                |
 | `rift purge`       | Remove all worktrees for the current project                              |
 
 Run `rift <command> --help` for detailed usage and options on any command.
@@ -137,13 +134,10 @@ Rift has two levels of configuration: **global** (your machine) and **per-projec
 `rift.yaml` at the repo root, created by `rift init`. This is the primary config file.
 
 ```yaml
-editor: code
 agent: codex
 hooks:
   # open: bash scripts/bootstrap.sh
   # jump: bash scripts/bootstrap.sh
-# extra-workspaces:
-#   - /path/to/shared-lib
 ```
 
 See the [Config](/config/) page for the full `rift.yaml` reference, and [Hooks](/hooks/) for lifecycle hook patterns.
@@ -153,17 +147,5 @@ See the [Config](/config/) page for the full `rift.yaml` reference, and [Hooks](
 Optional. Stored at `~/.config/rift/config.yaml`. Sets defaults for `rift init` when creating new projects. Project-level `rift.yaml` always takes precedence.
 
 ```bash
-rift config --global --editor cursor --agent codex
+rift config --global --agent codex
 ```
-
-## Editor workspace trust
-
-VS Code, Cursor, and Windsurf prompt you to trust each new folder before allowing extensions and tasks to run. Since every rift worktree lives under `~/.rift/`, you can trust this folder once to silence all future prompts:
-
-1. Open the command palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
-2. Run **Workspaces: Manage Workspace Trust**
-3. Add `~/.rift` to the trusted folders list
-
-{{< callout type="tip" >}}
-Trusting `~/.rift` covers both worktrees (`~/.rift/worktrees/`) and workspace files (`~/.rift/workspaces/`), so you won't be prompted again for any project.
-{{< /callout >}}

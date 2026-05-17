@@ -10,19 +10,9 @@ Rift uses a two-level configuration system: a **per-project** `rift.yaml` and an
 Created by `rift init` at the root of your git repository. This is the primary config file.
 
 ```yaml
-# Editor to open worktrees in.
-# Options: code, cursor, windsurf
-editor: code
-
 # AI coding agent to launch in new worktrees (any CLI command).
 # Examples: codex, amp, claude, opencode, aider, copilot
 agent: codex
-
-# Extra folders to include in the generated .code-workspace file.
-# Useful for monorepos or shared libraries outside your worktrees.
-extra-workspaces:
-  - /path/to/shared-lib
-  - /path/to/design-system
 
 # Lifecycle hooks — shell commands that run on worktree events.
 hooks:
@@ -33,20 +23,6 @@ hooks:
 ```
 
 ### Fields
-
-#### `editor`
-
-The editor command used by `rift code` to open your project.
-
-| Value | Editor | Workspace managed |
-|-------|--------|-------------------|
-| `code` | VS Code | Yes |
-| `cursor` | Cursor\* | Yes |
-| `windsurf` | Windsurf | Yes |
-
-Managed editors get a `.code-workspace` file (at `~/.rift/workspaces/<project>.code-workspace`) that is kept in sync with your active worktrees. Each worktree appears as a folder in the workspace.
-
-**Default:** `code`
 
 #### `agent`
 
@@ -67,28 +43,7 @@ agent: amp
 agent: claude --model opus
 ```
 
-```yaml
-# Another alternate command
-agent: opencode
-```
-
 **Default:** `codex`
-
-#### `extra-workspaces`
-
-An optional list of absolute folder paths to append to the generated `.code-workspace` file. Folders are added after the main repository and all active worktrees.
-
-```yaml
-extra-workspaces:
-  - /Users/you/projects/shared-ui
-  - /Users/you/projects/api-types
-```
-
-This is useful when you have related code that lives outside the repository — shared libraries, monorepo packages, or design systems — and you want them visible alongside your worktrees in the editor sidebar.
-
-Only applies to managed editors (VS Code, Cursor\*, Windsurf).
-
-\*Cursor is a VS Code fork and supports `.code-workspace` files, but has known rough edges — particularly around file association on macOS and multi-root workspace context for AI features.
 
 #### `hooks`
 
@@ -113,24 +68,19 @@ See the [Hooks](/hooks/) page for common patterns and the bootstrap recipe.
 
 ## Global config
 
-Optional. Stored at `~/.config/rift/config.yaml`. Sets default values for `editor` and `agent` that are used by `rift init` when creating new projects.
+Optional. Stored at `~/.config/rift/config.yaml`. Sets default values for `agent` that are used by `rift init` when creating new projects.
 
 ```yaml
-editor: cursor
 agent: codex
 ```
 
 Set it with:
 
 ```bash
-rift config --global --editor cursor --agent codex
+rift config --global --agent codex
 ```
 
 ### Fields
-
-#### `editor`
-
-Default editor for new projects. Same values as the project-level `editor` field. Used as the default when running `rift init`.
 
 #### `agent`
 
@@ -140,10 +90,10 @@ Default agent command for new projects. Used as the default when running `rift i
 
 ## Precedence
 
-When resolving `editor` and `agent`, Rift checks in order:
+When resolving `agent`, Rift checks in order:
 
 1. Project `rift.yaml`
 2. Global `~/.config/rift/config.yaml`
-3. Built-in defaults (`code` for editor, `codex` for agent)
+3. Built-in default (`codex`)
 
-The first value found wins. `extra-workspaces` and `hooks` are only supported in the project-level `rift.yaml`.
+The first value found wins. `hooks` are only supported in the project-level `rift.yaml`.

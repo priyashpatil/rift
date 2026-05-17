@@ -1,10 +1,6 @@
-import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
-import { existsSync, mkdirSync, writeFileSync, rmSync } from "fs";
-import { join } from "path";
+import { describe, expect, test, vi, beforeEach } from "vitest";
 
 const {
-  testDir,
-  testWorkspacesDir,
   mockIsGitRepo,
   mockGetMainWorktree,
   mockGetProjectName,
@@ -15,18 +11,9 @@ const {
   mockRunHook,
   mockWriteCdPath,
   mockPromptYesNo,
-  mockGetEditor,
   mockRemoveProjectAgents,
 } = vi.hoisted(() => {
-  const _join = (...parts: string[]) => parts.join("/");
-  const _testDir = _join(
-    require("os").tmpdir(),
-    `.rift-test-purge-${process.pid}`,
-  );
-  const _testWorkspacesDir = _join(_testDir, "workspaces");
   return {
-    testDir: _testDir,
-    testWorkspacesDir: _testWorkspacesDir,
     mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
     mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
     mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),
@@ -42,11 +29,6 @@ const {
     mockRunHook: vi.fn(() => Promise.resolve()),
     mockWriteCdPath: vi.fn(() => {}),
     mockPromptYesNo: vi.fn(() => Promise.resolve(true)),
-    mockGetEditor: vi.fn(() => ({
-      name: "VS Code",
-      cmd: "code",
-      managedWorkspace: true,
-    })),
     mockRemoveProjectAgents: vi.fn(() => []),
   };
 });
@@ -73,26 +55,6 @@ vi.mock("../../prompt", () => ({
   promptYesNo: mockPromptYesNo,
 }));
 
-vi.mock("../../config", () => ({
-  getEditor: mockGetEditor,
-  getGlobalConfig: vi.fn(() => ({})),
-  saveGlobalConfig: vi.fn(() => {}),
-  getAgentCommand: vi.fn(() => "codex"),
-  EDITORS: [],
-}));
-
-vi.mock("../../constants", () => ({
-  WORKSPACES_DIR: testWorkspacesDir,
-  WORKTREES_DIR: testDir + "/worktrees",
-  RIFT_DIR: testDir,
-  CONFIG_DIR: testDir + "/config",
-  GLOBAL_CONFIG_PATH: testDir + "/config/config.yaml",
-  CD_PATH_FILE: testDir + "/.rift_cd_path",
-  AGENT_START_FILE: testDir + "/.rift_start_agent",
-  ADJECTIVES: ["bold"],
-  NOUNS: ["ant"],
-}));
-
 vi.mock("../../agents", () => ({
   removeProjectAgents: mockRemoveProjectAgents,
 }));
@@ -101,7 +63,6 @@ import { cmdPurge } from "../../commands/purge";
 
 describe("cmdPurge", () => {
   beforeEach(() => {
-    mkdirSync(testWorkspacesDir, { recursive: true });
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockGetMainWorktree.mockClear().mockResolvedValue("/main/repo");
     mockGetProjectName.mockClear().mockResolvedValue("myproject");
@@ -115,16 +76,7 @@ describe("cmdPurge", () => {
     mockRunHook.mockClear().mockResolvedValue(undefined);
     mockWriteCdPath.mockClear();
     mockPromptYesNo.mockClear().mockResolvedValue(true);
-    mockGetEditor.mockClear().mockReturnValue({
-      name: "VS Code",
-      cmd: "code",
-      managedWorkspace: true,
-    });
     mockRemoveProjectAgents.mockClear().mockReturnValue([]);
-  });
-
-  afterEach(() => {
-    rmSync(testDir, { recursive: true, force: true });
   });
 
   test("exits with error when not in a git repo", async () => {
@@ -229,33 +181,6 @@ describe("cmdPurge", () => {
     );
     logSpy.mockRestore();
     errorSpy.mockRestore();
-  });
-
-  test("deletes workspace file after purge", async () => {
-    const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
-    writeFileSync(wsPath, JSON.stringify({ folders: [] }));
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdPurge(["-f"]);
-
-    expect(existsSync(wsPath)).toBe(false);
-    logSpy.mockRestore();
-  });
-
-  test("skips workspace cleanup when editor is not managed", async () => {
-    const wsPath = join(testWorkspacesDir, "myproject.code-workspace");
-    writeFileSync(wsPath, JSON.stringify({ folders: [] }));
-    mockGetEditor.mockReturnValue({
-      name: "Other",
-      cmd: "other",
-      managedWorkspace: false,
-    });
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdPurge(["-f"]);
-
-    expect(existsSync(wsPath)).toBe(true);
-    logSpy.mockRestore();
   });
 
   test("shows summary of worktrees to remove", async () => {

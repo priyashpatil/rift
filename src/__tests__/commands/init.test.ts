@@ -21,11 +21,6 @@ vi.mock("../../git", () => ({
 
 vi.mock("../../config", () => ({
   getGlobalConfig: mockGetGlobalConfig,
-  EDITORS: [
-    { name: "VS Code", cmd: "code", managedWorkspace: true },
-    { name: "Cursor", cmd: "cursor", managedWorkspace: true },
-    { name: "Windsurf", cmd: "windsurf", managedWorkspace: true },
-  ],
 }));
 
 vi.mock("fs", async (importOriginal) => {
@@ -58,25 +53,14 @@ describe("cmdInit", () => {
     await expect(cmdInit([])).rejects.toThrow("rift.yaml already exists");
   });
 
-  test("creates rift.yaml with default editor and agent", async () => {
+  test("creates rift.yaml with default agent", async () => {
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await cmdInit([]);
 
     expect(mockWriteFileSync).toHaveBeenCalled();
     const content = mockWriteFileSync.mock.calls[0][1] as string;
-    expect(content).toContain("editor: code");
     expect(content).toContain("agent: codex");
-    logSpy.mockRestore();
-  });
-
-  test("parses --editor flag", async () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdInit(["--editor", "cursor"]);
-
-    const content = mockWriteFileSync.mock.calls[0][1] as string;
-    expect(content).toContain("editor: cursor");
     logSpy.mockRestore();
   });
 
@@ -90,9 +74,8 @@ describe("cmdInit", () => {
     logSpy.mockRestore();
   });
 
-  test("uses global config defaults when flags missing", async () => {
+  test("uses global agent default when flag is missing", async () => {
     mockGetGlobalConfig.mockReturnValue({
-      editor: "windsurf",
       agent: "copilot",
     });
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
@@ -100,15 +83,8 @@ describe("cmdInit", () => {
     await cmdInit([]);
 
     const content = mockWriteFileSync.mock.calls[0][1] as string;
-    expect(content).toContain("editor: windsurf");
     expect(content).toContain("agent: copilot");
     logSpy.mockRestore();
-  });
-
-  test("throws on unknown editor", async () => {
-    await expect(cmdInit(["--editor", "vim"])).rejects.toThrow(
-      'unknown editor "vim"',
-    );
   });
 
   test("shows success message", async () => {
@@ -117,19 +93,7 @@ describe("cmdInit", () => {
     await cmdInit([]);
 
     expect(logSpy).toHaveBeenCalledWith("Initialized rift.yaml in /main/repo");
-    expect(logSpy).toHaveBeenCalledWith("  editor: VS Code [code]");
     expect(logSpy).toHaveBeenCalledWith("  agent:  codex");
-    logSpy.mockRestore();
-  });
-
-  test("ignores --editor flag without value", async () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdInit(["--editor"]);
-
-    // Should use default since --editor has no following value
-    const content = mockWriteFileSync.mock.calls[0][1] as string;
-    expect(content).toContain("editor: code");
     logSpy.mockRestore();
   });
 
@@ -140,22 +104,6 @@ describe("cmdInit", () => {
 
     const content = mockWriteFileSync.mock.calls[0][1] as string;
     expect(content).toContain("agent: codex");
-    logSpy.mockRestore();
-  });
-
-  test("shows editor name fallback when editor cmd is not in EDITORS list", async () => {
-    // This tests line 73: EDITORS.find(...)?.name || editor
-    // We need the editor to pass validation but not be found in EDITORS for display.
-    // Since validation also uses EDITORS, we need to temporarily add then remove.
-    // Actually, looking at line 73, this fallback only fires if the editor passes
-    // validation on line 66 but isn't found on line 73 - same list, so it's
-    // technically unreachable. But we can test through the success log output
-    // which exercises line 73.
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdInit(["--editor", "cursor"]);
-
-    expect(logSpy).toHaveBeenCalledWith("  editor: Cursor [cursor]");
     logSpy.mockRestore();
   });
 

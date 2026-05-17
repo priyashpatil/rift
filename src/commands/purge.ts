@@ -1,5 +1,4 @@
-import { unlinkSync } from "fs";
-import { basename, join } from "path";
+import { basename } from "path";
 import {
   isGitRepo,
   getMainWorktree,
@@ -12,9 +11,7 @@ import {
 import { runHook } from "../hooks";
 import { writeCdPath } from "../ipc";
 import { promptYesNo } from "../prompt";
-import { getEditor } from "../config";
 import { removeProjectAgents } from "../agents";
-import { WORKSPACES_DIR } from "../constants";
 
 export async function cmdPurge(args: string[]): Promise<void> {
   const force = args.includes("-f") || args.includes("--force");
@@ -70,13 +67,6 @@ export async function cmdPurge(args: string[]): Promise<void> {
   }
 
   await worktreePrune(mainRepo);
-
-  if ((await getEditor()).managedWorkspace) {
-    const wsPath = join(WORKSPACES_DIR, `${project}.code-workspace`);
-    try {
-      unlinkSync(wsPath);
-    } catch {}
-  }
 
   console.log(`\nPurged all worktrees for ${project}.`);
   writeCdPath(mainRepo);

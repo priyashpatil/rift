@@ -1,10 +1,6 @@
 # Rift project configuration
 # Docs: https://rift.priyashpatil.com/hooks/
 
-# Editor to open worktrees in.
-# Options: code, cursor, windsurf
-editor: code
-
 # AI coding agent to launch in new worktrees.
 # Options: codex, amp, claude, opencode, cn, copilot, gemini, kiro-cli
 agent: codex

@@ -1,27 +1,21 @@
 import { existsSync, writeFileSync } from "fs";
 import { join } from "path";
 import { isGitRepo, getMainWorktree } from "../git";
-import { getGlobalConfig, EDITORS } from "../config";
+import { getGlobalConfig } from "../config";
 
-function parseFlags(args: string[]): { editor?: string; agent?: string } {
-  const flags: { editor?: string; agent?: string } = {};
+function parseFlags(args: string[]): { agent?: string } {
+  const flags: { agent?: string } = {};
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--editor" && args[i + 1]) {
-      flags.editor = args[++i];
-    } else if (args[i] === "--agent" && args[i + 1]) {
+    if (args[i] === "--agent" && args[i + 1]) {
       flags.agent = args[++i];
     }
   }
   return flags;
 }
 
-function generateConfig(editor: string, agent: string): string {
+function generateConfig(agent: string): string {
   return `# Rift project configuration
 # Docs: https://rift.priyashpatil.com/hooks/
-
-# Editor to open worktrees in.
-# Options: ${EDITORS.map((e) => e.cmd).join(", ")}
-editor: ${editor}
 
 # AI coding agent to launch in new worktrees (any CLI command).
 # Examples: codex, amp, claude, opencode, aider, copilot
@@ -59,20 +53,10 @@ export async function cmdInit(args: string[]): Promise<void> {
   const flags = parseFlags(args);
   const global = getGlobalConfig();
 
-  const editor = flags.editor || global.editor || "code";
   const agent = flags.agent || global.agent || "codex";
 
-  // Validate editor
-  if (!EDITORS.some((e) => e.cmd === editor)) {
-    const valid = EDITORS.map((e) => e.cmd).join(", ");
-    throw new Error(`unknown editor "${editor}". Valid editors: ${valid}`);
-  }
-
-  writeFileSync(configPath, generateConfig(editor, agent));
-
-  const editorName = EDITORS.find((e) => e.cmd === editor)?.name || editor;
+  writeFileSync(configPath, generateConfig(agent));
 
   console.log(`Initialized rift.yaml in ${mainRepo}`);
-  console.log(`  editor: ${editorName} [${editor}]`);
   console.log(`  agent:  ${agent}`);
 }

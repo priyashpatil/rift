@@ -21,11 +21,9 @@ const {
   mockGetCurrentBranch,
   mockWorktreeAdd,
   mockGenerateName,
-  mockSyncWorkspace,
   mockRunHook,
   mockWriteCdPath,
   mockSignalAgentStart,
-  mockGetEditor,
   mockWarnIfAgentMissing,
 } = vi.hoisted(() => ({
   mockIsGitRepo: vi.fn(() => Promise.resolve(true)),
@@ -34,15 +32,9 @@ const {
   mockGetCurrentBranch: vi.fn(() => Promise.resolve("main")),
   mockWorktreeAdd: vi.fn(() => Promise.resolve()),
   mockGenerateName: vi.fn(() => "bold-ant"),
-  mockSyncWorkspace: vi.fn(() => Promise.resolve()),
   mockRunHook: vi.fn(() => Promise.resolve()),
   mockWriteCdPath: vi.fn(() => {}),
   mockSignalAgentStart: vi.fn(() => {}),
-  mockGetEditor: vi.fn(() => ({
-    name: "VS Code",
-    cmd: "code",
-    managedWorkspace: true,
-  })),
   mockWarnIfAgentMissing: vi.fn(() => Promise.resolve()),
 }));
 
@@ -58,10 +50,6 @@ vi.mock("../../names", () => ({
   generateName: mockGenerateName,
 }));
 
-vi.mock("../../workspace", () => ({
-  syncWorkspace: mockSyncWorkspace,
-}));
-
 vi.mock("../../hooks", () => ({
   runHook: mockRunHook,
 }));
@@ -72,13 +60,10 @@ vi.mock("../../ipc", () => ({
 }));
 
 vi.mock("../../config", () => ({
-  getEditor: mockGetEditor,
   warnIfAgentMissing: mockWarnIfAgentMissing,
-  getRiftConfig: vi.fn(() => Promise.resolve({})),
   getGlobalConfig: vi.fn(() => ({})),
   saveGlobalConfig: vi.fn(() => {}),
   getAgentCommand: vi.fn(() => "codex"),
-  EDITORS: [],
 }));
 
 import { cmdOpen } from "../../commands/open";
@@ -96,15 +81,9 @@ describe("cmdOpen", () => {
     mockGetCurrentBranch.mockClear().mockResolvedValue("main");
     mockWorktreeAdd.mockClear().mockResolvedValue(undefined);
     mockGenerateName.mockClear().mockReturnValue("bold-ant");
-    mockSyncWorkspace.mockClear().mockResolvedValue(undefined);
     mockRunHook.mockClear().mockResolvedValue(undefined);
     mockWriteCdPath.mockClear();
     mockSignalAgentStart.mockClear();
-    mockGetEditor.mockClear().mockReturnValue({
-      name: "VS Code",
-      cmd: "code",
-      managedWorkspace: true,
-    });
     mockWarnIfAgentMissing.mockClear().mockResolvedValue(undefined);
   });
 
@@ -235,33 +214,6 @@ describe("cmdOpen", () => {
     await cmdOpen(["--skip-hooks"]);
 
     expect(mockRunHook).not.toHaveBeenCalled();
-    logSpy.mockRestore();
-  });
-
-  test("syncs workspace when editor has managedWorkspace", async () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdOpen([]);
-
-    expect(mockSyncWorkspace).toHaveBeenCalledWith(
-      "myproject",
-      "/main/repo",
-      undefined,
-    );
-    logSpy.mockRestore();
-  });
-
-  test("skips workspace sync when editor is not managed", async () => {
-    mockGetEditor.mockReturnValue({
-      name: "Other",
-      cmd: "other",
-      managedWorkspace: false,
-    });
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-
-    await cmdOpen([]);
-
-    expect(mockSyncWorkspace).not.toHaveBeenCalled();
     logSpy.mockRestore();
   });
 

@@ -53,7 +53,7 @@ describe("cmdList", () => {
     exitSpy.mockRestore();
   });
 
-  test("shows base workspace when no rift worktrees exist", async () => {
+  test("shows base checkout when no rift worktrees exist", async () => {
     mockListRiftWorktrees.mockResolvedValue([]);
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
