@@ -77,7 +77,7 @@ vi.mock("../../config", () => ({
   getEditor: mockGetEditor,
   getGlobalConfig: vi.fn(() => ({})),
   saveGlobalConfig: vi.fn(() => {}),
-  getAgentCommand: vi.fn(() => "claude"),
+  getAgentCommand: vi.fn(() => "codex"),
   EDITORS: [],
 }));
 

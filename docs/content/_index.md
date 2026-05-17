@@ -8,7 +8,7 @@ features:
   - title: "Work on everything at once"
     description: "Every task gets its own isolated worktree and branch, so you never stash, switch, or wait again."
   - title: "Bring any agent"
-    description: "Claude Code, Copilot, Codex, Aider, or any CLI command — just plug it in."
+    description: "Codex, Amp, Claude Code, or any CLI command — just plug it in."
   - title: "Zero port conflicts"
     description: "Deterministic hash-based port mapping means every worktree runs services simultaneously without collisions."
   - title: "Hooks that handle the busywork"
@@ -29,4 +29,4 @@ VS Code, Cursor\*, and Windsurf. All three support managed workspaces — `rift 
 
 ## Supported agents
 
-Any CLI agent works — just set the command in `rift.yaml`. Common agents include Amp, Claude Code, Codex, Continue, Copilot, Gemini, Kiro, and OpenCode, but you can use any command (e.g. `aider`, `claude --model opus`, or a custom script).
+Any CLI agent works — just set the command in `rift.yaml`. Common agents include Codex, Amp, Claude Code, Continue, Copilot, Gemini, Kiro, and OpenCode, but you can use any command (e.g. `codex`, `amp`, `claude --model opus`, or a custom script).

@@ -15,18 +15,19 @@ rift config
 rift config --editor cursor
 
 # Set agent in project config (any CLI command)
-rift config --agent claude
-rift config --agent "aider --model gpt-4"
+rift config --agent codex
+rift config --agent amp
+rift config --agent "claude --model opus"
 
 # Set global defaults (for new projects)
-rift config --global --editor cursor --agent claude
+rift config --global --editor cursor --agent codex
 ```
 
 Running without flags detects your shell, adds the Rift shell wrapper to your RC file, and prints the current editor and agent. Use `--editor` and `--agent` flags to change them. A `rift.yaml` must exist for project-level changes — run `rift init` first.
 
 ## `rift init`
 
-Initialize a `rift.yaml` in the current git project. The editor defaults to VS Code and the agent to Claude Code, unless overridden by global config.
+Initialize a `rift.yaml` in the current git project. The editor defaults to VS Code and the agent to Codex, unless overridden by global config.
 
 ```bash
 # Use global defaults
@@ -36,10 +37,10 @@ rift init
 rift init --editor cursor
 
 # Override agent (any CLI command)
-rift init --agent aider
+rift init --agent amp
 
 # Override both
-rift init --editor cursor --agent aider
+rift init --editor cursor --agent amp
 ```
 
 The generated `rift.yaml` includes commented-out hook examples. See [Config](/config/) for the full `rift.yaml` reference and [Hooks](/hooks/) for lifecycle hook patterns.

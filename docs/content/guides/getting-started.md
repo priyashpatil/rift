@@ -21,7 +21,7 @@ rift config
 ```
 Shell integration added to /Users/you/.zshrc
   editor: VS Code [code]
-  agent:  claude
+  agent:  codex
 ```
 
 {{< callout type="warning" >}}
@@ -37,17 +37,17 @@ cd my-project
 rift init
 ```
 
-The editor defaults to VS Code and the agent to `claude`. Override with flags — the agent can be any CLI command:
+The editor defaults to VS Code and the agent to `codex`. Override with flags — the agent can be any CLI command:
 
 ```bash
-rift init --editor cursor --agent aider
+rift init --editor cursor --agent amp
 ```
 
 The result is a `rift.yaml` committed to your repo:
 
 ```yaml
 editor: code
-agent: claude
+agent: codex
 hooks:
   # open: bash scripts/bootstrap.sh
   # jump: bash scripts/bootstrap.sh
@@ -61,10 +61,10 @@ To change settings later, use `rift config`:
 
 ```bash
 # Update the project config (rift.yaml)
-rift config --editor cursor --agent aider
+rift config --editor cursor --agent amp
 
 # Update global defaults (for new projects)
-rift config --global --editor cursor --agent claude
+rift config --global --editor cursor --agent codex
 ```
 
 ## 4. Open a worktree
@@ -138,7 +138,7 @@ Rift has two levels of configuration: **global** (your machine) and **per-projec
 
 ```yaml
 editor: code
-agent: claude
+agent: codex
 hooks:
   # open: bash scripts/bootstrap.sh
   # jump: bash scripts/bootstrap.sh
@@ -153,7 +153,7 @@ See the [Config](/config/) page for the full `rift.yaml` reference, and [Hooks](
 Optional. Stored at `~/.config/rift/config.yaml`. Sets defaults for `rift init` when creating new projects. Project-level `rift.yaml` always takes precedence.
 
 ```bash
-rift config --global --editor cursor --agent copilot
+rift config --global --editor cursor --agent codex
 ```
 
 ## Editor workspace trust

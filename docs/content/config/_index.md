@@ -15,8 +15,8 @@ Created by `rift init` at the root of your git repository. This is the primary c
 editor: code
 
 # AI coding agent to launch in new worktrees (any CLI command).
-# Examples: claude, aider, copilot, codex
-agent: claude
+# Examples: codex, amp, claude, aider, copilot
+agent: codex
 
 # Extra folders to include in the generated .code-workspace file.
 # Useful for monorepos or shared libraries outside your worktrees.
@@ -54,13 +54,20 @@ The CLI command launched inside new worktrees on `rift open` and `rift jump`. Ca
 
 ```yaml
 # Single command
-agent: claude
-
-# Command with arguments
-agent: aider --model gpt-4
+agent: codex
 ```
 
-**Default:** `claude`
+```yaml
+# Alternate command
+agent: amp
+```
+
+```yaml
+# Command with arguments
+agent: claude --model opus
+```
+
+**Default:** `codex`
 
 #### `extra-workspaces`
 
@@ -105,13 +112,13 @@ Optional. Stored at `~/.config/rift/config.yaml`. Sets default values for `edito
 
 ```yaml
 editor: cursor
-agent: claude
+agent: codex
 ```
 
 Set it with:
 
 ```bash
-rift config --global --editor cursor --agent claude
+rift config --global --editor cursor --agent codex
 ```
 
 ### Fields
@@ -132,6 +139,6 @@ When resolving `editor` and `agent`, Rift checks in order:
 
 1. Project `rift.yaml`
 2. Global `~/.config/rift/config.yaml`
-3. Built-in defaults (`code` for editor, `claude` for agent)
+3. Built-in defaults (`code` for editor, `codex` for agent)
 
 The first value found wins. `extra-workspaces` and `hooks` are only supported in the project-level `rift.yaml`.

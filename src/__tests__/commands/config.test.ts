@@ -12,9 +12,9 @@ const {
   mockReadFileSync,
   mockAppendFileSync,
 } = vi.hoisted(() => ({
-  mockGetGlobalConfig: vi.fn(() => ({ agent: "claude", editor: "code" })),
+  mockGetGlobalConfig: vi.fn(() => ({ agent: "codex", editor: "code" })),
   mockSaveGlobalConfig: vi.fn((_config: any) => {}),
-  mockGetRiftConfig: vi.fn(async () => ({ agent: "claude", editor: "code" })),
+  mockGetRiftConfig: vi.fn(async () => ({ agent: "codex", editor: "code" })),
   mockSaveRiftConfig: vi.fn(async (_updates: any) => {}),
   mockIsGitRepo: vi.fn(async () => true),
   mockEditors: [
@@ -59,11 +59,11 @@ describe("cmdConfig", () => {
   beforeEach(() => {
     mockGetGlobalConfig
       .mockClear()
-      .mockReturnValue({ agent: "claude", editor: "code" });
+      .mockReturnValue({ agent: "codex", editor: "code" });
     mockSaveGlobalConfig.mockClear();
     mockGetRiftConfig
       .mockClear()
-      .mockResolvedValue({ agent: "claude", editor: "code" });
+      .mockResolvedValue({ agent: "codex", editor: "code" });
     mockSaveRiftConfig.mockClear();
     mockIsGitRepo.mockClear().mockResolvedValue(true);
     mockExistsSync.mockClear().mockReturnValue(true);
@@ -205,12 +205,12 @@ describe("cmdConfig", () => {
 
     await cmdConfig([]);
 
-    // Should fall back to "code" and "claude"
+    // Should fall back to "code" and "codex"
     const logCalls = logSpy.mock.calls.map((c) => String(c[0] ?? ""));
     expect(
       logCalls.some((c) => c.includes("VS Code") && c.includes("code")),
     ).toBe(true);
-    expect(logCalls.some((c) => c.includes("claude"))).toBe(true);
+    expect(logCalls.some((c) => c.includes("codex"))).toBe(true);
     logSpy.mockRestore();
   });
 
@@ -253,7 +253,7 @@ describe("cmdConfig", () => {
     expect(
       logCalls.some((c) => c.includes("VS Code") && c.includes("code")),
     ).toBe(true);
-    expect(logCalls.some((c) => c.includes("claude"))).toBe(true);
+    expect(logCalls.some((c) => c.includes("codex"))).toBe(true);
     logSpy.mockRestore();
   });
 

@@ -6,8 +6,8 @@
 editor: code
 
 # AI coding agent to launch in new worktrees.
-# Options: amp, claude, cn, codex, copilot, gemini, kiro-cli, opencode
-agent: claude
+# Options: codex, amp, claude, cn, copilot, gemini, kiro-cli, opencode
+agent: codex
 
 # Hooks run shell commands at worktree lifecycle events.
 # The RIFT_WORKTREE environment variable is set to the branch name.

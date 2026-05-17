@@ -127,7 +127,7 @@ export async function cmdConfig(args: string[]): Promise<void> {
   const globalConfig = getGlobalConfig();
 
   const editorCmd = riftConfig.editor || globalConfig.editor || "code";
-  const agentCmd = riftConfig.agent || globalConfig.agent || "claude";
+  const agentCmd = riftConfig.agent || globalConfig.agent || "codex";
   const editorName =
     EDITORS.find((e) => e.cmd === editorCmd)?.name || editorCmd;
 

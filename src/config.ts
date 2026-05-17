@@ -60,7 +60,7 @@ export async function getAgentCommand(): Promise<string> {
   const riftConfig = await getRiftConfig();
   if (riftConfig.agent) return riftConfig.agent;
   const config = getGlobalConfig();
-  return config.agent || "claude";
+  return config.agent || "codex";
 }
 
 export async function warnIfAgentMissing(): Promise<void> {
