@@ -75,6 +75,7 @@
   },
   "prettier": {},
   "release": {
+    "repositoryUrl": "git@github.com:priyashpatil/rift.git",
     "branches": [
       "main"
     ],
