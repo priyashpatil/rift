@@ -11,7 +11,7 @@ const {
   mockIsRegistered,
   mockWriteCdPath,
 } = vi.hoisted(() => ({
-  mockGetAgentCommand: vi.fn(() => Promise.resolve("claude")),
+  mockGetAgentCommand: vi.fn(() => Promise.resolve("codex")),
   mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
   mockIsRiftWorktree: vi.fn(() => Promise.resolve(false)),
   mockGetProjectName: vi.fn(() => Promise.resolve("myproject")),

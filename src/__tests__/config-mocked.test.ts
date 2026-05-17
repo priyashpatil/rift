@@ -8,7 +8,7 @@ const {
   mockGetMainWorktree,
 } = vi.hoisted(() => ({
   mockExistsSync: vi.fn(() => true),
-  mockReadFileSync: vi.fn(() => "agent: claude\neditor: code\n"),
+  mockReadFileSync: vi.fn(() => "agent: codex\neditor: code\n"),
   mockWriteFileSync: vi.fn(() => {}),
   mockMkdirSync: vi.fn(() => undefined as any),
   mockGetMainWorktree: vi.fn(() => Promise.resolve("/main/repo")),
@@ -49,7 +49,7 @@ describe("config (mocked)", () => {
     mockExistsSync.mockClear().mockReturnValue(true);
     mockReadFileSync
       .mockClear()
-      .mockReturnValue("agent: claude\neditor: code\n");
+      .mockReturnValue("agent: codex\neditor: code\n");
     mockWriteFileSync.mockClear();
     mockMkdirSync.mockClear();
   });
@@ -57,7 +57,7 @@ describe("config (mocked)", () => {
   describe("getRiftConfig", () => {
     test("returns parsed config when rift.yaml exists", async () => {
       const config = await getRiftConfig();
-      expect(config).toEqual({ agent: "claude", editor: "code" });
+      expect(config).toEqual({ agent: "codex", editor: "code" });
     });
 
     test("returns empty object when config file doesn't exist", async () => {
@@ -96,7 +96,7 @@ describe("config (mocked)", () => {
 
     test("merges updates with existing config", async () => {
       mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue("agent: claude\neditor: code\n");
+      mockReadFileSync.mockReturnValue("agent: codex\neditor: code\n");
 
       await saveRiftConfig({ agent: "aider" });
 
@@ -148,10 +148,10 @@ describe("config (mocked)", () => {
       expect(cmd).toBe("aider");
     });
 
-    test("defaults to claude when nothing configured", async () => {
+    test("defaults to codex when nothing configured", async () => {
       mockExistsSync.mockReturnValue(false);
       const cmd = await getAgentCommand();
-      expect(cmd).toBe("claude");
+      expect(cmd).toBe("codex");
     });
   });
 

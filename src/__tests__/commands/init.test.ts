@@ -66,7 +66,7 @@ describe("cmdInit", () => {
     expect(mockWriteFileSync).toHaveBeenCalled();
     const content = mockWriteFileSync.mock.calls[0][1] as string;
     expect(content).toContain("editor: code");
-    expect(content).toContain("agent: claude");
+    expect(content).toContain("agent: codex");
     logSpy.mockRestore();
   });
 
@@ -118,7 +118,7 @@ describe("cmdInit", () => {
 
     expect(logSpy).toHaveBeenCalledWith("Initialized rift.yaml in /main/repo");
     expect(logSpy).toHaveBeenCalledWith("  editor: VS Code [code]");
-    expect(logSpy).toHaveBeenCalledWith("  agent:  claude");
+    expect(logSpy).toHaveBeenCalledWith("  agent:  codex");
     logSpy.mockRestore();
   });
 
@@ -139,7 +139,7 @@ describe("cmdInit", () => {
     await cmdInit(["--agent"]);
 
     const content = mockWriteFileSync.mock.calls[0][1] as string;
-    expect(content).toContain("agent: claude");
+    expect(content).toContain("agent: codex");
     logSpy.mockRestore();
   });
 

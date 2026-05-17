@@ -1,7 +1,5 @@
 # Rift
 
-> Pacakge is Deprecated: Codex and Zed now has built in support for worktrees and I've also moved to Zed + Codex ACP so I won't be contributing to this. Feel free to fork and extend.
-
 [![codecov](https://codecov.io/gh/priyashpatil/rift/graph/badge.svg)](https://codecov.io/gh/priyashpatil/rift)
 
 Git worktree manager for parallel AI agent development.
@@ -11,7 +9,7 @@ Rift lets you spin up isolated git worktrees, each with its own branch, and auto
 ## Features
 
 - **Work on everything at once** — every task gets its own isolated worktree and branch, so you never stash, switch, or wait again
-- **Bring any agent** — Claude Code, Copilot, Codex, Aider, or any CLI command — just plug it in
+- **Bring any agent** — Codex, Amp, Claude Code, OpenCode, or any CLI command — just plug it in
 - **Zero port conflicts** — deterministic hash-based port mapping means every worktree runs services simultaneously without collisions
 - **Hooks that handle the busywork** — auto-install deps, seed databases, assign ports — all triggered by worktree lifecycle events
 - **One workspace, all worktrees** — `rift code` opens every active worktree in a single VS Code, Cursor\*, or Windsurf workspace
@@ -48,7 +46,7 @@ VS Code, Cursor\*, and Windsurf. All three support managed workspaces via `rift 
 
 ## Supported Agents
 
-Any CLI command works. Set it in `rift.yaml` or via `rift config --agent <cmd>`. Common agents include Claude Code, Copilot, Codex, Aider, Amp, Gemini, Kiro, and OpenCode.
+Any CLI command works. Set it in `rift.yaml` or via `rift config --agent <cmd>`. Common agents include Codex, Amp, Claude Code, OpenCode, Copilot, Aider, Gemini, and Kiro.
 
 ## Documentation
 

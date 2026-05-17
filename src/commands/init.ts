@@ -24,7 +24,7 @@ function generateConfig(editor: string, agent: string): string {
 editor: ${editor}
 
 # AI coding agent to launch in new worktrees (any CLI command).
-# Examples: claude, aider, copilot
+# Examples: codex, amp, claude, opencode, aider, copilot
 agent: ${agent}
 
 # Hooks run shell commands at worktree lifecycle events.
@@ -60,7 +60,7 @@ export async function cmdInit(args: string[]): Promise<void> {
   const global = getGlobalConfig();
 
   const editor = flags.editor || global.editor || "code";
-  const agent = flags.agent || global.agent || "claude";
+  const agent = flags.agent || global.agent || "codex";
 
   // Validate editor
   if (!EDITORS.some((e) => e.cmd === editor)) {
