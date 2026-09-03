@@ -1,9 +1,11 @@
 ---
 title: "Lifecycle Hooks"
 description: "Configure lifecycle hooks in rift.yaml to run commands on worktree events."
+aliases:
+  - /hooks/
 ---
 
-Hooks are shell commands defined in [`rift.yaml`](/config/) that run at worktree lifecycle events.
+Hooks are shell commands defined in [`rift.yaml`](/legacy/config/) that run at worktree lifecycle events.
 
 ## Hooks
 
@@ -63,7 +65,7 @@ When multiple worktrees run dev servers simultaneously, they all compete for the
 
 ### Bash script example
 
-Create a bootstrap script manually or follow the [framework guides](/guides/):
+Create a bootstrap script manually or follow the [framework guides](/legacy/guides/):
 
 ```bash
 #!/usr/bin/env bash
@@ -141,4 +143,4 @@ The generated `.env` file is worktree-specific and should not be committed:
 
 ### Next steps
 
-See the [framework guides](/guides/) for step-by-step examples of reading the assigned port, configuring databases, and wiring up hooks, and the [Docker Compose guide](/guides/docker-compose/) for isolating containerized services across worktrees.
+See the [framework guides](/legacy/guides/) for step-by-step examples of reading the assigned port, configuring databases, and wiring up hooks, and the [Docker Compose guide](/legacy/guides/docker-compose/) for isolating containerized services across worktrees.

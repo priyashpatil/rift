@@ -2,6 +2,8 @@
 title: "Getting Started with Rift"
 description: "Install Rift, configure your agent, and open your first worktree."
 weight: 1
+aliases:
+  - /guides/getting-started/
 ---
 
 ## 1. Install
@@ -53,7 +55,7 @@ hooks:
   # purge: echo "purging $RIFT_WORKTREE"
 ```
 
-Hooks are commented out by default. Uncomment and customize them to run commands on worktree lifecycle events — see [Hooks](/hooks/) for details and the [bootstrap pattern](/hooks/#the-bootstrap-pattern) for deterministic dev server ports.
+Hooks are commented out by default. Uncomment and customize them to run commands on worktree lifecycle events — see [Hooks](/legacy/hooks/) for details and the [bootstrap pattern](/legacy/hooks/#the-bootstrap-pattern) for deterministic dev server ports.
 
 To change settings later, use `rift config`:
 
@@ -140,7 +142,7 @@ hooks:
   # jump: bash scripts/bootstrap.sh
 ```
 
-See the [Config](/config/) page for the full `rift.yaml` reference, and [Hooks](/hooks/) for lifecycle hook patterns.
+See the [Config](/legacy/config/) page for the full `rift.yaml` reference, and [Hooks](/legacy/hooks/) for lifecycle hook patterns.
 
 ### Global config
 

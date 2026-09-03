@@ -1,6 +1,8 @@
 ---
 title: "Configuration"
 description: "Complete reference for rift.yaml and global config files."
+aliases:
+  - /config/
 ---
 
 Rift uses a two-level configuration system: a **per-project** `rift.yaml` and an optional **global** config. Project settings always take precedence.
@@ -62,7 +64,7 @@ All hooks receive:
 
 Hook failures are **non-blocking** — a non-zero exit code is logged as a warning but does not stop the operation.
 
-See the [Hooks](/hooks/) page for common patterns and the bootstrap recipe.
+See the [Hooks](/legacy/hooks/) page for common patterns and the bootstrap recipe.
 
 ---
 

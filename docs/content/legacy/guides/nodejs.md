@@ -2,9 +2,11 @@
 title: "Node.js — Next.js, NestJS, Vite, Express"
 description: "Step-by-step guide to running Node.js projects across multiple Rift worktrees with isolated ports and databases."
 weight: 3
+aliases:
+  - /guides/nodejs/
 ---
 
-Before you begin, complete the [Getting Started](/guides/getting-started/) guide and familiarize yourself with the [bootstrap pattern](/hooks/#the-bootstrap-pattern).
+Before you begin, complete the [Getting Started](/legacy/guides/getting-started/) guide and familiarize yourself with the [bootstrap pattern](/legacy/hooks/#the-bootstrap-pattern).
 
 ---
 
@@ -24,7 +26,7 @@ Add more variables as needed — `API_PORT`, `REDIS_PORT`, etc. Add `.env` to `.
 
 ## Step 2: Create the bootstrap script
 
-This script runs on every `rift open` and `rift jump`. It copies `.env.example` to `.env`, derives a deterministic port from the worktree name (so the same worktree always gets the same port), and sets a worktree-specific database name. See [The Bootstrap Pattern](/hooks/#the-bootstrap-pattern) for how the hash formula works.
+This script runs on every `rift open` and `rift jump`. It copies `.env.example` to `.env`, derives a deterministic port from the worktree name (so the same worktree always gets the same port), and sets a worktree-specific database name. See [The Bootstrap Pattern](/legacy/hooks/#the-bootstrap-pattern) for how the hash formula works.
 
 Add a bootstrap script to `package.json`:
 
@@ -68,7 +70,7 @@ console.log(`Worktree '${worktree}': port=${port}, db=${dbName}`);
 
 ### Avoiding port collisions across services
 
-Most projects run more than one service — an app server, a database, a cache. Each one binds a port, and every worktree needs its own set. Add more port variables derived from the same base so nothing collides. See [multiple ports](/hooks/#multiple-ports) for details.
+Most projects run more than one service — an app server, a database, a cache. Each one binds a port, and every worktree needs its own set. Add more port variables derived from the same base so nothing collides. See [multiple ports](/legacy/hooks/#multiple-ports) for details.
 
 Add the extra variables to `.env.example`:
 
@@ -269,7 +271,7 @@ hooks:
 
 ### With Docker Compose
 
-If your services run in Docker Compose, add container lifecycle commands. See the [Docker Compose guide](/guides/docker-compose/) for full details.
+If your services run in Docker Compose, add container lifecycle commands. See the [Docker Compose guide](/legacy/guides/docker-compose/) for full details.
 
 ```yaml
 hooks:

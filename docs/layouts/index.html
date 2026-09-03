@@ -1,69 +1,12 @@
-{{ define "head" }}
-{{ with .Params.video_src }}
-<link href="/vendor/videojs/video-js.css" rel="stylesheet">
-<link href="/vendor/videojs/forest.css" rel="stylesheet">
-{{ end }}
-{{ end }}
-
 {{ define "main" }}
 <div class="container py-4">
 
-  {{/* ── Hero ──────────────────────────────────────────────── */}}
   <section class="hero">
     <h1 class="hero-headline">{{ .Params.headline }}</h1>
     <p class="hero-tagline">{{ .Params.tagline }}</p>
   </section>
 
-  {{/* ── Get started (video + install) ─────────────────────── */}}
-  <section class="get-started">
-    {{ with .Params.video_src }}
-    <div class="video-section">
-      <video-js id="demo-video" class="video-js vjs-theme-forest vjs-fluid" controls preload="metadata" playsinline data-setup='{}'>
-        <source src="{{ . }}" type="video/mp4">
-      </video-js>
-    </div>
-    {{ end }}
-
-    <div class="install-commands">
-      <div class="install-block" data-copy="npm install -g @priyashpatil/rift">
-        <code><span class="install-prompt">$</span> npm install -g @priyashpatil/rift</code>
-        <button class="copy-btn" aria-label="Copy to clipboard">
-          {{ partial "icons/copy.html" }}
-        </button>
-      </div>
-    </div>
-    <p class="install-hint">
-      Run <code>rift config</code>, <span class="install-warn">restart your terminal</span>, then <code>rift init</code> in your project.
-      See the <a href="/guides/getting-started/">Getting Started guide</a>.
-    </p>
-    <div class="product-hunt-badge">
-      <a href="https://www.producthunt.com/products/rift-2?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-rift-3" target="_blank" rel="noopener noreferrer"><img alt="Rift - Git worktree manager for AI agents | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1091885&amp;theme=light&amp;t=1774157565082"></a>
-    </div>
-  </section>
-
-  {{/* ── Features grid ─────────────────────────────────────── */}}
-  {{ with .Params.features }}
-  <section class="features-section">
-    <h2 class="section-heading">Features</h2>
-    <div class="features-grid">
-      {{ range . }}
-      <div class="feature-card">
-        <h3 class="feature-title">{{ .title }}</h3>
-        <p class="feature-desc">{{ .description }}</p>
-      </div>
-      {{ end }}
-    </div>
-  </section>
-  {{ end }}
-
-  {{/* ── Remaining prose (agents, guides, etc.) ────────── */}}
   <article class="prose-section">{{ .Content }}</article>
 
 </div>
-{{ end }}
-
-{{ define "foot" }}
-{{ with .Params.video_src }}
-<script src="/vendor/videojs/video.min.js"></script>
-{{ end }}
 {{ end }}
