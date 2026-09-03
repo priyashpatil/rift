@@ -20,11 +20,6 @@
     <meta name="twitter:title" content="{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}">
     <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
 
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
-    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
-
     {{ $scss := resources.Get "sass/site.scss" }}
     {{ $style := $scss | toCSS (dict "includePaths" (slice "node_modules")) | minify | fingerprint }}
     <link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
