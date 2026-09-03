@@ -2,6 +2,8 @@
 title: "Docker Compose with Worktrees"
 description: "Isolate containerized services across worktrees with unique host ports."
 weight: 9
+aliases:
+  - /guides/docker-compose/
 ---
 
 ## The problem
@@ -42,7 +44,7 @@ The left side of each port mapping (the host port) is the one that must be uniqu
 
 ### bootstrap.sh
 
-Here's the [multiple ports variant](/hooks/#multiple-ports) to generate a `.env` with all the ports your services need:
+Here's the [multiple ports variant](/legacy/hooks/#multiple-ports) to generate a `.env` with all the ports your services need:
 
 ```bash
 #!/usr/bin/env bash
@@ -72,7 +74,7 @@ hooks:
   purge: "docker compose down -v"
 ```
 
-The bootstrap command can be anything — `bash scripts/bootstrap.sh`, `npm run bootstrap`, etc. See [Hooks](/hooks/#the-bootstrap-pattern) for details.
+The bootstrap command can be anything — `bash scripts/bootstrap.sh`, `npm run bootstrap`, etc. See [Hooks](/legacy/hooks/#the-bootstrap-pattern) for details.
 
 - **open** — generate ports, then start containers in the background.
 - **jump** — regenerate `.env` (containers keep running from the previous session).

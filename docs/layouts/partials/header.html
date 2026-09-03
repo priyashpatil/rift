@@ -15,16 +15,7 @@
                     <a class="nav-link {{ if eq .RelPermalink "/" }}active{{ end }}" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ if hasPrefix .RelPermalink "/guides" }}active{{ end }}" href="/guides/">Guides</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ if hasPrefix .RelPermalink "/commands" }}active{{ end }}" href="/commands/">Commands</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ if hasPrefix .RelPermalink "/config" }}active{{ end }}" href="/config/">Config</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ if hasPrefix .RelPermalink "/hooks" }}active{{ end }}" href="/hooks/">Hooks</a>
+                    <a class="nav-link {{ if hasPrefix .RelPermalink "/legacy" }}active{{ end }}" href="/legacy/">Legacy CLI</a>
                 </li>
             </ul>
 

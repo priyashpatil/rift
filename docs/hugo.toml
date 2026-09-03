@@ -28,5 +28,5 @@ enableRobotsTXT = true
     target = 'layouts'
 
 [params]
-  description = 'Documentation for Rift'
+  description = 'Rift is a native desktop app for Git worktree management.'
   author = 'Priyash Patil'

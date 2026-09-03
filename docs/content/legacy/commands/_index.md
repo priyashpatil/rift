@@ -1,6 +1,8 @@
 ---
 title: "Command Reference"
 description: "CLI reference for all Rift commands and options."
+aliases:
+  - /commands/
 ---
 
 ## `rift config`
@@ -35,7 +37,7 @@ rift init
 rift init --agent amp
 ```
 
-The generated `rift.yaml` includes commented-out hook examples. See [Config](/config/) for the full `rift.yaml` reference and [Hooks](/hooks/) for lifecycle hook patterns.
+The generated `rift.yaml` includes commented-out hook examples. See [Config](/legacy/config/) for the full `rift.yaml` reference and [Hooks](/legacy/hooks/) for lifecycle hook patterns.
 
 ## `rift status`
 
